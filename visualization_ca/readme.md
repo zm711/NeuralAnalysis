@@ -19,9 +19,13 @@ Creates z scored plots based on trial groups `tg=True` or without trial groups `
 Generates the top two dimensional pcs plot to show seperation of clusters. Of note it takes the top 4 spaces and condenses down into 2. This means that clusters not resolved in two dimensions may still be better resolved in another dimensions. Both kilosort and `qcfn` use more dimensions. So this more to make rep figures.
 
 Well resolved for two dimensions
+
+
 ![image](https://user-images.githubusercontent.com/92116279/219499187-ecea29a8-114c-410d-8cbd-6cad136f11c1.png)
 
 Poorly resolved for two dimensions
+
+
 ![image](https://user-images.githubusercontent.com/92116279/219499238-4222b306-315e-4ce7-abf9-d30e1db392bd.png)
 
 
