@@ -38,4 +38,11 @@ This is a function to check for drift during the course of the recording. It mar
 
 ![image](https://user-images.githubusercontent.com/92116279/219500047-625a17c3-f657-4cb1-af83-eeacc0f371d1.png)
 
+## `neuro_corr`
+
+Does pairwise time bin correlation of neurons with lots of possibilities triggered by the `datatype`. Options include `frraw` which is just raw firing rate, `frsm` which is a smoothed firing rate, `zscore` which correlates z score responses. `time_bin_size` is normal flag. `tg` for trial groups. `labels` for labeling the graphs.
+
+Ex with `datatype='zscore'`
+
+![image](https://user-images.githubusercontent.com/92116279/219500830-ec336eba-91ef-4df1-996f-417fc8626cda.png)
 
