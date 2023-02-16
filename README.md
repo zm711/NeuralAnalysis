@@ -1,6 +1,6 @@
 # ClusterAnalysis
 Pipeline for analyzing kilosort/phy data
-some functions based off of Nick Steinmetz's matlab code, others original
+some functions based off of Nick Steinmetz's matlab code (qcfn, psthfns, psthviewer, isiv, loadsp), others are based on reading of the lit which I've tried to indicate in their functions as comments and here.
 
 
 ## Requirements
