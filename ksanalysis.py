@@ -47,7 +47,7 @@ import os
 
 import numpy as np
 
-from spsetupzm import loadsp
+from spsetup import loadsp
 from stim_alignment import stim_alignment
 from stimulushelperszm import metadatafn, optoproc
 from zmbin import binConvert
