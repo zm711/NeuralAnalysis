@@ -23,3 +23,19 @@ Well resolved for two dimensions
 
 Poorly resolved for two dimensions
 ![image](https://user-images.githubusercontent.com/92116279/219499238-4222b306-315e-4ce7-abf9-d30e1db392bd.png)
+
+
+## `plot_wfs`
+
+Has one parameter flag `ind` which if set to `True` will return individual waveforms with the mean overlaid. `ind =False` will return just the mean waveform.
+
+![image](https://user-images.githubusercontent.com/92116279/219499991-bf7e59a0-e0d0-419a-a749-ee4d7d6d4bc5.png)
+
+
+## `plot_drift`
+
+This is a function to check for drift during the course of the recording. It marks any drift detection with red dots. May need to change the drift cutoffs in the `detectdrift.py` file for your use case.
+
+![image](https://user-images.githubusercontent.com/92116279/219500047-625a17c3-f657-4cb1-af83-eeacc0f371d1.png)
+
+
