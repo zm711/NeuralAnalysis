@@ -55,3 +55,12 @@ Ex with `datatype='zscore'`
 Plots the autocorrelogram of a neuron's spikes to its other spikes to help visualization refractory period violations. This is graphical representation of the `isiV` value from the `qcfn`. Red lines are set by the flag `ref_dur` which is the refractory period in seconds. Depending on neuron type this could be between 0.001 and 0.003 so I set default to 0.002. Currently this code uses some Rust, in the private repo, but I'm working on a numba accelerated python version for this public repo.
 
 ![image](https://user-images.githubusercontent.com/92116279/219501400-ba2c2d8e-9f39-4ef2-9a3f-de27ac71c36d.png)
+
+## `plot_cdf`
+
+This is a function for plotting a cumulative distribution style figure of neural spiking by depth, amplitude and firing rate. It's just a way to visualize the data. `units_only` is a boolean to mark only responsive units. `laterality` will generate separate medial and lateral plots for stack H7 probes. It also generates a pdf version as well as some histograms.
+
+![image](https://user-images.githubusercontent.com/92116279/219502120-24b19bcb-6877-4a91-9b8d-dadc276e8c4e.png)
+![image](https://user-images.githubusercontent.com/92116279/219502176-06e2f2d9-90ae-45e2-9580-2a375237cb93.png)
+![image](https://user-images.githubusercontent.com/92116279/219502181-95f59dc9-8c16-46b4-9ea1-e86cefa612c4.png)
+
