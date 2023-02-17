@@ -42,7 +42,17 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  ## First methods
  
  ### Setting important recording values
- There are a few values beneficial for this type of analysis which cannot be predicted when load the data. First trial groups are loaded as numeric values so likely for graphing it is necessary to map the numeric values to a stimulus value. This can be done with a dictionary. my_stim = {'1.0': '180 Degrees',..., '10.0': '370 Degrees'}. In addition the depth of the probe if measured can be factored into the analysis (500 um or 1000 um). Finally since most of the nervous system is bilateral indicating whether the recording was done of the 'l' or 'r' may be useful. So running the `set_labels` methods of `ClusterAnalysis` allows for inputting these values.
+ There are a few values beneficial for this type of analysis which cannot be predicted when load the data. First trial groups are loaded as numeric values so likely for graphing it is necessary to map the numeric values to a stimulus value. This can be done with a dictionary. 
+ 
+ ```python
+ my_stim = {
+            '1.0': '180 Degrees',
+            ..., 
+            '10.0': '270 Degrees'
+            } 
+ ```
+ 
+In addition the depth of the probe if measured can be factored into the analysis (500 um or 1000 um). Finally since most of the nervous system is bilateral indicating whether the recording was done of the 'l' or 'r' may be useful. So running the `set_labels` methods of `ClusterAnalysis` allows for inputting these values.
  
  ```python
  myNeuron.set_labels(labels = my_stim, depth = 1000, laterality='l')
