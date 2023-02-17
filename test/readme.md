@@ -15,7 +15,8 @@ This requires the raw 5-20 gb `.bin` file. Since I can't include it, we can't ru
 ### `qcfn`
 This requires the raw pc_files which would require pickling which isn't safe for testing in files that you don't know about. 
 
-
+### `plot_pc`
+This requires the pc_values in sp which I'm not loading for testing
 
 ## Results
 
@@ -28,3 +29,5 @@ Running clu_zscore with baseline window -2,-.1, stimulus window = -2,12 and runn
 np.shape(allP) should be (6,2,280).
 np.sum(allP['Dig2']) == -30.93797084395051
 ```
+The `acg` figure for `Neuron 5` should be:
+![image](https://user-images.githubusercontent.com/92116279/219798237-3f878480-8344-490d-ba19-5a5811ea1a3a.png)
