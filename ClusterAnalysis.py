@@ -193,9 +193,9 @@ class ClusterAnalysis:
 
     """plots firingrates as either lineplots or violinplots"""
 
-    def firingratedf(self, time_bin_size=0.05) -> None:
+    def firingratedf(self, window_dict=None, time_bin_size=0.05) -> None:
         firing_rate_df = firingRateWin(
-            self.sp, self.eventTimes, None, timeBinSize=time_bin_size
+            self.sp, self.eventTimes, window_dict, timeBinSize=time_bin_size
         )
         self.firing_rate_df = firing_rate_df
 
