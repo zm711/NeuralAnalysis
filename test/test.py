@@ -35,4 +35,4 @@ _,_ = myNeuron.spike_raster()
 myNeuron.plot_spikes()
 """
 myNeuron.acg()
-
+myNeuron.plot_drift()
