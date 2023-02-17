@@ -88,7 +88,7 @@ All analysis is split amongst generating values which are stored as class attrib
  
  ### Firing Rate Data
  
- Spike counts are the fundamental neural data for in vivo analysis. In order to generate these counts we need a `time_bin_size` given in seconds. 10-50 milliseconds work pretty well, but for slower neurons longer time bins provides more smoothing of the data and smaller time bins provides more 0 count bins. This function generates the `psthvalues` attribute of the `ClusterAnalysis` class which is organized as a dictionary of neurons with each neuron having a `'BinnedArray'` with the matrix of firing rates give as an `nEvents x nTimeBins`.
+ Spike counts are the fundamental neural data for *in vivo* analysis. In order to generate these counts we need a `time_bin_size` given in seconds. 10-50 milliseconds work pretty well, but for slower neurons longer time bins provides more smoothing of the data and smaller time bins provides more 0 count bins. This function generates the `psthvalues` attribute of the `ClusterAnalysis` class which is organized as a dictionary of neurons with each neuron having a `'BinnedArray'` with the matrix of firing rates give as an `nEvents x nTimeBins`.
  
  ```python
  psthvalues, windowlst = myNeuron.spike_raster(time_bin_size=0.05) # 50 millisecond example
@@ -99,7 +99,7 @@ All analysis is split amongst generating values which are stored as class attrib
  Data can also be z scored to allow for normalization of data. This requires that the std != 0, but to account for this an np.array called `normVal` is also produced which indicates the baseline mean and std or np.nan if un-z scoreable. *reminder Z score = x-mu/std* The return is `allP` a structure of the z scores stored as a dictionary of stimuli, followed by a matrix of the z score data. If `tg` is `True` then it will be `nUnits x nTrialGroups x nTimeBins` otherwise it will be `nUnits x nTimeBins`. `time_bin_size` like above is size of the time_bins. I also give an optional chance to input a `window_list` which is formatted as nested lists where each stimulus require two lists of time. Since this is complicated I explain below:
  
  #### Windows
- Each stmiulus needs the baseline period to generate the baseline mean and std. [bslStart, bslEnd]. These times are in relation to the event onset. So do to do the 2 seconds before the stimuli onsets would be [-2,0]. To do 500 to 100 milliseconds would be [-.5, -.1]. Then each stimulus also needs a window. Since some neurons have after-discharges this value can be longer or shorter than the actual stimlus. If I am doing a 5 second stim I could analyze the first 2 seconds [0, 2] or the last 2 [3, 5] or [0, 7] for full stimulus but also with the 2 seconds after.
+ Each stimulus needs the baseline period to generate the baseline mean and std. [bslStart, bslEnd]. These times are in relation to the event onset. So do to do the 2 seconds before the stimuli onsets would be [-2,0]. To do 500 to 100 milliseconds would be [-.5, -.1]. Then each stimulus also needs a window. Since some neurons have after-discharges this value can be longer or shorter than the actual stimlus. If I am doing a 5 second stim I could analyze the first 2 seconds [0, 2] or the last 2 [3, 5] or [0, 7] for full stimulus but also with the 2 seconds after.
  
  So the final window_list would be [[bslS, bslE], [start, end]] or with multiple different stimuli it's best to set to `None` and let the function prompt each stimulus itself **IE when in doubt just enter `None` and let the function prompt you**
  ###
@@ -197,8 +197,8 @@ this reverses the results of `qc_only` or `gen_resp` and unmasks back to the raw
 Finally, to save a bunch of different values of an analysis use the `save_analysis` method. This take the parameter `title` which can be used if you plan to save multiple iterations. You would then use the same `title` when using the `get_files` method. The save will occur in the pyanalysis folder and so look there when prompted in `get_files`. Always save the analysis at least once (space permitting) to allow you to quickly recollect old data like the `labels`, `depth`, etc. These values can always be written over if you change analysis, but it is helpful to reload these values.
 
 
-### The /__repr/__
-Since *in vivo* analysis often involves working with multiple files I provide a __repr__ which provides some helpful information. It will print the `filename` stored in the instance of the class. Then it will store the attributes currently stored within the class, which can help for pulling out values for *post-hoc* and then finally it will print a list of the methods in the class. In case the way I spelled a method seems confusing this will print out the spelling etc of the methods.
+### The \_\_repr\_\_
+Since *in vivo* analysis often involves working with multiple files I provide a \_\_repr\_\_ which provides some helpful information. It will print the `filename` stored in the instance of the class. Then it will store the attributes currently stored within the class, which can help for pulling out values for *post-hoc* and then finally it will print a list of the methods in the class. In case the way I spelled a method seems confusing this will print out the spelling etc of the methods.
 
 ```python
 
