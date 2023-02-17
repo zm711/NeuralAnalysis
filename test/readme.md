@@ -30,4 +30,10 @@ np.shape(allP) should be (6,2,280).
 np.sum(allP['Dig2']) == -30.93797084395051
 ```
 The `acg` figure for `Neuron 5` should be:
+
 ![image](https://user-images.githubusercontent.com/92116279/219798237-3f878480-8344-490d-ba19-5a5811ea1a3a.png)
+
+The Drift Plot from running `plot_drift` should be 
+
+![image](https://user-images.githubusercontent.com/92116279/219799370-11302e08-0eb6-4fe5-8bbe-907463c2d650.png)
+
