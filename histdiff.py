@@ -101,8 +101,8 @@ def reghist(
     size: float,
     nbins: float,
 ) -> tuple[np.array, np.array]:
-    cnts = np.zeros((1, nbins))
-    ctrs = np.zeros((1, nbins))
+    cnts = np.zeros((nbins))
+    ctrs = np.zeros((nbins))
     maxV = minV + size * nbins
     for counta in range(nbins):
         cnts[counta] = 0
@@ -110,16 +110,21 @@ def reghist(
 
     for counts in range(ndata1):
         if ndata2 == 1:
-            diff = data1[counts] - data2
+            diff: float = data1[counts] - data2
             if diff < minV or diff >= maxV:
                 continue
-            cnts[int((diff - minV) / size)] += 1
+            idx = (diff - minV) / size
+            cnts[int(idx)] += 1
         else:
             for counts2 in range(ndata2):
                 diff = data1[counts] - data2[counts2]
                 if diff < minV or diff >= maxV:
                     continue
-                cnts[int((diff - minV) / size)] += 1
+
+                idx = diff - minV
+                idx = idx / size
+                print(type(idx))
+                cnts[int(idx)] += 1
     return cnts, ctrs
 
 
