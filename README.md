@@ -49,7 +49,7 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  ```
  
  ### Generating raw waveform data
- Raw waveform data as opposed to the templates from phy can be beneficial for assessing peak-trough duration, amplitude etc. We can load this data from the `.bin` file that had been generated for kilosort based on our post-curation neural data. Of note this is a slow, RAM hungry process that performs a memory map of the binary file. It may need to be done on a server or a high-RAM workstation.
+ Raw waveform data as opposed to the templates from phy can be beneficial for assessing peak-trough duration, amplitude etc. We can load this data from the `.bin` file that had been generated for kilosort based on our post-curation neural data. Of note this is a slow, RAM hungry process that performs a memory map of the binary file. It may need to be done on a server or a high-RAM workstation. Since Kilosort is written in Matlab, the function also assumes that the `.bin` file was generated in Matlab, which will be Fortran ordered rather than the NumPy standard of `C`. So I load the structure in the `F`. If this seems to generate nonsense values it could be that your the file your using is `C` ordered. in `getWaveForms.py` I have commented out creating a `C`-ordered memory map so this can be generated to see if this is the issue.
  
  ```python
  myNeuron.get_waveforms()
