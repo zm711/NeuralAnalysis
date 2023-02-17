@@ -10,8 +10,10 @@ This function will generate a smoothed firing rate plot. It will request a smoot
 ## `plot_z`
 
 Creates z scored plots based on trial groups `tg=True` or without trial groups `tg=False`. With labels if given on in class or without if `None` or no attribute. 
+Of note You may receive ` UserWarning: Attempting to set identical low and high xlims makes transformation singular; automatically expanding.`. This is because for neurons which are not z-scoreable (ie baseline std = 0) I plot as raw firing rate. This error can occur when you don't have any neurons in which case a blank graph will appear. See Below.
 
 ![image](https://user-images.githubusercontent.com/92116279/219498798-ddd01e73-8afe-4f7c-94e5-629e649bc769.png)
+![image](https://user-images.githubusercontent.com/92116279/219796366-6feb66de-5d76-4df9-980c-1a1826b387d6.png)
 
 
 ## `plot_firingrate`
