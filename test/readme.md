@@ -1,6 +1,6 @@
 # Testing
 
-I'm including a couple test files. One `sp.npy` will have a prepackaged sp file set up with all the appropriate dictionary structures and one `eventTimes.npy` an example of how stimulus data should be set up. Running the test.py file will automatically load these files and create an instance of the ClusterAnalysis class. It will attempt various assertions which should all pass. 
+test.py will create a skinny version of `sp` and a set of stimulus data dictionary `eventTimes`
 
 ## Initial Notes
 Raw files are all >5gb and I routinely work on >20gb raw files. So I can't share those here. Since all storage is done in `.npy` files we require a lot of pickling. Since pickle is unsafe I also don't want to require `allow_pickle` to occur during testing. Internal pickle is used, but for external files please don't allow pickle. 
