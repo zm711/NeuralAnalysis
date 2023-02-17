@@ -1,4 +1,4 @@
-#! bin/python
+#! bin/python3
 """
 Created on Thu Aug 11 08:36:00 2022
 
@@ -11,59 +11,46 @@ should automatically just use the numpy implementation. '
 Recreating the histdiff function from the c code in histdiff for matlab from Nick's code 
 set'
 
-timeStamps = spikeTimes of interest should be nSpikes x1
-referencePoints = scalar or vector to references in Nick's code he puts it in as a s
+time_stamps = spikeTimes of interest should be nSpikes x1
+reference_points = scalar or vector to references in Nick's code he puts it in as a s
 calar'
-binBorders =scalar or vector for our bins. 
+bin_borders =scalar or vector for our bins. 
 
-To see original C code good to our github/analyis/helpers/histdiff.c. That 
+To see original C code to  cortex-lab/spikes/analyis/helpers/histdiff.c That 
 source code has a bunch of Mex functions to allow the code to play with Matlab. I 
 changed those to be inputs into python and I also deleted all the warning messages
 since for my implementation it should be pre-processed by this point and should 
 basically work.
 
-INPUTS: timeStamps = spikeTimes (sorted in previous function), but basically an 
+INPUTS: time_stamps = spikeTimes (sorted in previous function), but basically an 
                        nTimes vectors
-        referencePoints = 1 event from eventTime (ie a scalar)
-        binBorders = vector of our bins
+        reference_points = 1 event from eventTime (ie a scalar)
+        bin_borders = vector of our bins
 OUTPUTS: cnts = the number of counts per bin [nbins]
          ctrs = the bins centered rather than on the edges [nbins]
          
-         
-NOW I have rust based code to run things faster. For rust it takes in timeStamps, 
-referencePoints as an array, and a pointer to the totalBins array. This will be mutated 
-in place with no returns. So should go fast. If ordhist.pyd or ordhist.so is not present
-on the local computer or searchable on github it defaults to a python implmentation
 """
 
 import numpy as np
 from numba import jit
 
-try:
-    from ordhist import reghistpy
-except ModuleNotFoundError:
-    print("no rust code")
-
-
-def rusthist(timeStamps, RefPts, binBorders):
-    reghistpy(timeStamps, RefPts, binBorders)
-
 
 @jit(nopython=True)
 def histdiff(time_stamps: np.array, reference_points: np.array, bin_borders: np.array):
     """First we pull in our data"""
-    data1 = time_stamps
-    ndata1 = len(time_stamps)
-    data2 = reference_points
-    ndata2 = len(reference_points)
-    nbins = len(bin_borders)
+    data1: np.array = time_stamps
+    ndata1: int = len(time_stamps)
+    data2: np.array = reference_points
+    ndata2: int = len(reference_points)
+    nbins: int = len(bin_borders)
+
     """Now we check if nbins is scalar or vector"""
     if nbins == 1:
-        minV, maxV = findext(data1, ndata1, data2, ndata2)
-        size = (maxV - minV) / nbins
+        minV, maxV = findext(data1, ndata1, data2, ndata2)  # find min and max
+        size = (maxV - minV) / nbins  # our bins needed to be regularly spaced
     else:  # if a vector subtract one to account for the extra "end point"
         nbins = len(bin_borders) - 1
-        bins = bin_borders  # all of our bins are listsed in binBorders
+        bins = bin_borders  # all of our bins are listed in bin_borders
         size = bins[1] - bins[0]
         for count in range(1, nbins):
             if (
@@ -76,21 +63,28 @@ def histdiff(time_stamps: np.array, reference_points: np.array, bin_borders: np.
     """Here we check for which algorithm to use. If size means regularly spaced 
      and we can use faster if ordered and fast if unordered. Should be ordered 
      for us"""
-    if size:
+    cnts: np.array = np.zeros((nbins))
+    ctrs: np.array = np.zeros((nbins))
+    if size:  # checking for regular spacing
         if chckord(data1, ndata1, data2, ndata2):  # check if ordered
-            cnts, ctrs = ordhist(data1, ndata1, data2, ndata2, minV, size, nbins)
-            return cnts, ctrs
-        else:
-            cnts, ctrs = reghist(data1, ndata1, data2, ndata2, minV, size, nbins)
-            return cnts, ctrs
-    else:  # if unordered do slow algorithm
-        cnts, ctrs = binhist(data1, ndata1, data2, ndata2, bins, nbins)
-        return cnts, ctrs
+            cnts, ctrs = ordhist(
+                data1, ndata1, data2, ndata2, minV, size, nbins, cnts, ctrs
+            )
+
+        else:  # if not then run slightly slower algo.
+            cnts, ctrs = reghist(
+                data1, ndata1, data2, ndata2, minV, size, nbins, cnts, ctrs
+            )
+
+    else:  # if unordered, not-regular do slow algorithm
+        cnts, ctrs = binhist(data1, ndata1, data2, ndata2, bins, nbins, cnts, ctrs)
+
+    return cnts, ctrs
 
 
 """Sorting algorithms below"""
 
-
+# for regularly spaced, but unordered data faster than binhist
 @jit(nopython=True)
 def reghist(
     data1: np.array,
@@ -100,9 +94,10 @@ def reghist(
     minV: float,
     size: float,
     nbins: float,
+    cnts: np.array,
+    ctrs: np.array,
 ) -> tuple[np.array, np.array]:
-    cnts = np.zeros((nbins))
-    ctrs = np.zeros((nbins))
+
     maxV = minV + size * nbins
     for counta in range(nbins):
         cnts[counta] = 0
@@ -119,6 +114,7 @@ def reghist(
     return cnts, ctrs
 
 
+# for regularly spaced, ordered data. Is able to skip values based on order. Fastest
 @jit(nopython=True)
 def ordhist(
     data1: np.array,
@@ -128,26 +124,29 @@ def ordhist(
     minV: float,
     size: float,
     nbins: int,
-):
-    cnts = np.zeros((nbins))
-    ctrs = np.zeros((nbins))
+    cnts: np.array,
+    ctrs: np.array,
+) -> tuple[np.array, np.array]:
+
     maxV: float = minV + size * nbins
     for counta in range(nbins):
-        cnts[counta] = 0
+        # cnts[counta] = 0
         ctrs[counta] = minV + counta * size + size / 2
     jmin = 0
     for count_data1 in range(ndata1):
         for counts2 in range(jmin, ndata2):
-            if (data1[count_data1] - data2[counts2]) >= maxV:
+            if (data1[count_data1] - data2[counts2]) <= maxV:
                 jmin = counts2
-            for counts3 in range(jmin, ndata2):
-                diff = data1[count_data1] - data2[counts3]
-                if diff >= minV:
-                    cnts[int((diff - minV) / size)] += 1
+                break
+        for counts_2 in range(jmin, ndata2):
+            diff = data1[count_data1] - data2[counts_2]
+            if diff >= minV:
+                cnts[int((diff - minV) / size)] += 1
 
     return cnts, ctrs
 
 
+# for irregular spacing un ordered data. Slowest.
 @jit(nopython=True)
 def binhist(
     data1: np.array,
@@ -156,11 +155,12 @@ def binhist(
     ndata2: int,
     bins: np.array,
     nbins: int,
+    cnts: np.array,
+    ctrs: np.array,
 ) -> tuple[np.array, np.array]:
-    cnts = np.zeros((nbins))
-    ctrs = np.zeros((nbins))
+
     for counts in range(nbins):
-        cnts[counts] = 0
+        # cnts[counts] = 0
         ctrs[counts] = (bins[counts] + bins[counts + 1]) / 2
     for counts2 in range(ndata1):
         for counts3 in range(ndata2):
