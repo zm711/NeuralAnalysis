@@ -205,9 +205,14 @@ Since *in vivo* analysis often involves working with multiple files I provide a 
 >>> myNeuron
 >>> This is the analysis of filename.2.17.23
 
->>> The initialized variables are ['sp', 'clu', 'clusterIDs', 'spikeTimes', 'eventTimes', 'filename', 'allP', 'zwindow', 'normVal', 'depth', 'laterality', 'resp_neuro_df', 'non_resp_df']
+>>> The initialized variables are ['sp', 'clu', 'clusterIDs', 'spikeTimes', 'eventTimes', 'filename', 
+'allP', 'zwindow', 'normVal', 'depth', 'laterality', 'resp_neuro_df', 'non_resp_df']
 
- >>> The methods are ['set_labels', 'gen_wfdf', 'waveform_vals', 'plot_spikes', 'plot_firingrate', 'qcfn', 'get_files', 'gen_resp', 'spike_raster', 'plot_wfs',          'firingratedf', 'clu_zscore', 'prevalence_calculator', 'cap_conversion', 'save_analysis', 'plot_depth_scatter', 'plot_medlat_prevalence', 'get_waveforms', 'plot_pc', 'plot_cdf', 'revert_cids', 'acg', 'plot_drift', 'gen_respdf', 'plot_z', 'neuro_corr', 'latency', 'qc_only']
+>>> The methods are ['set_labels', 'gen_wfdf', 'waveform_vals', 'plot_spikes', 'plot_firingrate', 
+'qcfn', 'get_files', 'gen_resp', 'spike_raster', 'plot_wfs',          
+'firingratedf', 'clu_zscore', 'prevalence_calculator', 'cap_conversion', 'save_analysis', 
+'plot_depth_scatter', 'plot_medlat_prevalence', 'get_waveforms', 'plot_pc', 'plot_cdf', 
+'revert_cids', 'acg', 'plot_drift', 'gen_respdf', 'plot_z', 'neuro_corr', 'latency', 'qc_only']
 ```
 
 ### Plotting
