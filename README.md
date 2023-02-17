@@ -197,6 +197,19 @@ this reverses the results of `qc_only` or `gen_resp` and unmasks back to the raw
 Finally, to save a bunch of different values of an analysis use the `save_analysis` method. This take the parameter `title` which can be used if you plan to save multiple iterations. You would then use the same `title` when using the `get_files` method. The save will occur in the pyanalysis folder and so look there when prompted in `get_files`. Always save the analysis at least once (space permitting) to allow you to quickly recollect old data like the `labels`, `depth`, etc. These values can always be written over if you change analysis, but it is helpful to reload these values.
 
 
+### The __repr__
+Since *in vivo* analysis often involves working with multiple files I provide a __repr__ which provides some helpful information. It will print the `filename` stored in the instance of the class. Then it will store the attributes currently stored within the class, which can help for pulling out values for *post-hoc* and then finally it will print a list of the methods in the class. In case the way I spelled a method seems confusing this will print out the spelling etc of the methods.
+
+```python
+
+>>> myNeuron
+>>> This is the analysis of filename.2.17.23
+
+>>> The initialized variables are ['sp', 'clu', 'clusterIDs', 'spikeTimes', 'eventTimes', 'filename', 'allP', 'zwindow', 'normVal', 'depth', 'laterality', 'resp_neuro_df', 'non_resp_df']
+
+ >>> The methods are ['set_labels', 'gen_wfdf', 'waveform_vals', 'plot_spikes', 'plot_firingrate', 'qcfn', 'get_files', 'gen_resp', 'spike_raster', 'plot_wfs',          'firingratedf', 'clu_zscore', 'prevalence_calculator', 'cap_conversion', 'save_analysis', 'plot_depth_scatter', 'plot_medlat_prevalence', 'get_waveforms', 'plot_pc', 'plot_cdf', 'revert_cids', 'acg', 'plot_drift', 'gen_respdf', 'plot_z', 'neuro_corr', 'latency', 'qc_only']
+```
+
 ### Plotting
 plotting functions are explained in the visualization_ca folder.
 
