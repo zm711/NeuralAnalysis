@@ -28,10 +28,10 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  Many *in vivo* experiments are based on recording neural activity in response to stimulus data. Stimulus data also needs to be loaded as a specific dictionary structure. Since I use Intan for recording data and stimuli, I use their python code for extracting stimulus data and generating this dictionary. If another data recording system is used the general format required is: eventTimes['stim channel']['EventTime']: np.array (of events), eventTimes['stim channel']['Length']: np.array (of lengths for each event), eventTimes['stim channel']['TrialGroup']: np.array of the different degree of stim (for example changing light orientation or changing pressure of stimuli) and eventTimes['stim channel']['Stim']: str ( the name of the stimulus for plotting). 
  
  #### Intan_helpers Folder
- Includes functions to run intan data automatically along with my functions for prepping the stimulus data from the .rhd file. To generate an appropriate `eventTimes` for the class reading through these functions will be key. For the most up to date intan functions they offer their functions as a zip file although of note if downloading from their website I changed the import structure to fit with my pipeline (ie from intan_helpers.file import function)
+ Includes functions to run intan data automatically along with my functions for prepping the stimulus data from the `.rhd` file. To generate an appropriate `eventTimes` for the class reading through these functions will be key. For the most up to date intan functions they offer their functions as a zip file although *if downloading from their website* I changed the import structure to fit with my pipeline (ie from intan_helpers.file import function)
  
  ## Initialize the class
- The class is initialized by the spike data (sp) and the stimuli data (eventTimes).
+ The class is initialized by the spike data `sp` and the stimuli data `eventTimes`.
  
  ```python
  from ClusterAnalysis import ClusterAnalysis
@@ -42,7 +42,7 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  ## First methods
  
  ### Setting important recording values
- There are a few values beneficial for this type of analysis which cannot be predicted when load the data. First trial groups are loaded as numeric values so likely for graphing it is necessary to map the numeric values to a stimulus value. This can be done with a dictionary. 
+ There are a few values beneficial for this type of analysis which cannot be predicted when loading the data. First trial groups are loaded as numeric values so likely for graphing it is necessary to map the numeric values to a stimulus value. This can be done with a dictionary. I turn the trial groups into strings so the keys for this dictionary should be strings of the values used in `trialGroup` portion of `eventTimes`
  
  ```python
  my_stim = {
@@ -52,14 +52,14 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
             } 
  ```
  
-In addition the depth of the probe if measured can be factored into the analysis (500 um or 1000 um). Finally since most of the nervous system is bilateral indicating whether the recording was done of the 'l' or 'r' may be useful. So running the `set_labels` methods of `ClusterAnalysis` allows for inputting these values.
+In addition the depth of the probe if measured can be factored into the analysis (500 um or 1000 um). If depth is included then all graphing and outputs will be relative to this probe measure. (*e.g.* a probe inserted 1000um registering a spike at 400um would mean that relative to the insertion into the tissue is 600um deep, +/- measurement error etc). Finally since most of the nervous system is bilateral indicating whether the recording was done on the 'l' or 'r' may be useful. So running the `set_labels` methods of `ClusterAnalysis` allows for inputting these values.
  
  ```python
  myNeuron.set_labels(labels = my_stim, depth = 1000, laterality='l')
  ```
  
  ### Generating raw waveform data
- Raw waveform data as opposed to the templates from phy can be beneficial for assessing peak-trough duration, amplitude etc. We can load this data from the `.bin` file that had been generated for kilosort based on our post-curation neural data. Of note this is a slow, RAM hungry process that performs a memory map of the binary file. It may need to be done on a server or a high-RAM workstation. Since Kilosort is written in Matlab, the function also assumes that the `.bin` file was generated in Matlab, which will be Fortran ordered rather than the NumPy standard of `C`. So I load the structure in the `F`. If this seems to generate nonsense values it could be that your the file your using is `C` ordered. in `getWaveForms.py` I have commented out creating a `C`-ordered memory map so this can be generated to see if this is the issue.
+ Raw waveform data as opposed to the templates from phy can be beneficial for assessing peak-trough duration, amplitude etc. We can load this data from the `.bin` file that had been generated for kilosort based on our post-curation neural data. Of note this is a slow, RAM hungry process that performs a memory map of the binary file. It may need to be done on a server or a high-RAM workstation (For 20 gb bin I often see usage of 60-70gb of RAM). Since Kilosort is written in Matlab, the function also assumes that the `.bin` file was generated in Matlab, which will be Fortran ordered rather than the NumPy standard of `C`. So I load the structure in the `F` key of the `wf` attribute of kilosort. If you inspect `wf` you will see it also has a `C` key. This was historical since I had experimented with generating the `.bin` file in python. If you see nonsense values it could be that your file is using  `C` order. In `getWaveForms.py` I have commented out creating a `C`-ordered memory map, but this can be run by remove the comment hashes. Then this method can be run to see if this is the issue. This means that down stream in the `waveform_vals()` method the order would need to be switched to `C`.
  
  ```python
  myNeuron.get_waveforms()
@@ -84,11 +84,11 @@ In addition the depth of the probe if measured can be factored into the analysis
  ```
  ## Analyzing Data
  
-All analysis is split amongst generating values which are stored as class attributes and plotting functions which use these attributes for plotting. But to do your own analyses based on these values just access the appropriate attributes (list at bottom of this document). Methods where I often inspect values return from the class into the terminal, but most methods just store their returns internally in the class as attributes.
+All analysis is split among generating values which are stored as class attributes and plotting functions which use these attributes for plotting. But to do your own analyses based on these values just access the appropriate attributes (list at bottom of this document). Methods where I often inspect values return from the class into the terminal, but most methods just store their returns internally in the class as attributes.
  
  ### Firing Rate Data
  
- Spike counts are the fundamental neural data for *in vivo* analysis. In order to generate these counts we need a `time_bin_size` given in seconds. 10-50 milliseconds work pretty well, but for slower neurons longer time bins provides more smoothing of the data and smaller time bins provides more 0 count bins. This function generates the `psthvalues` attribute of the `ClusterAnalysis` class which is organized as a dictionary of neurons with each neuron having a `'BinnedArray'` with the matrix of firing rates give as an `nEvents x nTimeBins`.
+ Spike counts are the fundamental neural data for *in vivo* analysis. In order to generate these counts we need a `time_bin_size` given in seconds. 10-50 milliseconds work pretty well, but for slower neurons longer time bins provides more smoothing of the data and smaller time bins provides more 0 count bins. This function generates the `psthvalues` attribute of the `ClusterAnalysis` class which is organized as a dictionary of neurons with each neuron having a `'BinnedArray'` with the matrix of firing rates give as an `nEvents x nTimeBins`. Additionally this function will ask window info for each stimulus. The window info should be given as start,end. So for -10 before stimulus to 10 after for a 10 second stimulus I would write -10,20 when prompted.
  
  ```python
  psthvalues, windowlst = myNeuron.spike_raster(time_bin_size=0.05) # 50 millisecond example
