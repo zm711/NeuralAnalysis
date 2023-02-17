@@ -27,7 +27,7 @@ Each stimulus will have a series of events so each array will contain `nEvents`.
 Each stimumlus will have a series of events `nEvents`. Each `event` will have corresponding length stored in this np.array. Likely will be similar lengths for this allows for variability in stimuli as recording by the DAC/amplifier
 
 ### Trial Groups
-`eventTimes['DIG1']['TrialGroup']
+`eventTimes['DIG1']['TrialGroup']`
 Each stimulus will have a series of events `nEvents`. Each `event` could have a different intensity, orientation, positioning etc. If all stimuli were exactly the same this could be an np.array of 1s of len `nEvents`. Otherwise use of ints or floats can be used to distinguish the values. E.g. 0 for 0 degrees, 1 for 90 degrees, 2 for 180 degrees, 3 for 270 degrees. In the `ClusterAnalysis` class a `labels` attribute allows for translating between the numbers and the labels. I use numbers here since I often sort based on the numbering (if 1 is low intensity for 5 being high intensity it is easier to sort than sorting strings which are variable '1mW' '5mW')
 
 ### Stim Name
