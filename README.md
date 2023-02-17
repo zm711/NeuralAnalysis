@@ -197,7 +197,7 @@ this reverses the results of `qc_only` or `gen_resp` and unmasks back to the raw
 Finally, to save a bunch of different values of an analysis use the `save_analysis` method. This take the parameter `title` which can be used if you plan to save multiple iterations. You would then use the same `title` when using the `get_files` method. The save will occur in the pyanalysis folder and so look there when prompted in `get_files`. Always save the analysis at least once (space permitting) to allow you to quickly recollect old data like the `labels`, `depth`, etc. These values can always be written over if you change analysis, but it is helpful to reload these values.
 
 
-### The __repr__
+### The /__repr/__
 Since *in vivo* analysis often involves working with multiple files I provide a __repr__ which provides some helpful information. It will print the `filename` stored in the instance of the class. Then it will store the attributes currently stored within the class, which can help for pulling out values for *post-hoc* and then finally it will print a list of the methods in the class. In case the way I spelled a method seems confusing this will print out the spelling etc of the methods.
 
 ```python
