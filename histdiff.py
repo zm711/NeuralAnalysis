@@ -38,6 +38,7 @@ on the local computer or searchable on github it defaults to a python implmentat
 """
 
 import numpy as np
+from numba import jit
 
 try:
     from ordhist import reghistpy
@@ -49,7 +50,7 @@ def rusthist(timeStamps, RefPts, binBorders):
     reghistpy(timeStamps, RefPts, binBorders)
 
 
-def histdiff(timeStamps, referencePoints, binBorders):
+def histdiff(timeStamps: np.array, referencePoints: np.array, binBorders: np.array):
     """First we pull in our data"""
     data1 = timeStamps
     ndata1 = np.size(timeStamps)
@@ -58,7 +59,7 @@ def histdiff(timeStamps, referencePoints, binBorders):
     nbins = len(binBorders)
     """Now we check if nbins is scalar or vector"""
     if nbins == 1:
-        minV, maxV = findext(data1, ndata1, data2, ndata2, nbins)
+        minV, maxV = findext(data1, ndata1, data2, ndata2)
         size = (maxV - minV) / nbins
     else:  # if a vector subtract one to account for the extra "end point"
         nbins = len(binBorders) - 1
@@ -90,76 +91,105 @@ def histdiff(timeStamps, referencePoints, binBorders):
 """Sorting algorithms below"""
 
 
-def reghist(data1, ndata1, data2, ndata2, minV, size, nbins):
+@jit(nopython=True, cache=True)
+def reghist(
+    data1: np.array,
+    ndata1: int,
+    data2: np.array,
+    ndata2: int,
+    minV: float,
+    size: float,
+    nbins: float,
+) -> tuple[np.array, np.array]:
     cnts = np.zeros((1, nbins))
     ctrs = np.zeros((1, nbins))
     maxV = minV + size * nbins
     for counta in range(nbins):
-        cnts[0, counta] = 0
-        ctrs[0, counta] = minV + counta * size + size / 2
+        cnts[counta] = 0
+        ctrs[counta] = minV + counta * size + size / 2
 
     for counts in range(ndata1):
         if ndata2 == 1:
             diff = data1[counts] - data2
             if diff < minV or diff >= maxV:
                 continue
-            cnts[0, int((diff - minV) / size)] += 1
+            cnts[int((diff - minV) / size)] += 1
         else:
             for counts2 in range(ndata2):
                 diff = data1[counts] - data2[counts2]
                 if diff < minV or diff >= maxV:
                     continue
-                cnts[0, int((diff - minV) / size)] += 1
+                cnts[int((diff - minV) / size)] += 1
     return cnts, ctrs
 
 
-def ordhist(data1, ndata1, data2, ndata2, minV, size, nbins):
-    cnts = np.zeros((1, nbins))
-    ctrs = np.zeros((1, nbins))
-    maxV = minV + size * nbins
+@jit(nopython=True, cache=True)
+def ordhist(
+    data1: np.array,
+    ndata1: int,
+    data2: np.array,
+    ndata2: int,
+    minV: float,
+    size: float,
+    nbins: int,
+):
+    cnts = np.zeros((nbins))
+    ctrs = np.zeros((nbins))
+    maxV: float = minV + size * nbins
     for counta in range(nbins):
-        cnts[0, counta] = 0
-        ctrs[0, counta] = minV + counta * size + size / 2
+        cnts[counta] = 0
+        ctrs[counta] = minV + counta * size + size / 2
     jmin = 0
-    for counts in range(ndata1):
+    for count_data1 in range(ndata1):
         if ndata2 == 1:
-            if data1[counts] - data2 >= maxV:
+            if data1[count_data1] - data2 >= maxV:
                 continue
             else:
-                diff = data1[counts] - data2
+                diff = data1[count_data1] - data2
                 if diff >= minV:
-                    cnts[0, int((diff - minV) / size)] += 1
+                    cnts[int((diff - minV) / size)] += 1
         else:
             for counts2 in range(jmin, ndata2):
-                if (data1[counts] - data2[counts2]) >= maxV:
+                if (data1[count_data1] - data2[counts2]) >= maxV:
                     jmin = counts2
                 for counts3 in range(jmin, ndata2):
-                    diff = data1[counts] - data2[counts3]
+                    diff = data1[count_data1] - data2[counts3]
                     if diff >= minV:
-                        cnts[0, int((diff - minV) / size)] += 1
+                        cnts[((diff - minV) / size).astype(int)] += 1
     return cnts, ctrs
 
 
-def binhist(data1, ndata1, data2, ndata2, bins, nbins):
-    cnts = np.zeros((1, nbins))
-    ctrs = np.zeros((1, nbins))
+@jit(nopython=True, cache=True)
+def binhist(
+    data1: np.array,
+    ndata1: int,
+    data2: np.array,
+    ndata2: int,
+    bins: np.array,
+    nbins: int,
+) -> tuple[np.array, np.array]:
+    cnts = np.zeros((nbins))
+    ctrs = np.zeros((nbins))
     for counts in range(nbins):
-        cnts[0, counts] = 0
-        ctrs[0, counts] = (bins[counts] + bins[counts + 1]) / 2
+        cnts[counts] = 0
+        ctrs[counts] = (bins[counts] + bins[counts + 1]) / 2
     for counts2 in range(ndata1):
         for counts3 in range(ndata2):
             for counts in range(nbins):
                 if (data1[counts2] - data2[counts3]) >= bins[counts] and (
                     data1[counts2] - data2[counts3]
                 ) < bins[counts + 1]:
-                    cnts[0, counts] += 1
+                    cnts[counts] += 1
     return cnts, ctrs
 
 
 """Auxiliary functions for the finding min and max if unordered data"""
 
 
-def findext(data1, ndata1, data2, ndata2):
+@jit(nopython=True, cache=True)
+def findext(
+    data1: np.array, ndata1: int, data2: np.array, ndata2: int
+) -> tuple[float, float]:
     minV = data1[0] - data2[0]
     maxV = data1[0] - data2[0]
     for counts in range(1, ndata1):
@@ -167,7 +197,7 @@ def findext(data1, ndata1, data2, ndata2):
             diff = data1[counts] - data2[counts2]
             if diff < minV:
                 minV = diff
-            if diff > max:
+            if diff > maxV:
                 maxV = diff
     return minV, maxV
 
@@ -175,7 +205,8 @@ def findext(data1, ndata1, data2, ndata2):
 """Auxiliary function for checking if data is ordered or unordered"""
 
 
-def chckord(data1, ndata1, data2, ndata2):
+@jit(nopython=True, cache=True)
+def chckord(data1: np.array, ndata1: int, data2: np.array, ndata2: int) -> int:
     for counts in range(1, ndata1):
         if data1[counts] < data1[counts - 1]:
             return 0
