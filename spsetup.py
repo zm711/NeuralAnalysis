@@ -7,7 +7,7 @@ Python Loading of Numpy Files
 import numpy as np
 import os
 from zmgenhelpers import readCGSfile, savefile, getdirzm
-from intan_helpers.stimulushelperszm import paramread
+from intan_helpers.stimulushelpers import paramread
 
 
 def loadsp() -> dict:
