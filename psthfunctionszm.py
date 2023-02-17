@@ -12,13 +12,8 @@ INPUTS: st: spike times nSpikes
 """
 import numpy as np
 import numpy.matlib
+
 import histdiff as hd
-
-try:
-    from ordhist import bincenterpy
-except:
-    print("no rust code available")
-
 from numba import jit
 
 """ collected the psth, rasters, bins, spikeCounts"""
