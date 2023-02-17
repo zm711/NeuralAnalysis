@@ -14,6 +14,12 @@ Creates z scored plots based on trial groups `tg=True` or without trial groups `
 ![image](https://user-images.githubusercontent.com/92116279/219498798-ddd01e73-8afe-4f7c-94e5-629e649bc769.png)
 
 
+## `plot_firingrate`
+Creates a violinplot if `graph=v` otherwise it will generate a lineplot with each window provided and the trial groups. If `labels` provided as an attribute graph will be labeled otherwise it will just provide numbers. If the `neuro_resp_df` has been generated it will also provide a violin plot based on the type of responses.
+
+![image](https://user-images.githubusercontent.com/92116279/219787327-4b395ac6-f93e-4440-b945-0f49dcfb7f10.png)
+
+
 ## `plot_pc`
 
 Generates the top two dimensional pcs plot to show seperation of clusters. Of note it takes the top 4 spaces and condenses down into 2. This means that clusters not resolved in two dimensions may still be better resolved in another dimensions. Both kilosort and `qcfn` use more dimensions. So this more to make rep figures.
