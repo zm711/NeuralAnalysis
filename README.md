@@ -17,7 +17,7 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
 2. The goal will be to stack all analyses into large final dataframes, which are indexed by what I call the HashID. Since kilosort and phy always just give the same numbers between recordings I take the hash of the filename with the cluster number to generate a unique id for each neuron for each recording. This allows me to interact with multiple datasets while keeping track of unique ids. Haven't had any hash collisions yet.
 
 3. With these caveats I save both the dictionaries and dataframes so either structure can be used for post-hoc analyses
-4. I have one Rust based function called ordhist (based on a c function from matlab code). I haven't found a way to do this natively in python yet, so I'm including the .pyd file for windows and the .so for Mac. I haven't compiled for Linux yet since I only have a Raspberry Pi and it would be hard to have two .so files. 
+
 
  ## Inputs for the Class
  
