@@ -14,10 +14,9 @@ set'
 timeStamps = spikeTimes of interest should be nSpikes x1
 referencePoints = scalar or vector to references in Nick's code he puts it in as a s
 calar'
-binBorders =scalar or vector for our bins. Nick preprocesses this as a vector.
+binBorders =scalar or vector for our bins. 
 
-To see original C code good to our github/analyis/helpers/histdiff.c. Can be opened with
-any text editor or if using Linux can be viewed with cat or less pretty easily. That 
+To see original C code good to our github/analyis/helpers/histdiff.c. That 
 source code has a bunch of Mex functions to allow the code to play with Matlab. I 
 changed those to be inputs into python and I also deleted all the warning messages
 since for my implementation it should be pre-processed by this point and should 
@@ -28,7 +27,7 @@ INPUTS: timeStamps = spikeTimes (sorted in previous function), but basically an
         referencePoints = 1 event from eventTime (ie a scalar)
         binBorders = vector of our bins
 OUTPUTS: cnts = the number of counts per bin [nbins]
-         ctrs = the bins [nbins]
+         ctrs = the bins centered rather than on the edges [nbins]
          
          
 NOW I have rust based code to run things faster. For rust it takes in timeStamps, 
