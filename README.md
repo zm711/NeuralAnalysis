@@ -48,7 +48,8 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  my_stim = {
             '1.0': '180 Degrees',
             ..., 
-            '10.0': '270 Degrees'} 
+            '10.0': '270 Degrees'
+            } 
  ```
  
 In addition the depth of the probe if measured can be factored into the analysis (500 um or 1000 um). Finally since most of the nervous system is bilateral indicating whether the recording was done of the 'l' or 'r' may be useful. So running the `set_labels` methods of `ClusterAnalysis` allows for inputting these values.
