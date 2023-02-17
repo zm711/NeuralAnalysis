@@ -41,7 +41,6 @@ from getWaveForms import getWaveForms, getWaveFormVals
 from qcfns import maskedClusterQuality
 from isiVqc import isiV
 from clusterzscorezm import clusterzscore
-from neurocorrs import neuronCorr
 from firingratedf import firingRateWin
 from prevalence_calculator import prevalence_calculator
 from latency_calculator import latency_calculator
@@ -56,6 +55,7 @@ from visualization_ca.plotZscores import plotZscores
 from visualization_ca.plotCDFs import makeCDF, getTempPos, plotDepthSpike
 from visualization_ca.neuronprevalence import plotmedLat
 from visualization_ca.detectdrift import plotDriftmap
+from visualization_ca.neurocorrs import neuronCorr
 
 
 class ClusterAnalysis:
