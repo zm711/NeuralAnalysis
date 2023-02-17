@@ -27,7 +27,7 @@ import pandas as pd
 # general functions--glue for the class
 from zmgenhelpers import getFiles, loadPreviousAnalysis, getdirzm
 from misc.cap_conversion import cap_conversion
-from labelGenerator import (
+from label_generator import (
     labelGenerator,
     responseDF,
     genResp,
