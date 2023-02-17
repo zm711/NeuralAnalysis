@@ -72,7 +72,7 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  ```
  ## Analyzing Data
  
- All analysis is split amongst generating values which are stored as class attributes and plotting functions which use these attributes for plotting. But to do your own analyses based on these values just access the appropriate attributes (list at bottom of this document). Methods where I often inspect values return from the class, but most methods just store as attributes.
+ All analysis is split amongst generating values which are stored as class attributes and plotting functions which use these attributes for plotting. But to do your own analyses based on these values just access the appropriate attributes (list at bottom of this document). Methods where I often inspect values return from the class into the terminal, but most methods just store their returns internally in the class as attributes.
  
  ### Firing Rate Data
  
