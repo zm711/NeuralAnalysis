@@ -23,9 +23,13 @@ eventTimes['DIG2']['Stim'] = "TEST"
 
 myNeuron = ClusterAnalysis(sp, eventTimes)
 
-myNeuron.clu_zscore()
+allP, _, window = myNeuron.clu_zscore(window = [[-2,-.1],[-2,12]])
+print(f'window should be [-2,12]. window as entered is {window}')
+print(f'Shape of allP is {np.shape(allP)} it should be (6,2,280)')
+print(f'sum of allP scores is {np.sum(allP['Dig2'])} it should be -30.93797084395051')
+
 myNeuron.plot_z(labels=None, tg=True, sorter_dict=None, time_point=0, plot=True)
 
-allP = myNeuron.allP
+_,_ = myNeuron.spike_raster()
 
-assert(type(allP)==dict)
+myNeuron.plot_spikes()
