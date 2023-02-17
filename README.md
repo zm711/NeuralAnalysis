@@ -110,6 +110,22 @@ All analysis is split amongst generating values which are stored as class attrib
  allP, normVal, window= myNeuron.clu_zscore(time_bin_size = 0.05, tg=True, window=None)
  ```
 
+### Raw Firing Rate Data
+To collect raw firing rates over specific time windows the `firingratedf` function can be used. It will quickly calculate firing rates across trial groups over the windows set in the `window_dict`. As is usual a `time_bin_size` must be given. 
+#### `window_dict`
+This is a structure in time (s) given as:
+
+```python
+    window_dict = {
+        "Rest": [-2, -1],
+        "Onset": [0, 1],
+        "Sustained": [0, 5],
+        "Offset": [4,5],
+        }
+```
+Once this value has been prepped the function will generate raw firing rates for each time period for each neuron stored as an attribute data frame `firing_rate_df`.
+
+
 ### Latency Data
 generating latency values can be tricky. There are multiple strategies. I'm working on generating a permutation based code, but currently I've implemented two different latency styles. For Chase and Young 2007 they use a poisson distribution to check for the first spike which causes deviation from the base rate, lambda. Since many neurons I'm interested have low baseline rates and likly do not follow poisson I also implement a strategy adapted from Mormann et al. 2008 taking first spike amongst events and then taking the median amongst each trial. Stored as an attribute in the class under `ClusterAnalysis.latency` in the form of a nested dict with np.arrays inside.
 
