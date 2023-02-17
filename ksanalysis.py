@@ -49,7 +49,7 @@ import numpy as np
 
 from spsetup import loadsp
 from intan_helpers.stim_alignment import stim_alignment
-from intan_helpers.stimulushelperszm import metadatafn, optoproc
+from intan_helpers.stimulushelpers import metadatafn, optoproc
 from zmbin import binConvert
 from zmgenhelpers import getdirzm
 
