@@ -56,7 +56,9 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  ```
  
  ### Generating quality metrics
- Based on Nick Steinmetz's sortingQuality repo the `qcfn` method returns the isolation distance (Harris et al 2001) based on mahalobnis distance between pc values of clusters and the interspike interval violations (Schmitzer & Tobin et al. 2006). In short we can approximate the separation of units in our recording based on the distance in the pc spaces used by kilosort. Since Euclidean distance is prone to be influenced by less important features use of mahalobnis which uses the covariance matrix is less prone to these errors. ISI violations depend on the existence of neural refractory periods. 
+ Based on Nick Steinmetz's sortingQuality repo the `qcfn` method returns the isolation distance (Harris et al 2001) based on mahalobnis distance between pc values of clusters and the interspike interval violations (Schmitzer-Tobert et al. 2005). In short we can approximate the separation of units in our recording based on the distance in the pc spaces used by kilosort. Since Euclidean distance is prone to be influenced by less important features use of mahalobnis which uses the covariance matrix is less prone to these errors. These values are stored as `qc` in a dictionary with `uQ` the isolation distance and `cR` the contamination rate (see function for explanation of this value)
+ 
+ ISI violations depend on the existence of neural refractory periods. It is based on Nick's Matlab code based on Hill et al 2011, and adapted based on UltraMegaSort from Hill 2012. In short it generates a false positive rate of spikes along with the raw number of violations. The benefit of false positive rate is it accounts for changes in spike number, but use of raw number of refractory period violations is relatively common (Chirila et al. 2023, Emanuel et al. 2021). this is stored as `isiv` with keys related to `fp` and `nViol` which is the fraction rate of violations.
  
  **There are no hard cutoffs for either value. Appropriate cutoffs must be determined based on your analysis**
  
@@ -72,7 +74,7 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  ```
  ## Analyzing Data
  
- All analysis is split amongst generating values which are stored as class attributes and plotting functions which use these attributes for plotting. But to do your own analyses based on these values just access the appropriate attributes (list at bottom of this document). Methods where I often inspect values return from the class into the terminal, but most methods just store their returns internally in the class as attributes.
+All analysis is split amongst generating values which are stored as class attributes and plotting functions which use these attributes for plotting. But to do your own analyses based on these values just access the appropriate attributes (list at bottom of this document). Methods where I often inspect values return from the class into the terminal, but most methods just store their returns internally in the class as attributes.
  
  ### Firing Rate Data
  
