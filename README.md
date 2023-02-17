@@ -76,7 +76,7 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  
  ### Firing Rate Data
  
- Spike counts are the fundamental neural data for in vivo analysis. In order to generate these counts we need a `time_bin_size` given in seconds. 10-50 milliseconds work pretty well, but for slower neurons longer time bins provides more smoothing of the data and smaller time bins provides more 0 count bins. This function generates the `psthvalues` attribute of the `ClusterAnalysis` class which is organized as a dictionary of neurons with each neuron having a 'BinnedArray' with the matrix of firing rates give as an nEvents x nTimeBins.
+ Spike counts are the fundamental neural data for in vivo analysis. In order to generate these counts we need a `time_bin_size` given in seconds. 10-50 milliseconds work pretty well, but for slower neurons longer time bins provides more smoothing of the data and smaller time bins provides more 0 count bins. This function generates the `psthvalues` attribute of the `ClusterAnalysis` class which is organized as a dictionary of neurons with each neuron having a `'BinnedArray'` with the matrix of firing rates give as an `nEvents x nTimeBins`.
  
  ```python
  psthvalues, windowlst = myNeuron.spike_raster(time_bin_size=0.05) # 50 millisecond example
@@ -84,15 +84,15 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  
  ### Z scored Data
  
- Data can also be z scored to allow for normalization of data. This requires that the std != 0, but to account for this an np.array called `normVal` is also produced which indicates the baseline mean and std or np.nan if un-z scoreable. *reminder Z score = x-mu/std* The return is `allP` a structure of the z scores stored as a dictionary of stimuli, followed by a matrix of the z score data. If `tg` is `True` then it will be nUnits x nTrialGroups x nTimeBins otherwise it will be nUnits x nTimeBins. `time_bin_size` like above is size of the time_bins. I also give an optional chance to input a `window_list` which is formatted as nested lists where each stimulus require two lists of time. Since this is complicated I explain below:
+ Data can also be z scored to allow for normalization of data. This requires that the std != 0, but to account for this an np.array called `normVal` is also produced which indicates the baseline mean and std or np.nan if un-z scoreable. *reminder Z score = x-mu/std* The return is `allP` a structure of the z scores stored as a dictionary of stimuli, followed by a matrix of the z score data. If `tg` is `True` then it will be `nUnits x nTrialGroups x nTimeBins` otherwise it will be `nUnits x nTimeBins`. `time_bin_size` like above is size of the time_bins. I also give an optional chance to input a `window_list` which is formatted as nested lists where each stimulus require two lists of time. Since this is complicated I explain below:
  
  #### Windows
- Each stmiulus needs the baseline period to generate the baseline mean and std. [bslStart, bslEnd]. These times are in relation to the event onset. So do to do the 2 seconds before the stimuli onsets would be [-2,0]. To do 500 to 100 milliseconds would be [-.5, -.1]. Then each stimulus also needs a window. Since some neurons have after-discharges this value can be longer or shorter than the actual stimlus. If I am doing a 5 second stim I could analyze the first 2 seconds [0, 2] or the last 2 [3, 5] or [0, 7] for full stimlus but the 2 seconds after.
+ Each stmiulus needs the baseline period to generate the baseline mean and std. [bslStart, bslEnd]. These times are in relation to the event onset. So do to do the 2 seconds before the stimuli onsets would be [-2,0]. To do 500 to 100 milliseconds would be [-.5, -.1]. Then each stimulus also needs a window. Since some neurons have after-discharges this value can be longer or shorter than the actual stimlus. If I am doing a 5 second stim I could analyze the first 2 seconds [0, 2] or the last 2 [3, 5] or [0, 7] for full stimulus but also with the 2 seconds after.
  
- So the final window_list would be [[bslS, bslE], [start, end]] or with multiple different stimuli it's best to set to `None` and let the function prompt each stimuli itself
+ So the final window_list would be [[bslS, bslE], [start, end]] or with multiple different stimuli it's best to set to `None` and let the function prompt each stimulus itself **IE when in doubt just enter `None` and let the function prompt you**
  ###
  
- Returns allP, the dictionary of z scores, normVal a dictionary with mean and std of the baseline/neuron or nan, window used for analysis. Attributes are `allP`, `normVal`, `zwindow`
+ Returns `allP`, the dictionary of z scores, `normVal` a dictionary with mean and std of the baseline/neuron or nan, `window` used for analysis. Attributes are `allP`, `normVal`, `zwindow`
  
  ```python
  allP, normVal, window= myNeuron.clu_zscore(time_bin_size = 0.05, tg=True, window=None)
@@ -187,6 +187,27 @@ Finally, to save a bunch of different values of an analysis use the `save_analys
 
 ### Plotting
 plotting functions are explained in the visualization_ca folder.
+
+
+## Quick List of Attributes
+Reminder that some of these require various methods to be called first
+As always these are accessed with `.` notation thus `var = myNeuron.var`
+`sp`: spike properties
+`eventTimes`: stimulus properties
+`clu`: array of curated cluster ids
+`spikeTimes`: array of spike times
+`clusterIDs`: the original cluster ids. Should never be overwritten.
+`filename`: filename
+`wf`: raw waveform dictionary, keys are `['F']` (fortran ordered) followed by `['ClusterIDs']`, `[spikeTimeKeeps']`
+`allP`: dict of z scored by stimulus
+`zwindow`: window used for allP
+`normVal`: mean/std/nan for baseline for z scored data
+`depth`: real depth of the probe
+`laterality`: left side or right side of animal
+`resp_neuro_df`: DataFrame of responsive neurons, what and how they are responsive
+`non_resp_df`: DataFrame of non_responsive neurons
+
+
 
 # MCA
 This is the merged cluster analysis. It is still very much in beta, but the goal will be to merge multiple recordings together and analyze them in parallel when similar conditions are being used across experiments
