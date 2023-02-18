@@ -127,14 +127,14 @@ Once this value has been prepped the function will generate raw firing rates for
 
 
 ### Latency Data
-generating latency values can be tricky. There are multiple strategies. I'm working on generating a permutation based code, but currently I've implemented two different latency styles. For Chase and Young 2007 they use a poisson distribution to check for the first spike which causes deviation from the base rate, lambda. Since many neurons I'm interested have low baseline rates and likly do not follow poisson I also implement a strategy adapted from Mormann et al. 2008 taking first spike amongst events and then taking the median amongst each trial. Stored as an attribute in the class under `ClusterAnalysis.latency` in the form of a nested dict with np.arrays inside.
+Generating latency values can be a bit tricky since they rely on a lot of assumptions about the underlying distribution of the spiking data. There are multiple strategies. I'm working on generating a permutation based code, but currently I've implemented two different latency calculations. One is based on Chase and Young 2007 where they use a poisson distribution to check for the first spike which causes deviation from the base rate, lambda. Since many neurons I'm interested have low baseline rates and likly do not follow a poisson I also implement a strategy adapted from Mormann et al. 2008 taking first spike among events and then taking the median among each trial. The decision point is my code is currently firing rates of less than 2 Hz (as suggested by Mormann et al). Stored as an attribute in the class under `ClusterAnalysis.latency` in the form of a nested dict with np.arrays inside.
 
 ```python
 myNeuron.latency(time_bin_size=0.05, bsl_win=[[-10,-5]], event_win=[[0,10]]) # nested lists are required
 ```
 
 ### Neuron metrics (depth etc)
-Once the raw waveform data has been generated we can look for depth, duration, amplitude, and for multishank (only one implementation currently dual stacked H7 Cambridge Neurotech) position. The functions perform a lot of matrix math and list comprehensions to find the different values. These values are stored as attributes in the class: `max_waveform`, `waveform_dur` (the peak-trough duration), `waveform_depth` (corrected for shank if depth give in `set_labels`), `waveform_amps`, `shank_dict` (for stack H7 only currently).
+Once the raw waveform data has been generated we can look for depth, duration, amplitude, and for multishank (only one implementation currently dual stacked H7 Cambridge Neurotech) position. The functions perform a lot of matrix math and list comprehensions to find the different values. In short we generate the depth based on the weigthed average of the spike amplitudes on the different electrodes of the probe. Amplitude is determined by finding the maximal waveform and then taking the difference from its min and max values. The peak-trough duration is determined by finding the index of minimum value and then finding the number of samples between the min and max value. For medial-lateral position the weighted average of the x coords are given and then organized into shank 1,2,3,4 and depending on lateraility of the probe position give a medial or lateral identity. These values are stored as attributes in the class: `max_waveform`, `waveform_dur` (the peak-trough duration), `waveform_depth` (corrected for shank if depth give in `set_labels`), `waveform_amps`, `shank_dict` (for stack H7 only currently).
 
 ```python
 myNeuron.waveform_vals()
@@ -143,7 +143,7 @@ myNeuron.gen_wfdf()
 The dataframe is stored as an attribute `waveform_df`.
 
 ### Responsive Neurons
-Currently I am using user defined responsive neuron properties. Cutoffs vary (Emmanuel et al. 2021 uses 2.58 for the 99% CI, Chirila et al 2023 uses clustering to generate profiles). For historic reasons this stored in the `plot_z` function, which can be used to just generate the responsive neurons by setting the `plot` flag to `False`. With that out of the way, I use a decorator found in `z_score_decorator.py` to allow for multiple people in the same group set their own z score cutoffs. So that file can be re-formated with desired cutoffs. If only one person is using this code delete the conditional logic and just put in the values. `inhib` for inhibitory, `onset` for onset neurons, `sus` for sustained neurons, `offset` for near end of stimulus and `relief` for after discharge. The first value is desired z score and the second number is the number of bins required to count. So this will depend on the `time_bin_size` set in `clu_zscore`. Once this decorator is set the method can be run. `plot_z` has a few flags, most of them are optional to override the attributes set. So `labels` will pull from the attribute `labels` but can be overridden, `tg` is for trial group (it should match with what was done in `clu_zscore`, and `time_pt` is required for use with the default `sorter_dict`. I don't currently recommend this since the default is based on my analysis and not your current analysis. So the key parameter is setting a `sorter_dict`.
+Currently I am using user defined responsive neuron properties. Cutoffs vary (Emmanuel et al. 2021 uses 2.58 for the 99% CI, Chirila et al 2023 uses clustering to generate profiles). For historic reasons this function is a sub function stored in the `plot_z` function. It can be used to just generate the responsive neurons by setting the `plot` flag to `False`. With that out of the way, I use a decorator found in `z_score_decorator.py` to allow for multiple people in the same group to set their own z score cutoffs. So that file can be re-formated with desired cutoffs. If only one person is using this code delete the conditional logic and just put in the values. `inhib` for inhibitory, `onset` for onset neurons, `sus` for sustained neurons, `offset` for near end of stimulus and `relief` for after discharge. The first value is desired z score and the second number is the number of bins required to count as the type given by the keyword. So this will depend on the `time_bin_size` set in `clu_zscore`. Once this decorator is set the method can be run. `plot_z` has a few flags, most of them are optional to override the attributes set. So `labels` will pull from the attribute `labels` but can be overridden, `tg` is a boolean for trial group (it should match with what was done in `clu_zscore`), and `time_pt` is required for use with the default `sorter_dict`. I don't currently recommend this since the default is based on my analysis and not your current analysis. So the key parameter is setting a `sorter_dict`.
 
 #### Creating a sorter_dict
 this is a dictionary of the time periods that should be analyzed (in time bins) for each time of response. The general structure would follow:
@@ -164,7 +164,7 @@ sorter_dict = {
             
 ```
 
-The `zero_point` is the time_bin in which the stimulus starts. I prefer plotting with some baseline meaning that the first bin with stimulus is not 0, but for example bin 20. The event_len will be the final bin of the stimulus in this case, eg bin 80. For relief in this example I start at bin 80 and go to the final length of bins for example 100. For onset, I do only a subset of bins etc. For two sub periods you just generate a list of 4 numbers. Currently 4 time points (ie two time periods) are the max you can do for the sorter dict.
+The `zero_point` is the time_bin in which the stimulus starts. I prefer calculating with some baseline in `allP` meaning that the first bin with stimulus is not 0 (start of baseline), but for example bin 20. The event_len will be the final bin of the stimulus in this case, eg bin 80. For relief in this example I start at bin 80 and go to the final length of bins for example 100. For onset, I do only a subset of bins etc. For two sub periods you just generate a list of 4 numbers. Currently 4 time points (ie two time periods) are the max you can do for the sorter dict.
 
 #### Running `plot_z`. Once this is done for generating responsive neurons just run as 
 ```python
@@ -175,11 +175,10 @@ myNeuron.plot_z(labels = None, tg=True, sorter_dict=sorter_dict, time_pt=0, plot
 Since it is easier to work with a dataframe for mining this data I have the method `gen_respdf` which allows for quality control and response check. It will set two new attributes `resp_neuro_df` which has the responsive neurons, along with which stimuli trial groups they responded to and which time of response and `non_resp_df` which includes neurons that made quality cutoffs but did not respond to the stimuli. 
 
 #### Quality Cutoffs
-As stated above there are no hard values or rules for these cutoffs. Of note the python isolation distance is always lower than Matlab's due to the way the values are calculated, but they are nicely correlated. So if reading a paper based on matlab code just test lower values for python. Another type of cutoff often used is isi violations. I tend to use isolation distance, but this function has an optional `isi` flag which requires a fraction rate you'd tolerate (ie 0.02 would be anything less than a 2% violation rate. To shutoff off quality metrics set `qcthres = 0` and leave `isi=None`. Otherwise pick one or both to use.
+As stated above there are no hard values or rules for these cutoffs. Of note the python isolation distance is always lower than Matlab's due to the way the values are calculated, but they are nicely correlated. So if reading a paper based on matlab code just test lower values for python. Another type of cutoff often used is isi violations. I tend to use isolation distance, but this function has an optional `isi` flag which requires a fraction rate you'd tolerate (ie 0.02 would be anything less than a 2% violation rate. In the future I may switch this to check for the false positive rate (Dan Hill 2011). To shutoff off quality metrics set `qcthres = 0` and leave `isi=None`. Otherwise pick one or both to use.
 
 ##### Common Error in qc
-If the error len(noise) != len(qc) this is due to the way `sp` is generated from phy curation and how noise vs not noise are labeled. So if this occurs it means that your `qcvalues` no longer align with your noise. Before reporting a bug try rerunning `qcfn()` to realign the lengths of these variables. 
-to be explicit:
+If the error len(noise) != len(qc) this is due to the way `sp` is generated from phy curation and how noise vs not noise are labeled. So if this occurs it means that your `qcvalues` no longer align with your clusters defined as `noise` by Phy. Before reporting a bug try rerunning `qcfn()` to realign the lengths of these variables. This is because we save a copy of `qcvalues.npy` in the working directory and if more curation occurs we need to overwrite this file rather than load it. To be explicit in what to run if this error is seen:
 ```python
 myNeuron.qcfn()
 ```
@@ -192,6 +191,15 @@ myNeuron.gen_respdf(qcthres=10, isi=None)
 ```python
 responsive_df = myNeuron.resp_neuro_df
 non_responsive_df = myNeuron.non_responsive_df
+```
+#### Mining the responsive neurons
+As a dataframe it is easy to just pandas logic to see various metrics. For example to count the number of unique units one could do
+```python
+len(responsive_df['IDs'].unique())
+```
+Or to see raw counts of which neurons fell into the cutoffs you used one could try
+```python
+responsive_df['Sorter'].value_counts()
 ```
 
 #### Calculating the Prevalence
