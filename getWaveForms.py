@@ -39,10 +39,12 @@ from collections import namedtuple
 import zmgenhelpers as zmhelp
 
 
-def getWaveForms(sp: dict, datatype=np.int16, wfWin=[-40, 41], nWf=2000) -> dict:
-
+def getWaveForms(
+    sp: dict, nCh: int, datatype=np.int16, wfWin=[-40, 41], nWf=2000
+) -> dict:
     # First we set up all of our data and initialization values
-    nCh = int(input("number of channels"))
+    if nCh is None:
+        nCh = int(input("number of channels"))
     sample_rate: float = sp["sampleRate"]
     wfWin: list = wfWin
     nWf = int(nWf)
@@ -54,7 +56,6 @@ def getWaveForms(sp: dict, datatype=np.int16, wfWin=[-40, 41], nWf=2000) -> dict
         if "pyanalysis" in os.getcwd():
             os.chdir("..")
     else:
-
         oldDir, filePath, filename = zmhelp.getdirzm()
         os.chdir(filePath)
 
@@ -113,7 +114,6 @@ def getWaveForms(sp: dict, datatype=np.int16, wfWin=[-40, 41], nWf=2000) -> dict
 
     if gbs_needed > 3.9:
         nWf = int(round(3.9 / (nCluster * wfNSamples * nChInMap * 28 * 3.91e-10)))
-    
 
     """memory allocation with nan's to tell the difference between 0 as a value
     and an actual not present value"""
@@ -147,7 +147,6 @@ def getWaveForms(sp: dict, datatype=np.int16, wfWin=[-40, 41], nWf=2000) -> dict
             if np.shape(tmpWfF)[1] < 82:
                 continue
             else:
-
                 # waveForms[curUnit, curSpikeTime, :, :] = tmpWf[chMap]
                 waveFormsF[curUnit, curSpikeTime, :, :] = tmpWfF[chMap]
         # waveFormsMean[curUnit] = np.nanmean(waveForms[curUnit], axis=0)
@@ -160,8 +159,8 @@ def getWaveForms(sp: dict, datatype=np.int16, wfWin=[-40, 41], nWf=2000) -> dict
 
     "Final loading of stuff into output variable wf"
 
-    #wf["C"]["ClusterIDs"] = clusterIDs
-    #wf["C"]["spikeTimeKeeps"] = spikeTimeKeeps
+    # wf["C"]["ClusterIDs"] = clusterIDs
+    # wf["C"]["spikeTimeKeeps"] = spikeTimeKeeps
     # wf["C"]["waveForms"] = np.array(
     #    waveForms, dtype=datatype
     # )  # the datatype is int16 so there isn't really valuable to save as float64
@@ -207,7 +206,6 @@ OUTPUTS: max_waveforms: the max set of samples for each neuron
 def getWaveFormVals(
     wf: dict, sp: dict, dataOrder="F", depth=None, laterality=None
 ) -> namedtuple:
-
     xcoords: np.array = sp["xcoords"]
     shank_set = set(xcoords)  # set gets rid of duplicates
     ycoords: np.array = sp["ycoords"]
@@ -356,7 +354,9 @@ def waveFormMetrics(wf, sp, dataOrder="F", depth=None):
     """memory allocation to speed things up later"""
     waveFormDepth = np.zeros((np.shape(mean_waveforms)[0]))
     relativePeaks = np.zeros((np.shape(mean_waveforms)[0], np.shape(mean_waveforms)[1]))
-    weightScaleNorm = np.zeros((np.shape(mean_waveforms)[0], np.shape(mean_waveforms)[1]))
+    weightScaleNorm = np.zeros(
+        (np.shape(mean_waveforms)[0], np.shape(mean_waveforms)[1])
+    )
     weightScale = np.zeros((np.shape(mean_waveforms)[0], np.shape(mean_waveforms)[1]))
     clusterAbsPeak = np.zeros(np.shape(mean_waveforms)[0])
     channelIndex = np.zeros(np.shape(mean_waveforms)[0])
@@ -374,7 +374,6 @@ def waveFormMetrics(wf, sp, dataOrder="F", depth=None):
         )
         clusterAbsPeak[cluster] = np.min(mean_waveforms[cluster])
         for channel in range(np.shape(mean_waveforms)[1]):
-
             relativePeaks[cluster, channel] = np.min(mean_waveforms[cluster, channel])
 
             weightScaleNorm[cluster, channel] = abs(
