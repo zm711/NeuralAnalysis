@@ -7,13 +7,13 @@ some functions based off of Nick Steinmetz's matlab code (qcfn, psthfns, psthvie
 
 I've tested python 3.8-3.10. I've also tested some other packages and these are my current to recreate. I work in spyder so I generate a conda env with its own spyder I had stability issues so I'm sticking with 5.3.3 for now. Using the packages below will prevent any compatibility issues.
 
+```sh
+ conda create -n neuralanalysis -c conda-forge python=3.10 spyder=5.3.3 numpy=1.23 pandas=1.5 scipy=1.10 matplotlib=3.63 h5py=3.8 seaborn=0.12 scikit-learn=1.12 cython=0.29 sympy=1.11 numba=1.23
+ ```
 ### Caching Functions
 The counting algorithms used by `psthfns` are sped up using jit and cached in the `__pycache__` folder for future use. Since they are the core of many functions this is a desired behavior. It can be turned off by looking for `@jit(nopython=True, cache=True)` and changing `cache` to `False`
 
 
-```sh
- conda create -n neuralanalysis -c conda-forge python=3.10 spyder=5.3.3 numpy=1.23 pandas=1.5 scipy=1.10 matplotlib=3.63 h5py=3.8 seaborn=0.12 scikit-learn=1.12 cython=0.29 sympy=1.11 numba=1.23
- ```
  ## General Notes
 
 1. When I orginally designed this class it was largely based on dictionaries, but I find that dataframes are actually better for a lot of analyses, but this requires translation functions from my original dictionary structures (which all my plotting functions were writtened based on--although I often convert to dataframes within the plotting functions themselves, so maybe eventually I'll remove the dictionaries altogether). 
