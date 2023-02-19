@@ -226,7 +226,7 @@ class ClusterAnalysis:
     function will likely fail to due to memeory limitations I have added some 
     protections, but may still fail."""
 
-    def get_waveforms(self, num_chans=None) -> None:
+    def get_waveforms(self, num_chans: int) -> None:
         wf = getWaveForms(self.sp, nCh=num_chans)
         self.wf = wf
 
