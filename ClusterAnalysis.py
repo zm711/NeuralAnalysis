@@ -102,7 +102,6 @@ class ClusterAnalysis:
         try:
             clustermetrics = loadPreviousAnalysis(title=title)
             if type(clustermetrics) != str:
-
                 if clustermetrics.responsive_neurons:
                     self.responsive_neurons: dict = clustermetrics.responsive_neurons
                 if clustermetrics.note:
@@ -227,8 +226,8 @@ class ClusterAnalysis:
     function will likely fail to due to memeory limitations I have added some 
     protections, but may still fail."""
 
-    def get_waveforms(self) -> None:
-        wf = getWaveForms(self.sp)
+    def get_waveforms(self, num_chans=None) -> None:
+        wf = getWaveForms(self.sp, nCh=num_chans)
         self.wf = wf
 
     """ This will collect true waveform values, including the duration of the 
