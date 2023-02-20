@@ -9,7 +9,7 @@ MergedCA is a class which allows for analysis of multiple datasets.
 
 from ksanalysis import ClusterAnalysis
 import psthfunctionszm as psthfn
-from clusterzscorezm import clu_z_score_merged
+from analysis.clusterzscore import clu_z_score_merged
 from mergeclufunctions import merge_df
 
 from psthviewer import plotPSTH
