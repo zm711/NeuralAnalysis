@@ -2,10 +2,6 @@
 """
 Created on Thu Aug 11 08:36:00 2022
 
-NOTE: 22JAN23--I've implemented the same in a numpy using the c layer so this
-code really doesn't need to be used. I deprecated the wrapper for this code so it 
-should automatically just use the numpy implementation. '
-
 @author: ZacharyMcKenzie
 
 Recreating the histdiff function from the c code in histdiff for matlab from Nick's code 
@@ -21,6 +17,10 @@ source code has a bunch of Mex functions to allow the code to play with Matlab. 
 changed those to be inputs into python and I also deleted all the warning messages
 since for my implementation it should be pre-processed by this point and should 
 basically work.
+
+With the numba jit boost it runs extremely well and shouldn't slow anything down.
+numpy.histogram works well for sorting spike times by events, but for two vectors
+with the bins this works, but I didn't get numpy.histogram working
 
 INPUTS: time_stamps = spikeTimes (sorted in previous function), but basically an 
                        nTimes vectors
