@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
 import seaborn as sns
-import psthfunctionszm as psfn
+import analysis.psthfunctions as psfn
 
 
 """This is my function to create a smoothed firing rate PSTH along with a raster plot of the same data
