@@ -7,7 +7,7 @@ Created on Mon Jan  9 08:37:47 2023
 MergedCA is a class which allows for analysis of multiple datasets. 
 """
 
-from ksanalysis import ClusterAnalysis
+from ClusterAnalysis import ClusterAnalysis
 import analysis.psthfunctions as psthfn
 from analysis.clusterzscore import clu_z_score_merged
 from misc.mergeclufunctions import merge_df
