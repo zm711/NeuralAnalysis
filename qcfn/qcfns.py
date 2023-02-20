@@ -27,7 +27,7 @@ contamination Rat
 import numpy as np
 from scipy.spatial.distance import cdist
 import os
-import zmgenhelpers as zmhelp
+from misc.genhelpers import getdir, savefile, findindex
 from numba import jit
 
 """ This is the initialization function. We pull in our PC features and then organize 
@@ -48,7 +48,7 @@ def maskedClusterQuality(sp=None) -> tuple[np.array, np.array, dict]:
                 os.chdir("..")
         else:
 
-            _, curr_dir, filename = zmhelp.getdirzm()
+            _, curr_dir, filename = getdir()
             os.chdir(curr_dir)
 
     qcvalues = {}
@@ -103,7 +103,7 @@ def maskedClusterQuality(sp=None) -> tuple[np.array, np.array, dict]:
 
             for feat in range(nFet):
                 thisChanInds = pc_features_ind == theseChans[feat]
-                tempsWithThisChan, chanInds = zmhelp.findindex(thisChanInds)
+                tempsWithThisChan, chanInds = findindex(thisChanInds)
 
                 inclTempsWithThisFet = np.where(np.isin(inclTemps, tempsWithThisChan))[
                     0
@@ -141,7 +141,7 @@ def maskedClusterQuality(sp=None) -> tuple[np.array, np.array, dict]:
         print("Finalizing output")
         qcvalues["uQ"] = unitQuality
         qcvalues["cR"] = contaminationRate
-        zmhelp.savefile(filename + "qcvalues.npy", qcvalues)
+        savefile(filename + "qcvalues.npy", qcvalues)
 
         return unitQuality, contaminationRate, qcvalues
 
