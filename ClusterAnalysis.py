@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 
 # general functions--glue for the class
-from zmgenhelpers import getFiles, loadPreviousAnalysis, getdirzm
+from misc.genhelpers import getFiles, loadPreviousAnalysis, getdir
 from misc.cap_conversion import cap_conversion
 from misc.label_generator import (
     labelGenerator,
@@ -183,7 +183,7 @@ class ClusterAnalysis:
                 _,
                 target_folder,
                 _,
-            ) = getdirzm()
+            ) = getdir()
             if os.path.basename(target_folder) != "pyanalysis":
                 os.chdir("pyanalysis")
             np.save(
