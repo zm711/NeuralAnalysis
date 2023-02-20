@@ -46,7 +46,6 @@ def responseDF(
     qcthres: float,
     isi=None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-
     # cids = sp["cids"]
     try:
         unit_quality = qcvalues["uQ"]
@@ -161,7 +160,6 @@ def qc_only(
     sp: dict,
     qcthres: float,
 ) -> tuple[dict, pd.DataFrame]:
-
     filename = sp["filename"]
     neuron_idx = hash(filename)
     cids = sp["cids"]
@@ -198,7 +196,6 @@ def waveform_vals_DF(
     waveform_amps: np.array,
     shank_dict: dict,
 ) -> pd.DataFrame:
-
     cluster_ids = wf["F"]["ClusterIDs"]
     filename = sp["filename"]
     ids_hash = [hash(str(cluster_id) + filename) for cluster_id in cluster_ids]
@@ -221,23 +218,10 @@ def waveform_vals_DF(
     return neuron_characteristics
 
 
-def merge_df(*args: pd.DataFrame) -> pd.DataFrame:
-
-    final_df = pd.DataFrame({})
-    for idx in range(len(args)):
-        if idx == 0:
-            final_df = args[idx]
-        else:
-            final_df = final_df.merge(args[idx], left_on="HashID", right_on="HashID")
-
-    return final_df
-
-
 """ It loads sp['cids'] to only look at the desired neurons"""
 
 
 def genResp(resp_neuron_df: pd.DataFrame, sp: dict) -> dict:
-
     current_cids = resp_neuron_df["IDs"].unique()
     sp["cids"] = current_cids
 
