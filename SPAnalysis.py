@@ -29,8 +29,8 @@ METHODS:
 
 from spsetup import loadsp
 
-from qcfns import qcfn
-from isiVqc import isiV
+from qcfn.qcfns import qcfn
+from qcfn.isiVqc import isiV
 from getWaveForms import getWaveForms
 
 from visualization_ca.plotWaveforms import plotWaveforms
