@@ -36,7 +36,7 @@ import numpy as np
 import os
 import glob
 from collections import namedtuple
-import zmgenhelpers as zmhelp
+from misc.genhelpers import getdir, savefile
 
 
 def getWaveForms(
@@ -56,7 +56,7 @@ def getWaveForms(
         if "pyanalysis" in os.getcwd():
             os.chdir("..")
     else:
-        oldDir, filePath, filename = zmhelp.getdirzm()
+        oldDir, filePath, filename = getdir()
         os.chdir(filePath)
 
     fileName = glob.glob("*.bin")[0]
@@ -172,14 +172,14 @@ def getWaveForms(
     wf["F"]["waveFormsMean"] = np.array(waveFormsMeanF, dtype=datatype)
 
     try:  # first we try to save both 'c' and 'f' ordered files
-        zmhelp.savefile(fileName[:-3] + "wf.npy", wf)
+        savefile(fileName[:-3] + "wf.npy", wf)
     except OverflowError:  # if this fails we delete the 'c' since 'f' are important
         try:
             wfF = (
                 wf.copy()
             )  # deep copy because we will return the full dataset to the work space
             del wfF["C"]
-            zmhelp.savefile(fileName[:-3] + "wf.npy", wfF)  # try to save 1/2 the data
+            savefile(fileName[:-3] + "wf.npy", wfF)  # try to save 1/2 the data
             return wfF  # if this works just return this and try to use it
         except OverflowError:
             print("wf file is too large to be saved")
