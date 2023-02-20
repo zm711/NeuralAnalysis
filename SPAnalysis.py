@@ -31,7 +31,7 @@ from spsetup import loadsp
 
 from qcfn.qcfns import qcfn
 from qcfn.isiVqc import isiV
-from getWaveForms import getWaveForms
+from misc.getWaveForms import getWaveForms
 
 from visualization_ca.plotWaveforms import plotWaveforms
 from visualization_ca.acg import plotACGs
