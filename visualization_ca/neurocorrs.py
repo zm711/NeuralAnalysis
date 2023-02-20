@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import signal
-import psthfunctionszm as psfn
+import analysis.psthfunctions as psfn
 import scipy.cluster.hierarchy as sch
 
 
