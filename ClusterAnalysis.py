@@ -42,8 +42,8 @@ from qcfn.qcfns import maskedClusterQuality
 from qcfn.isiVqc import isiV
 from analysis.clusterzscore import clusterzscore
 from firingratedf import firingRateWin
-from prevalence_calculator import prevalence_calculator
-from latency_calculator import latency_calculator
+from analysis.prevalence_calculator import prevalence_calculator
+from analysis.latency_calculator import latency_calculator
 
 # plotting functions
 from visualization_ca.psthviewer import plotPSTH
