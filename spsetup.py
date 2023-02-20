@@ -6,7 +6,7 @@ Python Loading of Numpy Files
 """
 import numpy as np
 import os
-from zmgenhelpers import readCGSfile, savefile, getdirzm
+from misc.genhelpers import readCGSfile, savefile, getdir
 from intan_helpers.stimulushelpers import paramread
 
 
@@ -15,7 +15,7 @@ def loadsp() -> dict:
     """First I grab the directory where are numpy files are open that directory and save
     the title in case we decide to save things later"""
 
-    old_dir, open_file, fileName = getdirzm()
+    old_dir, open_file, fileName = getdir()
 
     sp = {}  # Our final dict structure that we will return
 
