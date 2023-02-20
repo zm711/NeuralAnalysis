@@ -8,14 +8,14 @@ Created on Tue Jun 14 09:57:57 2022
 """
 import numpy as np
 from intan_helpers import load_intan_rhd_format
-from zmgenhelpers import getdirzm
+from genhelpers import getdir
 import os
 import glob
 
 
 def binConvert() -> None:
 
-    oldDir, currentDir, filename = getdirzm()
+    oldDir, currentDir, filename = getdir()
 
     filenamestr = filename + ".rhd"
     filenamebin = filename + ".bin"
