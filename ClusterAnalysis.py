@@ -41,7 +41,7 @@ from getWaveForms import getWaveForms, getWaveFormVals
 from qcfn.qcfns import maskedClusterQuality
 from qcfn.isiVqc import isiV
 from analysis.clusterzscore import clusterzscore
-from firingratedf import firingRateWin
+from analysis.firingratedf import firingRateWin
 from analysis.prevalence_calculator import prevalence_calculator
 from analysis.latency_calculator import latency_calculator
 
