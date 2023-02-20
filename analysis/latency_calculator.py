@@ -8,7 +8,7 @@ Created on Tue Jan 24 12:56:12 2023
 
 from scipy import stats
 import numpy as np
-from psthfunctionszm import psthAndBA
+from analysis.psthfunctions import psthAndBA
 
 
 def latency_calculator(
@@ -18,12 +18,11 @@ def latency_calculator(
     bsl_win: list[float, float],
     event_win: list[float, float],
 ) -> dict:
-
     spike_times: np.array = np.squeeze(sp["spikeTimes"])
     clu: np.array = np.squeeze(sp["clu"])
     cluster_ids: np.array = np.squeeze(sp["cids"])
     latency_dict = {}
-    for (idx, event) in enumerate(eventTimes.keys()):
+    for idx, event in enumerate(eventTimes.keys()):
         curr_bsl = bsl_win[idx]
         curr_event = event_win[idx]
         events = eventTimes[event]["EventTime"]
@@ -57,7 +56,6 @@ def latency_calculator(
                     latency_dict[event][cluster][trial]["Latency Median"] = median_lat
                     latency_dict[event][cluster][trial]["Std"] = lat_std
                 else:
-
                     # final_ba = np.sum(ba, axis=0)
                     # n_tg= np.shape(final_ba)[0]
 
@@ -81,10 +79,8 @@ p_tn(>=n) = 1 - sum_m_n-1 ((rt)^m e^(-rt))/m!"""
 def latency_core(
     bsl_fr: float, firing_counts: np.array, time_bin_size: float
 ) -> tuple[float, float]:
-
     latency = np.zeros((np.shape(firing_counts)[0],))
     for trial in range(np.shape(firing_counts)[0]):
-
         for n_bin in range(np.shape(firing_counts)[1] - 1):
             final_prob = 1 - stats.poisson.cdf(
                 np.sum(firing_counts[trial][: n_bin + 1]) - 1,
@@ -107,7 +103,6 @@ trial groups together"""
 def latency_core2(
     bsl_fr: float, firing_counts: np.array, time_bin_size, n_tg: int
 ) -> float:
-
     for n_bin in range(len(firing_counts) - 1):
         final_prob = 1 - stats.poisson.cdf(
             np.sum(firing_counts[: n_bin + 1]),
@@ -130,7 +125,6 @@ sets with differences greater thean +/- 200 ms they exclude"""
 def latency_median(
     firing_counts: np.array, time_bin_size: float
 ) -> tuple[float, float]:
-
     latency = np.zeros((np.shape(firing_counts)[0]))
     for trial in range(np.shape(firing_counts)[0]):
         min_spike_time = np.nonzero(firing_counts[trial])[0]
