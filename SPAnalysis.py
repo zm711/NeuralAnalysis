@@ -29,7 +29,7 @@ METHODS:
 
 from spsetup import loadsp
 
-from qcfn.qcfns import qcfn
+from qcfn.qcfns import maskedClusterQuality
 from qcfn.isiVqc import isiV
 from misc.getWaveForms import getWaveForms
 
@@ -59,7 +59,7 @@ class SPAnalysis:
         return sp
 
     def qcfn(self, isi=0.0005, ref_dur=0.002) -> tuple[dict, dict]:
-        qcvalues, _, _ = qcfn()
+        qcvalues, _, _ = maskedClusterQuality(self.sp)
         self.qc = qcvalues
         isiv = isiV(self.sp, isi=isi, ref_dur=ref_dur)
         self.isiv = isiv
