@@ -8,7 +8,7 @@ Created on Tue Jun 14 09:57:57 2022
 """
 import numpy as np
 from intan_helpers import load_intan_rhd_format
-from genhelpers import getdir
+from misc.genhelpers import getdir
 import os
 import glob
 
