@@ -38,8 +38,8 @@ from label_generator import (
 # functions which calculate various metrics for the neural data
 import psthfunctionszm as psthfn
 from getWaveForms import getWaveForms, getWaveFormVals
-from qcfns import maskedClusterQuality
-from isiVqc import isiV
+from qcfn.qcfns import maskedClusterQuality
+from qcfn.isiVqc import isiV
 from analysis.clusterzscore import clusterzscore
 from firingratedf import firingRateWin
 from prevalence_calculator import prevalence_calculator
