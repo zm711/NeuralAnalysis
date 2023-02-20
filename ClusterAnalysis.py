@@ -40,7 +40,7 @@ import psthfunctionszm as psthfn
 from getWaveForms import getWaveForms, getWaveFormVals
 from qcfns import maskedClusterQuality
 from isiVqc import isiV
-from clusterzscorezm import clusterzscore
+from analysis.clusterzscore import clusterzscore
 from firingratedf import firingRateWin
 from prevalence_calculator import prevalence_calculator
 from latency_calculator import latency_calculator
