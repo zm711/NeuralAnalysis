@@ -11,7 +11,6 @@ import pandas as pd
 
 
 def lookup_table_gen(sp_list: list) -> pd.DataFrame:
-
     filename_list = list()
     cids_list = list()
     hash_ids_final = list()
@@ -31,3 +30,14 @@ def lookup_table_gen(sp_list: list) -> pd.DataFrame:
     )
 
     return id_table
+
+
+def merge_df(*args: pd.DataFrame) -> pd.DataFrame:
+    final_df = pd.DataFrame({})
+    for idx in range(len(args)):
+        if idx == 0:
+            final_df = args[idx]
+        else:
+            final_df = final_df.merge(args[idx], left_on="HashID", right_on="HashID")
+
+    return final_df
