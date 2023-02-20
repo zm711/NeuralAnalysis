@@ -10378,7 +10378,7 @@ eventTimes["DIG2"]["Stim"] = "TEST"
 myNeuron = ClusterAnalysis(sp, eventTimes)
 
 allP, _, window = myNeuron.clu_zscore(window=[[-2, -0.1], [-2, 12]])
-print(f"window should be [-2,12]. window as entered is {window}")
+print(f"window should be [[-2,12]]. window as entered is {window}")
 print(f"Shape of allP is {np.shape(allP['TEST'])} it should be (6,2,280)")
 print(f"sum of allP scores is {np.sum(allP['TEST'])} it should be -30.93797084395051")
 
