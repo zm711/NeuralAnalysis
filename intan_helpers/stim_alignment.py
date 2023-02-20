@@ -15,12 +15,12 @@ import intan_helpers.stimulus_setupzm as stim
 import os
 import glob
 import numpy as np
-import zmgenhelpers as zmhelp
+from misc.genhelpers import getdir, savefile, loadvalues
 
 
 def stim_alignment(baro=False) -> dict:
 
-    _, currPath, _ = zmhelp.getdirzm()
+    _, currPath, _ = getdir()
     print("Setting Path")
     os.chdir(currPath)
     eventTimePresent: list = glob.glob("*eventTimes.npy")
@@ -29,7 +29,7 @@ def stim_alignment(baro=False) -> dict:
         return eventTimes
     eventTimeTot = {}
 
-    intan = zmhelp.loadvalues()  # returns namedtuple that I can pull values otu of
+    intan = loadvalues()  # returns namedtuple that I can pull values otu of
 
     # board_adc_channels = intan.board_adc_channels
     board_adc_data: np.array = intan.board_adc_data
@@ -75,6 +75,6 @@ def stim_alignment(baro=False) -> dict:
 
     if os.path.basename(os.path.normpath(os.getcwd())) == "pyanalysis":
         filename: str = glob.glob("*npy")[0]
-        zmhelp.savefile(filename[:-9] + "eventTimes" + ".npy", eventTimes)
+        savefile(filename[:-9] + "eventTimes" + ".npy", eventTimes)
 
     return eventTimes
