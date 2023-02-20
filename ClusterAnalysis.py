@@ -36,7 +36,7 @@ from label_generator import (
 )
 
 # functions which calculate various metrics for the neural data
-import psthfunctionszm as psthfn
+import analysis.psthfunctions as psthfn
 from getWaveForms import getWaveForms, getWaveFormVals
 from qcfn.qcfns import maskedClusterQuality
 from qcfn.isiVqc import isiV
