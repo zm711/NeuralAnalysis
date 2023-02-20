@@ -10,6 +10,7 @@ MergedCA is a class which allows for analysis of multiple datasets.
 from ksanalysis import ClusterAnalysis
 import psthfunctionszm as psthfn
 from clusterzscorezm import clu_z_score_merged
+from mergeclufunctions import merge_df
 
 from psthviewer import plotPSTH
 
@@ -117,6 +118,17 @@ class MCA(ClusterAnalysis):
         self.timeBin = time_bin_size
         self.eventTimes = self.event_list[0]
         self.zwindow = [window_list[1]]
+
+    def merge_datasets(self):
+        if len(self.waveform_df) > 0:
+            m_waveform_df = merge_df(*self.waveform_list)
+            self.m_waveform_df = m_waveform_df
+        if len(self.resp_list) > 0:
+            m_resp_df = merge_df(*self.resp_list)
+            self.m_resp_df = m_resp_df
+        if len(self.non_resp_list) > 0:
+            m_non_resp_df = merge_df(*self.non_resp_list)
+            self.m_non_resp_df = m_non_resp_df
 
     def qcfn(self):
         return "qcfn not possible in merged dataset"
