@@ -1,3 +1,8 @@
 # Misc
 
-Files which I'm actively working for adding new features. Able to be used, but not included and not vetted.
+## `genhelpers`
+
+A lot of utility functions. A GUI directory function etc.
+
+## `getWaveForms`
+Includes getting the raw data as well as getting the metric values.
