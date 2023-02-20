@@ -22,7 +22,7 @@ from collections import namedtuple
 out the old directory for easy of moving back if one gets lost"""
 
 
-def getdirzm() -> tuple[str, str, str]:
+def getdir() -> tuple[str, str, str]:
     root = Tk()
     root.withdraw()
     root.attributes("-topmost", True)
