@@ -13,7 +13,7 @@ INPUTS: st: spike times nSpikes
 import numpy as np
 import numpy.matlib
 
-import histdiff as hd
+#import analysis.histdiff as hd
 from numba import jit
 
 """ collected the psth, rasters, bins, spikeCounts"""
@@ -152,7 +152,7 @@ def rasterPSTH(sp: dict, eventTimes: dict, timeBinSize: float) -> tuple[dict, li
     return psthvalues, windowlst
 
 
-""" sets up the data to run the histdiff--DEPRECATING"""
+""" sets up the data to run the histdiff--DEPRECATING
 
 
 def timestampsToBinned(
@@ -161,8 +161,8 @@ def timestampsToBinned(
     stepNumber = int(abs((window[1] - window[0]) / binSize + 1))
     binBorders = np.linspace(window[0], window[1], num=stepNumber)
     binNumber = len(binBorders) - 1
-    """we make two deep copies of our bins. Since we will be mutating things with rust we need these copies to
-    have their own pointers so we can use them without just changing the same data over and over"""
+    we make two deep copies of our bins. Since we will be mutating things with rust we need these copies to
+    have their own pointers so we can use them without just changing the same data over and over
     totalBins = np.broadcast_to(
         binBorders, (len(referencePoints),) + binBorders.shape
     ).copy()
@@ -200,3 +200,4 @@ def timestampsToBinned(
             binArray = totalBins[:, :-1]  #
 
         return binArray, binCenters
+"""
