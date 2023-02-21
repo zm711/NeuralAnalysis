@@ -45,7 +45,6 @@ def plotZscores(
     plot=True,
 ) -> tuple[dict, dict]:
 
-    print(sorter_dict)
     eventLst = (
         list()
     )  # need to create a list of the stim since allP only stores stim name not Intan channel
