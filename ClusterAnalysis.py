@@ -313,9 +313,7 @@ class ClusterAnalysis:
     labels = {'value found in eventTimes': 'value you want to 
                                be displayed as str'}"""
 
-    def plot_z(
-        self, labels=None, tg=True, sorter_dict=None, time_point=0, plot=True
-    ) -> None:
+    def plot_z(self, labels=None, tg=True, time_point=0, plot=True) -> None:
         if not labels:
             try:
                 labels = self.labels
@@ -331,7 +329,6 @@ class ClusterAnalysis:
             timeBinSize=time_bin_size,
             tg=tg,
             labels=labels,
-            sorter_dict=sorter_dict,
             time_point=time_point,
             plot=plot,
         )
