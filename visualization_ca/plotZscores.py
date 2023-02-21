@@ -28,9 +28,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 from itertools import compress
-from z_score_decorator import z_score_cutoff, raw_count
+from z_score_decorator import z_score_cutoff, raw_count, sorter_dict_adder
 
 
+@sorter_dict_adder
 def plotZscores(
     allP: dict,
     normVal: dict,
@@ -44,6 +45,7 @@ def plotZscores(
     plot=True,
 ) -> tuple[dict, dict]:
 
+    print(sorter_dict)
     eventLst = (
         list()
     )  # need to create a list of the stim since allP only stores stim name not Intan channel
