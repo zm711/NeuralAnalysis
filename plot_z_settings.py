@@ -22,7 +22,7 @@ says you need a minimum of at least 75 spikes to count.
 
 import os
 
-
+"""change inhib, sustained, onset, offset with notes from above here."""
 def z_score_cutoff(func):
     def cut_off(*args, **kwargs):
 
@@ -61,7 +61,9 @@ def raw_count(func):
 
     return cut_off_raw
 
-
+"""change me to change the time bins observed for determining
+responsiveness see if "charl" example for set-up. Change
+values in sorter_dict"""
 def sorter_dict_adder(func):
     def dict_adder(*args, **kwargs):
         if "charl" in os.getcwd().lower():
