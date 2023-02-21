@@ -250,6 +250,7 @@ plotting functions are explained in the visualization_ca folder.
 ## Quick List of Attributes
 Reminder that some of these require various methods to be called first
 As always these are accessed with `.` notation thus `var = myNeuron.var`
+
 `sp`: spike properties
 
 `eventTimes`: stimulus properties
