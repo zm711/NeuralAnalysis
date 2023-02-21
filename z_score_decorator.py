@@ -60,3 +60,24 @@ def raw_count(func):
         return new_func
 
     return cut_off_raw
+
+
+def sorter_dict_adder(func):
+    def dict_adder(*args, **kwargs):
+        if "charl" in os.getcwd().lower():
+            new_func = func(
+                *args,
+                sorter_dict={
+                    "Sustained": [50, 100],
+                    "Onset": [50, 65],
+                    "Onset-Offset": [50, 65, 90, 110],
+                    "Relief": [100, 150],
+                    "Inhib": [50, 67],
+                },
+                **kwargs
+            )
+        else:
+            new_func = func(*args, sorter_dict=None, **kwargs)
+        return new_func
+
+    return dict_adder
