@@ -356,7 +356,10 @@ class ClusterAnalysis:
     def plot_spikes(self, tg=True, eb=True) -> None:
         psthvalues = self.psthvalues
         eventTimes = self.eventTimes
-        labels = self.labels
+        try:
+            labels = self.labels
+        except AttributeError:
+            labels = None
         plotPSTH(
             psthvalues,
             eventTimes,
