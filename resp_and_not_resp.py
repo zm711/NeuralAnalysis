@@ -10,7 +10,7 @@ neurons can be analyzed. It automatically loads the responsive cluster ids into 
 well as loading the non-responsive cluster ids and returns a new ClusterAnalysis object
 which can be analyzed with only the non-responsive Neurons"""
 
-from ksanalysis import ClusterAnalysis
+from ClusterAnalysis import ClusterAnalysis
 import numpy as np
 import pandas as pd
 import copy
