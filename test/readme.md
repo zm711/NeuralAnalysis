@@ -1,4 +1,4 @@
-# Testing
+# Test.py
 
 test.py will create a skinny version of `sp` and a set of stimulus data dictionary `eventTimes`
 
@@ -18,6 +18,9 @@ This requires the raw pc_files which would require pickling which isn't safe for
 ### `plot_pc`
 This requires the pc_values in sp which I'm not loading for testing
 
+###  `plot_drift`
+Requires `temps`
+
 ## Results
 
 Running clu_zscore with baseline window -2,-.1, stimulus window = -2,12 and running plot_z will generate:
@@ -33,7 +36,7 @@ The `acg` figure for `Neuron 5` should be:
 
 ![image](https://user-images.githubusercontent.com/92116279/219798237-3f878480-8344-490d-ba19-5a5811ea1a3a.png)
 
-The Drift Plot from running `plot_drift` should be 
 
-![image](https://user-images.githubusercontent.com/92116279/219799370-11302e08-0eb6-4fe5-8bbe-907463c2d650.png)
+# test2.py
 
+This script tests that `histdiff.py` and `psthfunctions.py` are working with a sub dataset. Assertions test that counts and shapes of structures are correct for these two core counting algorithms.
