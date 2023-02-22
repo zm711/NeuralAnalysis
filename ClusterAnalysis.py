@@ -456,7 +456,7 @@ class ClusterAnalysis:
 
     def gen_respdf(self, qcthres: float, isi=None) -> None:
         try:
-            isiv = self.isiV
+            isiv = self.isiv
         except AttributeError:
             isiv = None
             print("run qcfn to generate isiv if necessary")

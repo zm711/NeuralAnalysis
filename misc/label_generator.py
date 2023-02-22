@@ -150,7 +150,9 @@ def responseDF(
         non_resp_df = non_resp_df.loc[non_resp_df["QC"] >= qcthres]
 
     if isi is not None:
-        resp_neuron_df = resp_neuron_df.loc[resp_neuron_df["ISI Violations"] < isi]
+        resp_neuron_df = resp_neuron_df.loc[
+            resp_neuron_df["ISI Violation Fraction"] < isi
+        ]
 
     return resp_neuron_df, non_resp_df
 
