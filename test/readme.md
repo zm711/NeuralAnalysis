@@ -36,7 +36,5 @@ The `acg` figure for `Neuron 5` should be:
 
 ![image](https://user-images.githubusercontent.com/92116279/219798237-3f878480-8344-490d-ba19-5a5811ea1a3a.png)
 
-
-# test2.py
-
-This script tests that `histdiff.py` and `psthfunctions.py` are working with a sub dataset. Assertions test that counts and shapes of structures are correct for these two core counting algorithms.
+## Test.py strategy
+Based on this sample dataset a series of calculations and graphs are made to ensure plotting functionality is working. In addition access to attributes is tested. Finally, matrix shape, means, and sums are used together with a series of `assert` statements to ensure that any changes in the code do not break these core functionalities.
