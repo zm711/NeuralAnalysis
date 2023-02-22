@@ -10410,6 +10410,16 @@ def test():
     print("\nACG test. see readme.md for what cluster 5 should look like\n")
     myNeuron.acg()
     
+    print("\ntesting latency function\n")
+    myNeuron.latency(time_bin_size = 0.05, bsl_win=[[-2, -0.1]], event_win=[[-2,12]])
+    latency = myNeuron.latency_vals
+    lat_neuron_5= latency['DIG2'][5]
+    print(f"\n\nlatency value is {lat_neuron_5[1.0]['Latency Median']} it should be nan")
+    assert(np.isnan(lat_neuron_5[1.0]['Latency Median']))
+    
+    print('\n Passed latency test\n')
+    
+    
     
 def test2():
     print('\n\nTest2 will test counting Functions\n')
@@ -10440,6 +10450,8 @@ def test2():
     print(f"Index 50 of centers is {centers[50]}. It should be 2.5250000000000004\n\n")
     assert(round(centers[50], 3) == 2.525)
     print("histdiff and time_stamps_to_bins passed check.")
+    
+
 
 if __name__ == '__main__':
     test()
