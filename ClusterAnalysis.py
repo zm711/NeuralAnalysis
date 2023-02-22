@@ -417,7 +417,7 @@ class ClusterAnalysis:
             bsl_win=bsl_win,
             event_win=event_win,
         )
-        self.latency = latency_values
+        self.latency_vals = latency_values
 
     """plots cdf and pdf of spike depth by spike amplitude by firing rate. 
     Requires depth of neurons. `unit_only` will label only `good units`. 
