@@ -10,8 +10,12 @@ import numpy as np
 import pandas as pd
 
 
-def prevalence_calculator(resp_neuro_df: pd.DataFrame) -> None:
-
+def prevalence_calculator(resp_neuro_df: pd.DataFrame, *args) -> None:
+    
+    if args:
+        non_resp_df = args[0]
+        print(f"Number of neurons which passed qc checks, but which did not respond to stimuli is {len(non_resp_df['IDs'].unique())}\n")
+    
     sus_list = resp_neuro_df[
         (resp_neuro_df["Sorter"] == "Sustained")
         | (resp_neuro_df["Sorter"] == "sustained")
