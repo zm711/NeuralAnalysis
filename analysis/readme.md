@@ -23,3 +23,6 @@ first spike and take the median value of these first spikes. It excludes neurons
 # `prevalence_calculator`
 Just looks at the resp_df and gives numbers based on a hierarchy of responses. Logic is basically sustained-onset/offset-onset; inhibitory; relief. A new can only be one
 of the first three, but the other two categories are not mutually exclusive.
+
+# `firingratedf`
+Same as `cluzscore`, but instead does a series of sub windows with the raw firing rate rather than z scored.
