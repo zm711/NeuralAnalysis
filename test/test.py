@@ -10395,7 +10395,7 @@ def test():
     print(f"sum of allP scores is {np.sum(allP['TEST'])} it should be -30.93797084395051\n\n")
     assert(round(np.sum(allP['TEST']),2)==-30.94)
     
-    print('\nPassed allP value check\n')
+    print('\n~~Passed allP value check~~\n')
     
     print('\nAccessing ClusterAnalysis Attribute\n')
     assert(myNeuron.normVal is not None)
@@ -10417,7 +10417,7 @@ def test():
     print(f"\n\nlatency value is {lat_neuron_5[1.0]['Latency Median']} it should be nan")
     assert(np.isnan(lat_neuron_5[1.0]['Latency Median']))
     
-    print('\n Passed latency test\n')
+    print('\n~~Passed latency test~~\n')
     
     
     
@@ -10449,12 +10449,13 @@ def test2():
     assert(round(np.mean(np.mean(counts)), 3) == 0.003)
     print(f"Index 50 of centers is {centers[50]}. It should be 2.5250000000000004\n\n")
     assert(round(centers[50], 3) == 2.525)
-    print("histdiff and time_stamps_to_bins passed check.")
+    print("~~histdiff and time_stamps_to_bins passed check~~")
     
 
 
 if __name__ == '__main__':
     test()
     test2()
+    print("\n\n\n~~All testing complete~~")
 
 
