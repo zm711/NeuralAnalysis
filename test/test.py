@@ -10375,20 +10375,26 @@ eventTimes["DIG2"]["TrialGroup"] = np.append(
 )
 eventTimes["DIG2"]["Stim"] = "TEST"
 
+print("Generating test data structure\n")
+print("loading sp and eventtimes into ClusterAnalysis\n")
+
 myNeuron = ClusterAnalysis(sp, eventTimes)
+print("\nRunning clu_zscore test run\n")
 
 allP, _, window = myNeuron.clu_zscore(window=[[-2, -0.1], [-2, 12]])
 print("\n\nTesting allP values\n\n")
 
 print(f"window should be [[-2,12]]. window as entered is {window}")
+assert(window == [[-2,12]])
 print(f"Shape of allP is {np.shape(allP['TEST'])} it should be (6,2,280)")
 assert(np.shape(allP['TEST'])==(6,2,280))
 print(f"sum of allP scores is {np.sum(allP['TEST'])} it should be -30.93797084395051\n\n")
 assert(round(np.sum(allP['TEST']),2)==-30.94)
 
-print('Passed allP value check')
+print('\nPassed allP value check\n')
 
 print("\ngenerating Z plot. check readme for what plot should look like\n")
+print("\nUserWarningErrors are okay--due to non-Z scoreable data structure ignore warnings\n")
 myNeuron.plot_z(labels=None, tg=True, time_point=0, plot=True)
 """
 _,_ = myNeuron.spike_raster()
