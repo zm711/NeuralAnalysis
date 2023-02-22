@@ -275,6 +275,8 @@ As always these are accessed with `.` notation thus `var = myNeuron.var`
 
 `laterality`: left side or right side of animal
 
+`responsive_neurons`: dictionary of responsive neuron **indices not ids**. By using these as indices into `sp['cids']` the correct ids can be obtained
+
 `resp_neuro_df`: DataFrame of responsive neurons, what and how they are responsive
 
 `non_resp_df`: DataFrame of non_responsive neurons
