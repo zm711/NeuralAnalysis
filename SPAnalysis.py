@@ -27,7 +27,7 @@ METHODS:
     plot_cdf: plots a pdf and cdf of spike info
 """
 
-from spsetup import loadsp
+from analysis.spsetup import loadsp
 
 from qcfn.qcfns import maskedClusterQuality
 from qcfn.isiVqc import isiV
