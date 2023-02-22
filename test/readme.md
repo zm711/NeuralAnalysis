@@ -1,4 +1,4 @@
-# Testing
+# Test.py
 
 test.py will create a skinny version of `sp` and a set of stimulus data dictionary `eventTimes`
 
@@ -35,3 +35,8 @@ np.sum(allP['Dig2']) == -30.93797084395051
 The `acg` figure for `Neuron 5` should be:
 
 ![image](https://user-images.githubusercontent.com/92116279/219798237-3f878480-8344-490d-ba19-5a5811ea1a3a.png)
+
+
+# test2.py
+
+This script tests that `histdiff.py` and `psthfunctions.py` are working with a sub dataset. Assertions test that counts and shapes of structures are correct for these two core counting algorithms.
