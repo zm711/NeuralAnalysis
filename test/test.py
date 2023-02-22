@@ -10382,7 +10382,7 @@ print(f"window should be [[-2,12]]. window as entered is {window}")
 print(f"Shape of allP is {np.shape(allP['TEST'])} it should be (6,2,280)")
 print(f"sum of allP scores is {np.sum(allP['TEST'])} it should be -30.93797084395051")
 
-myNeuron.plot_z(labels=None, tg=True, sorter_dict=None, time_point=0, plot=True)
+myNeuron.plot_z(labels=None, tg=True, time_point=0, plot=True)
 """
 _,_ = myNeuron.spike_raster()
 
