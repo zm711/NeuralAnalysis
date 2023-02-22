@@ -26,3 +26,6 @@ of the first three, but the other two categories are not mutually exclusive.
 
 # `firingratedf`
 Same as `cluzscore`, but instead does a series of sub windows with the raw firing rate rather than z scored.
+
+# `resp_and_non_resp`
+A function which takes in a ClusterAnalysis object and loads only responsive neurons and then returns the same `ClusterAnalysis` object with only the non_responsive neurons. Thus there are 2 `ClusterAnalysis` objects that can be analyzed in parallel -- one responsive and one nonresponsive
