@@ -5,6 +5,7 @@
 
 import sys, struct, math, os, time
 import numpy as np
+from numba import jit
 
 from intan_helpers.intanutil.read_header import read_header
 from intan_helpers.intanutil.get_bytes_per_data_block import get_bytes_per_data_block
@@ -115,7 +116,7 @@ def read_data(filename):
         if (header["version"]["major"] == 1 and header["version"]["minor"] >= 2) or (
             header["version"]["major"] > 1
         ):
-            data["t_amplifier"] = np.zeros(num_amplifier_samples, dtype=np.int)
+            data["t_amplifier"] = np.zeros(num_amplifier_samples, dtype=np.int_)
         else:
             data["t_amplifier"] = np.zeros(num_amplifier_samples, dtype=np.uint)
 
@@ -150,7 +151,7 @@ def read_data(filename):
 
         data["board_dig_out_data"] = np.zeros(
             [header["num_board_dig_out_channels"], num_board_dig_out_samples],
-            dtype=np.bool,
+            dtype=np.bool_,
         )
         data["board_dig_out_raw"] = np.zeros(num_board_dig_out_samples, dtype=np.uint)
 
@@ -219,6 +220,8 @@ def read_data(filename):
         data["amplifier_data"] = np.multiply(
             0.195, (data["amplifier_data"].astype(np.int32) - 32768)
         )  # units = microvolts
+        # rows = np.shape(data["amplifier_data"])[0]
+        # convert_amplifier_data(data["amplifier_data"], rows)
         data["aux_input_data"] = np.multiply(
             37.4e-6, data["aux_input_data"]
         )  # units = volts
@@ -291,6 +294,14 @@ def read_data(filename):
 
     print("Done!  Elapsed time: {0:0.1f} seconds".format(time.time() - tic))
     return result
+
+
+@jit(nopython=True)
+def convert_amplifier_data(amp_data: np.array, rows: int) -> None:
+    # amp_data = amp_data.astype(np.int32)
+
+    for row in range(rows):
+        amp_data[row] = np.multiply(0.195, (amp_data[row].astype(np.int32) - 32768))
 
 
 def plural(n):
