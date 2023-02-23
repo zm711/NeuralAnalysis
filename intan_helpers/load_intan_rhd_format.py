@@ -296,6 +296,9 @@ def read_data(filename):
     return result
 
 
+"""testing for improved memory protection, but not actively using"""
+
+
 @jit(nopython=True)
 def convert_amplifier_data(amp_data: np.array, rows: int) -> None:
     # amp_data = amp_data.astype(np.int32)
