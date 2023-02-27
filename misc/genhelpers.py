@@ -61,8 +61,8 @@ def findindex(matrix: np.array) -> tuple[np.array, np.array]:
 
 
 def savefile(filename: str, file: str) -> None:
-    if len(filename) > 94:
-        filename = filename[:95]
+    if len(filename) > 90:
+        filename = filename[:90]
         
     if os.path.isfile(filename):
         print("File already exists.")
