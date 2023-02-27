@@ -92,10 +92,6 @@ to the workspace."""
 
 
 def loadvalues() -> namedtuple:
-    currPath = os.getcwd()
-    if "pyanalysis" not in currPath:
-        os.chdir("pyanalysis")
-        print("collecting file info")
 
     filename = glob.glob("*intan.npy")
     IntanValues = namedtuple(
