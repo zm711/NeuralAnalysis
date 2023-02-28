@@ -339,6 +339,8 @@ class ClusterAnalysis:
     rate and raster plots"""
 
     def spike_raster(self, time_bin_size=0.05) -> tuple[dict, list]:
+        if float(time_bin_size):
+            time_bin_size =list(time_bin_size)
         psthvalues, window = psthfn.rasterPSTH(self.sp, self.eventTimes, time_bin_size)
         self.psthvalues: dict = psthvalues
         self.time_bin: float = time_bin_size
