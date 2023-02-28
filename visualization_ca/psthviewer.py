@@ -30,22 +30,24 @@ def plotPSTH(
     groupSep=True,
     eb=False,
 ) -> None:
-    """smoothing in general applies a gaussian to average adjacent bins. It should help make
-    baseline right around 0 and the firing peaks should stay relatively. Based on my reading
-    smoothing factor is more of an empiric decision. Too smooth would destory all peaks. No
-    smoothing should jsut be a lineplot of a histogram data set"""
-    param = int(input("input the smoothing factor\n"))
-    gw = signal.windows.gaussian(
-        round(param * 6), (round(param * 6) - 1) / 6
-    )  # this takes std vs alpha for matlab version
-    # std = (L-1)/2alpha (matlab alpha = 3)
+    
 
     eventLst = list()
     for stimE in eventTimes.keys():
         eventLst.append(stimE)
 
     for (index, stim) in enumerate(psthvalues.keys()):
-
+        
+        """smoothing in general applies a gaussian to average adjacent bins. It should help make
+        baseline right around 0 and the firing peaks should stay relatively. Based on my reading
+        smoothing factor is more of an empiric decision. Too smooth would destory all peaks. No
+        smoothing should jsut be a lineplot of a histogram data set"""
+        param = int(input("input the smoothing factor\n"))
+        gw = signal.windows.gaussian(
+            round(param * 6), (round(param * 6) - 1) / 6
+        )  # this takes std vs alpha for matlab version
+        # std = (L-1)/2alpha (matlab alpha = 3)
+        
         window = raster_window[index]
         windowS = window[0]
         windowE = (
