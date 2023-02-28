@@ -53,13 +53,13 @@ def plotPSTH(
         windowE = (
             window[-1] + (window[-1] - window[0]) / 20
         )  # add 1/20 of stimulus length for spacing
-        trialGroup = np.array(eventTimes[eventLst[index]]["TrialGroup"])
+        trial_groups = np.array(eventTimes[eventLst[index]]["trial_groups"])
         event_lengths = eventTimes[eventLst[index]]["Lengths"]
         eventLength = np.mean(
             eventTimes[eventLst[index]]["Lengths"]
         )  # events should be same use mean d/t natural variation
-        nEvents = len(eventTimes[eventLst[index]]["EventTime"])
-        rasterScale = np.floor(nEvents / 100)  # correct raster sizing
+        n_events = len(eventTimes[eventLst[index]]["EventTime"])
+        raster_scale = np.floor(n_events / 100)  # correct raster sizing
         # windowLength = qcvalues[stim]['Window']
         # qcValues = {k: qcvalues[stim][k] for k in qcvalues[stim] if k not in ["Window"]}
         for cluster in psthvalues[stim].keys():
@@ -67,9 +67,9 @@ def plotPSTH(
             if np.sum(ba) == 0:
                 continue
             bins = psthvalues[stim][cluster]["Bins"]  # these are the centers of bins
-            tg = list(np.unique(trialGroup))
-            nGroups = len(tg)
-            nBins = len(bins)
+            tg = list(np.unique(trial_groups))
+            n_groups = len(tg)
+            n_bins = len(bins)
             smWin = gw / np.sum(gw)
             # baT = np.reshape(ba, (np.shape(ba)[1], np.shape(ba)[0]))
             baSm = np.zeros((np.shape(ba)[0], np.shape(ba)[1]))  # memory allocation
@@ -80,14 +80,14 @@ def plotPSTH(
                 )  # convolution to apply gaussians
 
             if groupSep:
-                psthSm = np.zeros((nGroups, nBins))
-                stderr = np.zeros((nGroups, nBins))
-                event_len = np.zeros((nGroups,))
+                psthSm = np.zeros((n_groups, n_bins))
+                stderr = np.zeros((n_groups, n_bins))
+                event_len = np.zeros((n_groups,))
 
-                for group in range(nGroups):
-                    psthSm[group] = np.mean(baSm[trialGroup == tg[group]], axis=0)
+                for group in range(n_groups):
+                    psthSm[group] = np.mean(baSm[trial_groups == tg[group]], axis=0)
                     stderr[group] = np.std(baSm) / np.sqrt(np.shape(baSm)[0])
-                    event_len[group] = np.mean(event_lengths[trialGroup == tg[group]])
+                    event_len[group] = np.mean(event_lengths[trial_groups == tg[group]])
             else:
                 psthSm = np.mean(baSm, axis=0)
                 stderr = np.std(baSm) / np.sqrt(np.shape(baSm)[0])
@@ -96,7 +96,7 @@ def plotPSTH(
             rather than by event number. (ie if we do random stimuli trial groups)
             then we need to reorganize our events for raster"""
             if groupSep:
-                inds = np.argsort(trialGroup)
+                inds = np.argsort(trial_groups)
                 BinIndex = np.transpose(np.nonzero(ba[inds, :]))
                 tr = BinIndex[:, 0]
                 b = BinIndex[:, 1]
@@ -105,11 +105,11 @@ def plotPSTH(
                 tr = BinIndex[:, 0]
                 b = BinIndex[:, 1]
 
-            rasterX, yy = psfn.rasterize(bins[b])
-            rasterX = np.squeeze(rasterX)
-            rasterY = yy + np.reshape(np.matlib.repmat(tr.T, 3, 1), (1, len(tr.T) * 3))
-            rasterY = np.squeeze(rasterY)
-            rasterY[1:-1:3] = rasterY[1:-1:3] + rasterScale  # apply scale
+            raster_x, yy = psfn.rasterize(bins[b])
+            raster_x = np.squeeze(raster_x)
+            raster_y = yy + np.reshape(np.matlib.repmat(tr.T, 3, 1), (1, len(tr.T) * 3))
+            raster_y = np.squeeze(raster_y)
+            raster_y[1:-1:3] = raster_y[1:-1:3] + raster_scale  # apply scale
 
             minV = np.min(
                 psthSm
@@ -216,10 +216,10 @@ def plotPSTH(
 
                     ax1.legend(all_plots, legend_list)
 
-                ax2.plot(rasterX, rasterY, color="black")
+                ax2.plot(raster_x, raster_y, color="black")
                 ax2.plot(
                     [0, 0],
-                    [0, np.max(rasterY) + 1],
+                    [0, np.max(raster_y) + 1],
                     color="red",
                     linestyle=":",
                 )
@@ -227,7 +227,7 @@ def plotPSTH(
                 for value in range(np.shape(psthSm)[0]):
                     ax2.plot(
                         [event_len[value], event_len[value]],
-                        [0, np.max(rasterY) + 1],
+                        [0, np.max(raster_y) + 1],
                         color=color1[value],
                         linestyle=":",
                     )
@@ -236,11 +236,11 @@ def plotPSTH(
                     xlim=(windowS, windowE),
                     #       xticks=np.arange(-windowS, windowE),
                     xlabel="Time (s)",
-                    ylim=(0, np.max(rasterY) + 1),
-                    #        yticks=np.arange(1,np.shape(rasterX)[0]+1),
+                    ylim=(0, np.max(raster_y) + 1),
+                    #        yticks=np.arange(1,np.shape(raster_x)[0]+1),
                     ylabel="Event",
                 )
-                # ax2.set_yticks(np.arange(1, np.shape(rasterX)[0]+1), labels=eventLabels)
+                # ax2.set_yticks(np.arange(1, np.shape(raster_x)[0]+1), labels=eventLabels)
 
             else:
                 fig1, (ax1, ax2) = plt.subplots(2, figsize=(10, 8), sharex=True)
@@ -276,16 +276,16 @@ def plotPSTH(
                 else:
                     ax1.set(ylim=(0, np.max(psthSm) + 1))
 
-                ax2.plot(rasterX, rasterY, color="black")
+                ax2.plot(raster_x, raster_y, color="black")
                 ax2.plot(
                     [0, 0],
-                    [0, np.max(rasterY) + 1],
+                    [0, np.max(raster_y) + 1],
                     color="red",
                     linestyle=":",
                 )
                 ax2.plot(
                     [eventLength, eventLength],
-                    [0, np.max(rasterY) + 1],
+                    [0, np.max(raster_y) + 1],
                     color="red",
                     linestyle=":",
                 )
@@ -294,11 +294,11 @@ def plotPSTH(
                     xlim=(windowS, windowE),
                     #       xticks=np.arange(-windowS, windowE),
                     xlabel="Time (s)",
-                    ylim=(0, np.max(rasterY) + 1),
-                    #        yticks=np.arange(1,np.shape(rasterX)[0]+1),
+                    ylim=(0, np.max(raster_y) + 1),
+                    #        yticks=np.arange(1,np.shape(raster_x)[0]+1),
                     ylabel="Event",
                 )
-                # ax2.set_yticks(np.arange(1, np.shape(rasterX)[0]+1), labels=eventLabels)]
+                # ax2.set_yticks(np.arange(1, np.shape(raster_x)[0]+1), labels=eventLabels)]
 
             """regardless of figure type following are the same"""
 
