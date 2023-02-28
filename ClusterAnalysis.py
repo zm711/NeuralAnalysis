@@ -298,7 +298,7 @@ class ClusterAnalysis:
         self, time_bin_size=0.05, tg=True, window=None
     ) -> tuple[dict, dict, list]:
         if type(time_bin_size) == float:
-            time_bin_size = list(time_bin_size)
+            time_bin_size = [time_bin_size]
         allP, normVal, window = clusterzscore(
             self.sp, self.eventTimes, time_bin_size, tg, window_list=window
         )
@@ -342,7 +342,7 @@ class ClusterAnalysis:
 
     def spike_raster(self, time_bin_size=0.05) -> tuple[dict, list]:
         if type(time_bin_size)==float:
-            time_bin_size =list(time_bin_size)
+            time_bin_size = [time_bin_size]
         psthvalues, window = psthfn.rasterPSTH(self.sp, self.eventTimes, time_bin_size)
         self.psthvalues: dict = psthvalues
         self.time_bin: float = time_bin_size
