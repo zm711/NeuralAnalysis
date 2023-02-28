@@ -118,6 +118,8 @@ def rasterPSTH(sp: dict, eventTimes: dict, time_bins: list) -> tuple[dict, list]
     clusterIDs = list(sp["cids"])
     psthvalues = {}
     windowlst = list()
+    if len(eventTimes.keys())>1 and len(time_bins) == 1:
+        time_bins *= len(eventTimes.keys())
     for (index, stim) in enumerate(eventTimes.keys()):
         if len(eventTimes[stim]["EventTime"]) == 0:
             continue
