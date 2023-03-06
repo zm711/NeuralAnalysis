@@ -37,7 +37,7 @@ def plotZscores(
     normVal: dict,
     eventTimes: dict,
     window: list[list[float, float]],
-    timeBinSize: float,
+    time_bin_list: list,
     tg: bool,
     sorter_dict=None,
     labels=None,
@@ -59,7 +59,7 @@ def plotZscores(
         curr_window: list = window[i]
         allP_sub: np.array = allP[stim]
         normVal_sub: np.array = normVal[stim]
-
+        timeBinSize = time_bin_list[i]
         responsive_neurons[stim] = {}
         responsive_neurons_raw[stim] = {}
 

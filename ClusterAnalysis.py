@@ -326,7 +326,7 @@ class ClusterAnalysis:
             self.normVal,
             self.eventTimes,
             self.zwindow,
-            timeBinSize=time_bin_size,
+            time_bin_list=time_bin_size,
             tg=tg,
             labels=labels,
             time_point=time_point,
