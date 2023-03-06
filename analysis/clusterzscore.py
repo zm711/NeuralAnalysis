@@ -11,7 +11,7 @@ import analysis.psthfunctions as psthfn
 def clusterzscore(
     sp: dict,
     eventTimes: dict,
-    timeBinSize: float,
+    time_bins: list,
     tg=False,
     window_list=None,
 ) -> tuple[dict, dict, list]:
@@ -21,7 +21,11 @@ def clusterzscore(
     clu = np.squeeze(sp["clu"])
     clusterIDs = list(sp["cids"])
     windowlst = list()
-    for stim in eventTimes.keys():
+    
+    if len(eventTimes.keys()) >1 and len(time_bins)==1:
+        time_bins *= len(eventTimes.keys())
+    
+    for (index, stim) in enumerate(eventTimes.keys()):
         if len(eventTimes[stim]["EventTime"]) == 0:
             continue
         else:
@@ -48,7 +52,8 @@ def clusterzscore(
             normVal[eventTimes[stim]["Stim"]] = {}
             eventTimesOnset: np.array = eventTimes[stim]["EventTime"]
             bslEventTime: np.array = eventTimesOnset
-
+                
+            timeBinSize = time_bins[index]
             if tg == False:
                 suballP = np.empty(
                     (len(clusterIDs), int((window[1] - window[0]) / timeBinSize))

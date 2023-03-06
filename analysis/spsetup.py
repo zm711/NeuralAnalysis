@@ -148,6 +148,8 @@ def loadsp() -> dict:
     sp["winv"] = winv
     sp["pcFeat"] = pcFeat
     sp["pcFeatInd"] = pcFeatInd
+    if len(fileName) >90:
+        fileName = fileName[:90]
     sp["filename"] = fileName
     sp["noise"] = noise
 

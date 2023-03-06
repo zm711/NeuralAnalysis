@@ -112,13 +112,15 @@ of all our stimuli with all events and their lengths. timeBinSize will be binsiz
 seconds"""
 
 
-def rasterPSTH(sp: dict, eventTimes: dict, timeBinSize: float) -> tuple[dict, list]:
+def rasterPSTH(sp: dict, eventTimes: dict, time_bins: list) -> tuple[dict, list]:
     spikeTimes = np.squeeze(sp["spikeTimes"])
     clu = np.squeeze(sp["clu"])
     clusterIDs = list(sp["cids"])
     psthvalues = {}
     windowlst = list()
-    for stim in eventTimes.keys():
+    if len(eventTimes.keys())>1 and len(time_bins) == 1:
+        time_bins *= len(eventTimes.keys())
+    for (index, stim) in enumerate(eventTimes.keys()):
         if len(eventTimes[stim]["EventTime"]) == 0:
             continue
         else:
@@ -133,12 +135,12 @@ def rasterPSTH(sp: dict, eventTimes: dict, timeBinSize: float) -> tuple[dict, li
             windowlst.append(window)
             eventTimesOnset = eventTimes[stim]["EventTime"]
             # psthvalues[eventTimes[stim]['Stim']]['Window'] = window[-1]-window[0]
-
+            time_bin_size = time_bins[index]
             for cluster in clusterIDs:
                 psthvalues[eventTimes[stim]["Stim"]][str(cluster)] = {}
                 print("Processing cluster {clu}".format(clu=cluster))
                 _, bins, _, _, _, ba = psthAndBA(
-                    spikeTimes[clu == cluster], eventTimesOnset, window, timeBinSize
+                    spikeTimes[clu == cluster], eventTimesOnset, window, time_bin_size
                 )
                 psthvalues[eventTimes[stim]["Stim"]][str(cluster)]["BinnedArray"] = ba
                 if np.shape(ba)[1] != len(bins):

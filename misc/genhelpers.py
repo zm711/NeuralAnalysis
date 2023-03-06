@@ -61,7 +61,9 @@ def findindex(matrix: np.array) -> tuple[np.array, np.array]:
 
 
 def savefile(filename: str, file: str) -> None:
-
+    if len(filename) > 90:
+        filename = filename[:90]
+        
     if os.path.isfile(filename):
         print("File already exists.")
         overWrite = input("Would you like to overwrite y/n?\n")
@@ -94,7 +96,6 @@ def loadvalues() -> namedtuple:
     if "pyanalysis" not in currPath:
         os.chdir("pyanalysis")
         print("collecting file info")
-
     filename = glob.glob("*intan.npy")
     IntanValues = namedtuple(
         "IntanValues",

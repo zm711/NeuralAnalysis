@@ -67,7 +67,7 @@ class MCA(ClusterAnalysis):
         final_methods = [method for method in methods if "__" not in method]
         return f"This is the analysis of {self.filename_list}.\n\nThe initialized variables are {var}\n\n The methods are {final_methods}"
 
-    def mSpiRas(self, timeBinSize=0.05, tg=True, ebval=True):
+    def m_spike_raster(self, timeBinSize=0.05, tg=True, ebval=True):
         sp_list = self.sp_list
         event_list = self.event_list
         for idx in range(len(sp_list)):
@@ -90,7 +90,7 @@ class MCA(ClusterAnalysis):
                 raster_window=window,
             )
 
-    def mACG(self, ref_period=0.002):
+    def m_acg(self, ref_period=0.002):
         sp_list = self.sp_list
         for idx in range(len(sp_list)):
             print(f"Analyising Data from {self.filename_list[idx]}")
@@ -98,7 +98,7 @@ class MCA(ClusterAnalysis):
 
             super().ACG(self, ref_per=ref_period)
 
-    def mZscore(
+    def m_zscore(
         self,
         window_list,
         time_bin_size=0.05,
