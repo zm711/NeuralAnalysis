@@ -206,7 +206,7 @@ def plotZscores(
 
         else:  # if we do have trial group separated out
 
-            trialGroups = np.array(list(eventTimes[eventLst[i]]["TrialGroup"]))
+            trialGroups = np.array(list(eventTimes[eventLst[i]]["TrialGroup"]),dtype=np.float64)
             tgs = sorted(list(set(trialGroups)))  # need the set of trial groups
 
             """As above we need to generate a dataframe with rows = to nClu x ntimeBins for
