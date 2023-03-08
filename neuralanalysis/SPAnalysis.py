@@ -41,6 +41,30 @@ from .visualization_ca.detectdrift import plotDriftmap
 
 
 class SPAnalysis:
+    """SPAnalysis is a class for assessing in vivo recording quality with some basic
+    metrics. It can look at waveforms to assess proper extracellular potential shape. It
+    can calculate the PC spaces. It can look at autocorrelograms to asses refractory
+    period violations.And it can look for instance of drift. When initializing the class
+    it can be given an optional filepath to the Phy root directory, but if this is not
+    given it will request
+
+    ### ATTRIBUTES:
+        sp: dict of spike properties
+        qc: dict of quality metrics
+        wf: dict of raw waeveform data
+        isiv: dict of interspike interval violations
+
+    ### METHODS
+        loadsp: method for loading Phy data
+        get_waveforms: method for getting raw waveform data
+        plot_wfs: method for plotting raw waveforms
+        qcfn: method for generating isolatin distance and isi violations
+        acg: method for plotting autocorrelogram
+        plot_pc: method for plotting top two PC spaces
+        plot_drift: method for creating a drift plot
+        plot_cdf: method for plotting pdf and cdf of spiking info
+    """
+
     def __init__(self, *args):
         if args:
             self.filepath = args[0]
