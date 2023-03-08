@@ -48,13 +48,13 @@ class SPAnalysis:
     it can be given an optional filepath to the Phy root directory, but if this is not
     given it will request
 
-    ### ATTRIBUTES:
+    ### ATTRIBUTES ###
         sp: dict of spike properties
         qc: dict of quality metrics
         wf: dict of raw waeveform data
         isiv: dict of interspike interval violations
 
-    ### METHODS
+    ### METHODS ###
         loadsp: method for loading Phy data
         get_waveforms: method for getting raw waveform data
         plot_wfs: method for plotting raw waveforms
