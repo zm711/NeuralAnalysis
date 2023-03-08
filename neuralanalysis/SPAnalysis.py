@@ -54,11 +54,20 @@ class SPAnalysis:
         print(f"Attributes are {vars(self)}")
 
     def loadsp(self) -> dict:
+        """this function will request a directory from the user which contains the
+        standard `Phy` output numpy files (e.g. `spike_times.npy`). It will then load
+        all of these values and return it to the workspace."""
         sp = loadsp()
         self.sp = sp
         return sp
 
     def qcfn(self, isi=0.0005, ref_dur=0.002) -> tuple[dict, dict]:
+        """qcfn runs an isolation distance and refractory period violation calcs and
+        returns those values. `isi` is the minimual interspike interval as limited by
+        the sampling rate of the recording device. Change based on device's sample rate.
+        ref_dur is the length of the refractory period of the neurons. Although 2ms is
+        standard in neuroscience this is based on the neuron population being studied.
+        """
         qcvalues, _, _ = maskedClusterQuality(self.sp)
         self.qc = qcvalues
         isiv = isiV(self.sp, isi=isi, ref_dur=ref_dur)
@@ -66,20 +75,31 @@ class SPAnalysis:
         return qcvalues, isiv
 
     def get_waveforms(self, num_chans: int) -> dict:
+        """function to generate raw waveforms from the data rather than just templates.
+        `nCh` is the number of channels for making the memory map. So a 64 channel probe
+        would put 64 in. It will request a directory if needed. Returns the wf data."""
         wf = getWaveForms(self.sp, nCh=num_chans)
         self.wf = wf
         return wf
 
     def plot_wfs(self, ind: bool) -> None:
+        """plot the raw waveforms. `ind` is True if ~500 waveforms are desired with mean
+        in the middle. If `ind` False it will only display the mean"""
         plotWaveforms(self.wf, Ind=ind)
 
     def acg(self, ref_dur: float) -> None:
+        """Autocorrelogram plots. It will display `ref_dur` as red lines in the figure.
+        This value indicates refractory period which should be somewhere in the range of
+        1-3 ms (0.001-0.003)"""
         plotACGs(self.sp, refract_time=ref_dur)
 
     def plot_pc(self) -> None:
+        """Plots top 2 pc spaces to give a rough idea of cluster separation. Not perfect
+        since these are many dimensional spaces, but is a good first pass"""
         plotPCs(self.sp)
 
     def plot_drift(self) -> None:
+        """Plots and marks potential instance of drift within the recording"""
         spike_depths, spike_amps, _ = getTempPos(self.sp)
         plotDriftmap(self.sp["spikeTimes"], spike_amps, spike_depths)
 
