@@ -62,6 +62,7 @@ def plotZscores(
         timeBinSize = time_bin_list[i]
         responsive_neurons[stim] = {}
         responsive_neurons_raw[stim] = {}
+        sub_label = labels[stim]
 
         """We create the len of our events to mark out events on the graph"""
         event_len: float = np.mean(eventTimes[eventLst[i]]["Lengths"]) / timeBinSize
@@ -263,7 +264,7 @@ def plotZscores(
                 )
 
                 if labels:
-                    trial_name = labels[str(trial)]
+                    trial_name = sub_label[str(trial)]
                 else:
                     trial_name = trial
 
