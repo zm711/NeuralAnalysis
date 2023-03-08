@@ -6,7 +6,7 @@ Created on Wed Jun 15 09:39:32 2022
 """
 
 import numpy as np
-from intan_helpers.stimulushelpers import spike_prep
+from .stimulushelpers import spike_prep
 import statistics
 
 """dig_stim_setup takes a nChxnSampl datat and a list of the channels (nCh) as 

@@ -47,11 +47,11 @@ import os
 
 import numpy as np
 
-from spsetup import loadsp
-from intan_helpers.stim_alignment import stim_alignment
-from intan_helpers.stimulushelpers import metadatafn, optoproc
-from intan_helpers.zmbin import binConvert
-from misc.genhelpers import getdir
+from ..analysis.spsetup import loadsp
+from ..intan_helpers.stim_alignment import stim_alignment
+from ..intan_helpers.stimulushelpers import metadatafn, optoproc
+from ..intan_helpers.zmbin import binConvert
+from ..misc_helpers.genhelpers import getdir
 
 """loadKS allows us to get sp and eventTimes for creating our class Basically we
 rerun the loadsp function each time in order to allow for any new phy curation

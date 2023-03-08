@@ -11,11 +11,11 @@ a large dictionary structure which is saved.
 
 """
 
-import intan_helpers.stimulus_setupzm as stim
+from . import stimulus_setupzm as stim
 import os
 import glob
 import numpy as np
-from misc.genhelpers import getdir, savefile, loadvalues
+from ..misc_helpers.genhelpers import getdir, savefile, loadvalues
 
 
 def stim_alignment(baro=False) -> dict:
