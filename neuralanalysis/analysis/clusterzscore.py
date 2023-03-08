@@ -5,7 +5,7 @@ Created on Fri Aug 12 09:59:19 2022
 @author: ZacharyMcKenzie
 """
 import numpy as np
-import analysis.psthfunctions as psthfn
+from . import psthfunctions as psthfn
 
 
 def clusterzscore(

@@ -36,7 +36,7 @@ import numpy as np
 import os
 import glob
 from collections import namedtuple
-from misc.genhelpers import getdir, savefile
+from .genhelpers import getdir, savefile
 
 
 def getWaveForms(

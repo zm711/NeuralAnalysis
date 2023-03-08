@@ -27,17 +27,17 @@ METHODS:
     plot_cdf: plots a pdf and cdf of spike info
 """
 
-from analysis.spsetup import loadsp
+from .analysis.spsetup import loadsp
 
-from qcfn.qcfns import maskedClusterQuality
-from qcfn.isiVqc import isiV
-from misc.getWaveForms import getWaveForms
+from .qcfn.qcfns import maskedClusterQuality
+from .qcfn.isiVqc import isiV
+from .misc_helpers.getWaveForms import getWaveForms
 
-from visualization_ca.plotWaveforms import plotWaveforms
-from visualization_ca.acg import plotACGs
-from visualization_ca.plottingPCs import plotPCs
-from visualization_ca.plotCDFs import makeCDF, getTempPos
-from visualization_ca.detectdrift import plotDriftmap
+from .visualization_ca.plotWaveforms import plotWaveforms
+from .visualization_ca.acg import plotACGs
+from .visualization_ca.plottingPCs import plotPCs
+from .visualization_ca.plotCDFs import makeCDF, getTempPos
+from .visualization_ca.detectdrift import plotDriftmap
 
 
 class SPAnalysis:

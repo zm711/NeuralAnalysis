@@ -6,8 +6,8 @@ Python Loading of Numpy Files
 """
 import numpy as np
 import os
-from misc.genhelpers import readCGSfile, savefile, getdir
-from intan_helpers.stimulushelpers import paramread
+from ..misc_helpers.genhelpers import readCGSfile, savefile, getdir
+from ..intan_helpers.stimulushelpers import paramread
 
 
 def loadsp() -> dict:

@@ -28,7 +28,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 from itertools import compress
-from visualization_ca.plot_z_settings import z_score_cutoff, raw_count, sorter_dict_adder
+from .plot_z_settings import z_score_cutoff, raw_count, sorter_dict_adder
 
 
 @sorter_dict_adder

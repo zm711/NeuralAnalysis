@@ -7,7 +7,7 @@ Created on Fri Jan 20 16:11:21 2023
 
 import numpy as np
 import pandas as pd
-from analysis.psthfunctions import psthAndBA
+from .psthfunctions import psthAndBA
 
 """wrapper for mergedClusterAnalysis which needs to iterate through sp_list and 
 event_list. needs same window_dict and timeBinSize"""

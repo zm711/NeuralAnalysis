@@ -27,7 +27,7 @@ contamination Rat
 import numpy as np
 from scipy.spatial.distance import cdist
 import os
-from misc.genhelpers import getdir, savefile, findindex
+from ..misc_helpers.genhelpers import getdir, savefile, findindex
 from numba import jit
 
 """ This is the initialization function. We pull in our PC features and then organize 

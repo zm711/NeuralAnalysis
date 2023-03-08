@@ -15,7 +15,7 @@ OUTPUTS: graphs of ACGs for each cluster in sp
 """
 
 import numpy as np
-from analysis.histdiff import histdiff
+from ..analysis.histdiff import histdiff
 import matplotlib.pyplot as plt
 import seaborn as sns
 

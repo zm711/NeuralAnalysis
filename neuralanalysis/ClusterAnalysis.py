@@ -25,9 +25,9 @@ import numpy as np
 import pandas as pd
 
 # general functions--glue for the class
-from misc.genhelpers import getFiles, loadPreviousAnalysis, getdir
-from misc.cap_conversion import cap_conversion
-from misc.label_generator import (
+from .misc_helpers.genhelpers import getFiles, loadPreviousAnalysis, getdir
+from .misc_helpers.cap_conversion import cap_conversion
+from .misc_helpers.label_generator import (
     labelGenerator,
     responseDF,
     genResp,
@@ -36,26 +36,26 @@ from misc.label_generator import (
 )
 
 # functions which calculate various metrics for the neural data
-import analysis.psthfunctions as psthfn
-from misc.getWaveForms import getWaveForms, getWaveFormVals
-from qcfn.qcfns import maskedClusterQuality
-from qcfn.isiVqc import isiV
-from analysis.clusterzscore import clusterzscore
-from analysis.firingratedf import firingRateWin
-from analysis.prevalence_calculator import prevalence_calculator
-from analysis.latency_calculator import latency_calculator
+from .analysis import psthfunctions as psthfn
+from .misc_helpers.getWaveForms import getWaveForms, getWaveFormVals
+from .qcfn.qcfns import maskedClusterQuality
+from .qcfn.isiVqc import isiV
+from .analysis.clusterzscore import clusterzscore
+from .analysis.firingratedf import firingRateWin
+from .analysis.prevalence_calculator import prevalence_calculator
+from .analysis.latency_calculator import latency_calculator
 
 # plotting functions
-from visualization_ca.psthviewer import plotPSTH
-from visualization_ca.acg import plotACGs
-from visualization_ca.plottingPCs import plotPCs
-from visualization_ca.plotFiringRate import plotFiringRate
-from visualization_ca.plotWaveforms import plotWaveforms
-from visualization_ca.plotZscores import plotZscores
-from visualization_ca.plotCDFs import makeCDF, getTempPos, plotDepthSpike
-from visualization_ca.neuronprevalence import plotmedLat
-from visualization_ca.detectdrift import plotDriftmap
-from visualization_ca.neurocorrs import neuronCorr
+from .visualization_ca.psthviewer import plotPSTH
+from .visualization_ca.acg import plotACGs
+from .visualization_ca.plottingPCs import plotPCs
+from .visualization_ca.plotFiringRate import plotFiringRate
+from .visualization_ca.plotWaveforms import plotWaveforms
+from .visualization_ca.plotZscores import plotZscores
+from .visualization_ca.plotCDFs import makeCDF, getTempPos, plotDepthSpike
+from .visualization_ca.neuronprevalence import plotmedLat
+from .visualization_ca.detectdrift import plotDriftmap
+from .visualization_ca.neurocorrs import neuronCorr
 
 
 class ClusterAnalysis:

@@ -8,7 +8,7 @@ Created on Tue Jan 24 12:56:12 2023
 
 from scipy import stats
 import numpy as np
-from analysis.psthfunctions import psthAndBA
+from .psthfunctions import psthAndBA
 
 
 def latency_calculator(
