@@ -1,4 +1,4 @@
-# ClusterAnalysis
+# NeuralAnalysis
 Pipeline for analyzing kilosort/phy data
 some functions based off of Nick Steinmetz's matlab code (qcfn, psthfns, psthviewer, isiv, loadsp), others are based on reading of the lit which I've tried to indicate in their functions as comments and here.
 
@@ -10,6 +10,8 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
 ```sh
  conda create -n neuralanalysis -c conda-forge python=3.10 spyder=5.3.3 numpy=1.23 pandas=1.5 scipy=1.10 matplotlib h5py=3.8 seaborn=0.12 scikit-learn cython=0.29 sympy=1.11 numba
  ```
+ **I'm going to great an environment `yaml` soon**
+ 
 ### Caching Functions
 The counting algorithms used by `psthfns` are sped up using jit and cached in the `__pycache__` folder for future use. Since they are the core of many functions this is a desired behavior. It can be turned off by looking for `@jit(nopython=True, cache=True)` and changing `cache` to `False`
 
@@ -38,7 +40,7 @@ The counting algorithms used by `psthfns` are sped up using jit and cached in th
  The class is initialized by the spike data `sp` and the stimuli data `eventTimes`.
  
  ```python
- from neuralanalysis import ClusterAnalysis
+ from neuralanalysis.ClusterAnalysis import ClusterAnalysis
  myNeuron = ClusterAnalysis(sp, eventTimes)
  ```
  **I will use myNeuron as the name for an instance of `ClusterAnalysis` for the rest of this doc**
@@ -46,13 +48,16 @@ The counting algorithms used by `psthfns` are sped up using jit and cached in th
  ## First methods
  
  ### Setting important recording values
- There are a few values beneficial for this type of analysis which cannot be predicted when loading the data. First trial groups are loaded as numeric values so likely for graphing it is necessary to map the numeric values to a stimulus value. This can be done with a dictionary. I turn the trial groups into strings so the keys for this dictionary should be strings of the values used in `trialGroup` portion of `eventTimes`
+ There are a few values beneficial for this type of analysis which cannot be predicted when loading the data. First trial groups are loaded as numeric values so likely for graphing it is necessary to map the numeric values to a stimulus value. This can be done with a nested-dictionary. I turn the trial groups into strings so the keys for this dictionary should be strings of the values used in `trialGroup` portion of `eventTimes`. The first set of keys are stimuli `Stim` and the values for each
+ `Stim` are a set of `key:value` pairs converting from numeric to stimulus name.
  
  ```python
- my_stim = {
+ my_stim = {'Stim':
+           {
             '1.0': '180 Degrees',
             ..., 
             '10.0': '270 Degrees'
+            }
             } 
  ```
  
@@ -333,7 +338,7 @@ Raw waveforms can be generated using the `get_waveforms` method call. It require
 
 ## Plotting Functions
 
-For images and explanations in depth of plotting see the `readme.md` in the `visualization_ca` folder. In shorter the following plotting can be used
+For images and explanations in depth of plotting see the `readme.md` in the `visualization_ca` folder. In short the following plotting can be used
 `plot_wfs`, `acg`, `plot_pc`, `plot_drift`, and `plot_cdf`.
 
 # MCA
