@@ -59,6 +59,13 @@ from .visualization_ca.neurocorrs import neuronCorr
 
 
 class ClusterAnalysis:
+    """ClusterAnalysis is a class which takes in `sp` spike properties data as well as
+    `eventTimes` the stimulus data. It deep copies these values so that there won't be
+    any accidental mutation. This is for one Phy set of files. Parameters are given with
+    reasonable defaults as well as some optional parameters to make faster reuse, but if
+    these optional parameters are not used, the user will be prompted with request for
+    the necessary values."""
+
     def __init__(self, sp: dict, eventTimes: dict):
         self.sp: dict = copy.deepcopy(sp)  # dict is mutable, so deep copy
         self.clu: np.array = sp["clu"].copy()
@@ -341,7 +348,7 @@ class ClusterAnalysis:
     rate and raster plots"""
 
     def spike_raster(self, time_bin_size=0.05) -> tuple[dict, list]:
-        if type(time_bin_size)==float:
+        if type(time_bin_size) == float:
             time_bin_size = [time_bin_size]
         psthvalues, window = psthfn.rasterPSTH(self.sp, self.eventTimes, time_bin_size)
         self.psthvalues: dict = psthvalues
