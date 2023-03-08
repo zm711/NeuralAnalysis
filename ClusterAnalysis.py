@@ -350,18 +350,17 @@ class ClusterAnalysis:
         return psthvalues, window
 
     """plot_spikes will generate a 2 figure plot with firing rate on top and 
-    raster on the bottom. `tg` is the trial group flag plots with `True` for
+    raster on the bottom. `labels` can either be None in which it will try to grab
+    the internal labels from `set_labels` or it can be False, in which case it won't
+    plot labels on the graph. `tg` is the trial group flag plots with `True` for
     separateing by trial groups. `eb` is the flag for including error shading
     for firing rate plot."""
 
-    def plot_spikes(self, labels=False, tg=True, eb=True) -> None:
+    def plot_spikes(self, labels=None, tg=True, eb=True) -> None:
         psthvalues = self.psthvalues
         eventTimes = self.eventTimes
         if labels is None:
             labels = self.labels
-        elif type(labels)==dict:
-            continue
-        
         plotPSTH(
             psthvalues,
             eventTimes,
