@@ -16,6 +16,12 @@ from .visualization_ca.psthviewer import plotPSTH
 
 
 class MCA(ClusterAnalysis):
+    """MCA is for assessing similar data sets across recordings to ensure that the same
+    function paramaters are used. It takes all the same methods and attributes as the
+    base `ClusterAnalysis` class, but has its own wrappers for working dataset by
+    dataset. It takes in an optionally number of `ClusterAnalysis` objects to be
+    initialized"""
+
     def __init__(self, *args: ClusterAnalysis):
         self.sp_list = list()
         self.event_list = list()
@@ -67,7 +73,11 @@ class MCA(ClusterAnalysis):
         final_methods = [method for method in methods if "__" not in method]
         return f"This is the analysis of {self.filename_list}.\n\nThe initialized variables are {var}\n\n The methods are {final_methods}"
 
-    def m_spike_raster(self, timeBinSize=0.05, tg=True, ebval=True):
+    def m_spike_raster(self, time_bin_size=0.05, tg=True, ebval=True):
+        """same as the standard spike_raster, but on multiple datasets and then with
+        final merging of datasets together. Requires a `time_bin_size` default 50 ms
+        as well as `tg` boolean to indicate split by trial groupings and then `ebval`
+        which will include error bar shading"""
         sp_list = self.sp_list
         event_list = self.event_list
         for idx in range(len(sp_list)):
@@ -78,7 +88,7 @@ class MCA(ClusterAnalysis):
             except IndexError:
                 label_cur = None
             psthvalues, window = psthfn.rasterPSTH(
-                sp_cur, eventTime_cur, timeBinSize=timeBinSize
+                sp_cur, eventTime_cur, timeBinSize=time_bin_size
             )
 
             plotPSTH(
@@ -103,7 +113,11 @@ class MCA(ClusterAnalysis):
         window_list,
         time_bin_size=0.05,
         tg=True,
-    ):
+    ) -> None:
+        """runs `clu_zscore` on multiple datasets. It can accept a `window_list` to
+        allow for faster calculations otherwise it will prompt the user for values.
+        `time_bin_size` as usual is set to default of 50 ms. `tg` is whether to analyze
+        by trial grouping"""
         if window_list is None:
             window_list = [[-30, 10], [-10, 30]]
         allP, normVal, hash_idx = clu_z_score_merged(
@@ -119,7 +133,10 @@ class MCA(ClusterAnalysis):
         self.eventTimes = self.event_list[0]
         self.zwindow = [window_list[1]]
 
-    def merge_datasets(self):
+    def merge_datasets(self) -> None:
+        """This function takes any of the waveform data, responsive neuron data or non
+        responsive neuron data and combines them into a pandas data frame with each unit
+        being given a unique identity"""
         if len(self.waveform_df) > 0:
             m_waveform_df = merge_df(*self.waveform_list)
             self.m_waveform_df = m_waveform_df
@@ -132,15 +149,3 @@ class MCA(ClusterAnalysis):
 
     def qcfn(self):
         return "qcfn not possible in merged dataset"
-
-    def subClu(self):
-        return "subClu not possible in merged dataset"
-
-    def revertClu(self):
-        return "revertClu not possible in merged dataset"
-
-    def cluZscore(self):
-        return "run mZscore instead for merged data"
-
-    def spikeRaster(self):
-        return "run mSpiRas instead for merged data"
