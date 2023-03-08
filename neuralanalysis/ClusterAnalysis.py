@@ -90,13 +90,11 @@ class ClusterAnalysis:
         final_methods = [method for method in methods if "__" not in method]
         return f"This is the analysis of {self.filename}.\n\nThe initialized variables are {var}\n\n The methods are {final_methods}"
 
-    """I have the code cache wf and qcvalues. These are computationally 
-    expensive calculations (RAM and CPU limited). So once we get these, they 
-    shouldn't really change so it is better to load the files rather than 
-    recalculate. I use a named tuple so if I decide to cache other files I can 
-    easily grab those be modifying the underlying getFiles functions."""
-
     def get_files(self, title="") -> None:
+        """this grabs all cached files (e.g. wf and qcvalues). it will also load a
+        previous analysis if geiven `title` and load some metrics from that previous
+        analysis."""
+
         metrics = getFiles(self.filename)
         if metrics.firingrate:
             self.firingrate = metrics.firingrate
@@ -132,13 +130,11 @@ class ClusterAnalysis:
         except:
             print("No previous ClusterAnalysis to pull values from")
 
-    """labels is dict with format {str(int): "what you want"}. For baro it 
-    works automatically based on 20mmHg/V. For other stimuli it must be entered
-    by hand.
-    It also allows to load laterality 'r' or 'l' for multi shank probes
-    Finally it also load in depth of the bottom of the probe"""
-
     def set_labels(self, labels: dict, depth=None, laterality=None) -> None:
+        """labels is dict with format {'Stim': {str(float): "what you want"}}. For baro
+        works automatically based on 20mmHg/V. For other stimuli it must be entered
+        by hand.It also allows to load laterality 'r' or 'l' for multi shank probes
+        Finally it also load in depth of the bottom of the probe"""
         if self.eventTimes.get("ADC1", False) or self.eventTimes.get("ADC1tot", False):
             self.labels = labelGenerator(self.eventTimes)
         else:
@@ -162,12 +158,11 @@ class ClusterAnalysis:
         self.eventTimes = eventTimes
         self.labels = labels
 
-    """This save allows us to keep track of the responsive_neurons by saving a 
-    copy of a previous ClusterAnalysis Class. I'm working on making this save 
-    better using dataframes to store values. May deprecate this along with 
-    loadPrev()"""
-
     def save_analysis(self, note=None, title="") -> None:
+        """This save allows us to keep track of the responsive_neurons by saving a
+        copy of a previous ClusterAnalysis Class. I'm working on making this save
+        better using dataframes to store values. May deprecate this along with
+        loadPrev()"""
         if note:
             self.note = note
         current_folder = os.path.abspath(os.getcwd())
@@ -226,23 +221,20 @@ class ClusterAnalysis:
             labels=labels,
         )
 
-    """getWaveForms will return the true waveforms (post phy curation) of, 
-    which can then be analyzed for various metrics. This is RAM-limited since 
-    it needs to load the whole binary file into memory. Please look at your RAM
-    amount and if binary bile of raw waveforms is > 60% of your RAM this 
-    function will likely fail to due to memeory limitations I have added some 
-    protections, but may still fail."""
-
     def get_waveforms(self, num_chans: int) -> None:
+        """`get_waveforms` will return the true waveforms (post phy curation),
+        which can then be analyzed for various metrics. This is RAM-limited since
+        it needs to load the whole binary file into memory. Please look at your RAM
+        amount and if binary bile of raw waveforms is > 60% of your RAM this
+        function will likely fail to due to memory limitations"""
         wf = getWaveForms(self.sp, nCh=num_chans)
         self.wf = wf
 
-    """ This will collect true waveform values, including the duration of the 
-    action potential in samples and seconds, the depth as averaged by waveform
-    amplitude (by pc feature space is another way to average, which I have not
-    implemented) and the amplitudes"""
-
     def waveform_vals(self) -> None:
+        """This will collect true waveform values, including the duration of the
+        action potential in samples and seconds, the depth as averaged by waveform
+        amplitude (by pc feature space is another way to average, which I have not
+        implemented) and the amplitudes"""
         self.max_waveform = None
         self.waveform_dur = None
         self.waveform_depth = None
@@ -260,11 +252,10 @@ class ClusterAnalysis:
         if wf_vals.shank_dict:
             self.shank_dict = wf_vals.shank_dict
 
-    """`plot_wfs` will plot the raw waveforms. If `Ind` = `True` it will 
-    display ~500 waveforms with the mean waveform in the middle. 
-    If `Ind` is `False` it will only display the mean waveform."""
-
     def plot_wfs(self, ind=True) -> None:
+        """`plot_wfs` will plot the raw waveforms. If `Ind` = `True` it will
+        display ~500 waveforms with the mean waveform in the middle.
+        If `Ind` is `False` it will only display the mean waveform."""
         plotWaveforms(self.wf, order="F", Ind=True)
 
     def gen_wfdf(self):
@@ -278,13 +269,12 @@ class ClusterAnalysis:
         )
         self.waveform_df = waveform_df
 
-    """qcfn will run the isolation distance of clusters. It will also run the 
-    interspike interval violation caluclation based on Dan Hill's paper. `isi` 
-    is the minimal interspike interval as suggested. the `ref_dur` is your 
-    hypothesized refractory period for your neurons currently set to 1.5 ms, 
-    but can be changed depending on neural population"""
-
     def qcfn(self, isi=0.0005, ref_dur=0.0015) -> tuple[dict, dict]:
+        """qcfn will run the isolation distance of clusters. It will also run the
+        interspike interval violation caluclation based on Dan Hill's paper. `isi`
+        is the minimal interspike interval as suggested. the `ref_dur` is your
+        hypothesized refractory period for your neurons currently set to 1.5 ms,
+        but can be changed depending on neural population"""
         unitQuality, contaminationRate, qcValues = maskedClusterQuality(self.sp)
         self.qc = qcValues
         isiv = isiV(self.sp, isi=isi, ref_dur=ref_dur)
@@ -292,18 +282,17 @@ class ClusterAnalysis:
         self.isiv = isiv
         return qcValues, isiv
 
-    """cluZscore will calculate the zscored firing rates of neurons. There are
-    two possible paramaters. timeBinSize which defaults to 10 ms, but can 
-    be changed to 50 or 100 ms if desired. `tg` is the parameter for whether 
-    to separate data by trial grouping. `False` means no sepearation by tg
-    whereas `True` indicates to keep data separated. I added a window command
-    which gives the user the option to enter a baseline window and a stimulus
-    window if they use the same windows for their stimuli. Format is
-    [[bslStart:float, bslStop:float], [stimStart:float, stimStop:float]]"""
-
     def clu_zscore(
         self, time_bin_size=0.05, tg=True, window=None
     ) -> tuple[dict, dict, list]:
+        """`clu_zscore` will calculate the zscored firing rates of neurons. There are
+        two possible paramaters. `time_bin_size` which defaults to 50 ms, but can
+        be changed to 10 or 100 ms if desired. `tg` is the parameter for whether
+        to separate data by trial grouping. `False` means no sepearation by tg
+        whereas `True` indicates to keep data separated. `window` is optional parameter
+        which gives the user the option to enter a baseline window and a stimulus
+        window if they use the same windows for their stimuli. Format is
+        [[bslStart:float, bslStop:float], [stimStart:float, stimStop:float]]"""
         if type(time_bin_size) == float:
             time_bin_size = [time_bin_size]
         allP, normVal, window = clusterzscore(
@@ -315,14 +304,11 @@ class ClusterAnalysis:
         self.zwindow: list = window
         return allP, normVal, window
 
-    """plot_z plots of Z score data from clu_zscore. `tg` is the trial group
-    flag. It automatically take time_bin_size self. Labels are what word
-    should be used for graphing the trial groups. If you haven't set labels or 
-    want to overide then labels should be a dict with the following format 
-    labels = {'value found in eventTimes': 'value you want to 
-                               be displayed as str'}"""
-
     def plot_z(self, labels=None, tg=True, time_point=0, plot=True) -> None:
+        """plot_z plots of Z score data from clu_zscore. `tg` is the trial group
+        flag. It automatically take time_bin_size self. Labels are what word
+        should be used for graphing the trial groups. If you haven't set labels or
+        want to overide then labels should be a nested dict"""
         if not labels:
             try:
                 labels = self.labels
@@ -344,10 +330,10 @@ class ClusterAnalysis:
         self.responsive_neurons = responsive_neurons
         self.raw_responsive_neurons = raw_responsive_neurons
 
-    """spike_raster calculates psthvalues which can be used to create firing 
-    rate and raster plots"""
-
     def spike_raster(self, time_bin_size=0.05) -> tuple[dict, list]:
+        """spike_raster calculates psthvalues which can be used to create firing
+        rate and raster plots. it takes in `time_bin_size` in seconds, ie the default
+        is 50 ms, but if using for raster plot 1 ms (0.001) is much better."""
         if type(time_bin_size) == float:
             time_bin_size = [time_bin_size]
         psthvalues, window = psthfn.rasterPSTH(self.sp, self.eventTimes, time_bin_size)
@@ -356,14 +342,13 @@ class ClusterAnalysis:
         self.raster_window: list = window
         return psthvalues, window
 
-    """plot_spikes will generate a 2 figure plot with firing rate on top and 
-    raster on the bottom. `labels` can either be None in which it will try to grab
-    the internal labels from `set_labels` or it can be False, in which case it won't
-    plot labels on the graph. `tg` is the trial group flag plots with `True` for
-    separateing by trial groups. `eb` is the flag for including error shading
-    for firing rate plot."""
-
     def plot_spikes(self, labels=None, tg=True, eb=True) -> None:
+        """plot_spikes will generate a 2 figure plot with firing rate on top and
+        raster on the bottom. `labels` can either be None in which it will try to grab
+        the internal labels from `set_labels` or it can be `False`, in which case it
+        won't plot labels on the graph. `tg` is the trial group flag plots with `True`
+        fo separating by trial groups. `eb` is the flag for including error shading
+        for firing rate plot."""
         psthvalues = self.psthvalues
         eventTimes = self.eventTimes
         if labels is None:
@@ -377,32 +362,31 @@ class ClusterAnalysis:
             raster_window=self.raster_window,
         )
 
-    """This function plots ACG for each cluster. `ref_per` is the refractory
-    period you want displayed on each graph. Default is 2ms"""
-
     def acg(self, ref_per=0.002) -> None:
+        """This function plots ACG (autocorrelograms) for each cluster. `ref_per`
+        is the refractory period to be displayed on each graph. Default is 2ms, but
+        range could reasonably 1-3 ms (0.001-0.003)"""
         plotACGs(self.sp, refract_time=ref_per)
 
-    """plot_pc plots only based on top two PCs. It will check for four pcs if 
-    they exist and then after some math--see function for what is  happening--
-    returns top two. Red is this cluster and black is spikes from other 
-    clusters."""
-
     def plot_pc(self) -> None:
+        """plot_pc plots only based on top two PCs. It will check for four pcs if
+        they exist and then after some math--see function for what is  happening--
+        returns top two. Red is this cluster and black is spikes from other
+        clusters."""
         plotPCs(self.sp, nPCsPerChan=4, nPCchans=15)
-
-    """This function takes in sp and eventTimes along with a datatype flag. The
-    options for this flag are to be `frraw` which indicates the raw firing rate
-    calculated from the psth functions. The `frbsl` flag takes a baseline as 
-    request from the user within the function. Finally the `frsm` flag will 
-    perform a smoothing operation again the smoothing factor will be requested 
-    from the user during the function call. `time_bin_size` allows for setting
-    time scale. `tg` flag for trial groups and labels is the normal label dict.
-    """
 
     def neuro_corr(
         self, datatype="frraw", time_bin_size=0.05, tg=False, labels=None
     ) -> None:
+        """This function takes in sp and eventTimes along with a datatype flag. The
+        options for this flag are to be `frraw` which indicates the raw firing rate
+        calculated from the psth functions. The `frbsl` flag takes a baseline as
+        request from the user within the function. Finally the `frsm` flag will
+        perform a smoothing operation again the Gaussian smoothing factor will be
+        requested from the user during the function call. `time_bin_size` allows for
+        setting time scale (50ms default). `tg` flag for trial groups and labels is the
+        normal label dict.
+        """
         if not labels:
             try:
                 labels = self.labels
@@ -421,6 +405,10 @@ class ClusterAnalysis:
         )
 
     def latency(self, time_bin_size: float, bsl_win: list, event_win: list) -> dict:
+        """calculates latency based on Chase 2007 and Mormann 2012. See function for
+        full stats. Requires `time_bin_size` as time in seconds, `bsl_win` which is the
+        window to look for the baseline in seconds [start, end], and an `event_win`
+        which is the same, but for the stimulus time [start, end]"""
         latency_values = latency_calculator(
             self.sp,
             self.eventTimes,
@@ -430,28 +418,26 @@ class ClusterAnalysis:
         )
         self.latency_vals = latency_values
 
-    """plots cdf and pdf of spike depth by spike amplitude by firing rate. 
-    Requires depth of neurons. `unit_only` will label only `good units`. 
-    `laterality` is for multishank probes"""
-
     def plot_cdf(self, unit_only=False, laterality=False) -> None:
+        """plots cdf and pdf of spike depth by spike amplitude by firing rate.
+        Requires depth of neurons. `unit_only` will label only `good units`.
+        `laterality` is for multishank probes"""
+
         depth = self.depth
         sp = self.sp
         makeCDF(sp, depth, units_only=unit_only, laterality=laterality)
 
-    """Creates a drift map which marks out spikes of drift in red. Grayscale 
-    indicates the amplitude of spikes."""
-
     def plot_drift(self) -> None:
+        """Creates a drift map which marks out spikes of drift in red. Grayscale
+        indicates the amplitude of spikes."""
         depth = self.depth
         spike_depths, spike_amps, _ = getTempPos(self.sp, depth)
         spike_times = self.spikeTimes
         plotDriftmap(spike_times, spike_amps, spike_depths)
 
-    """plot_prevalence returns number of lateral and medial neurons for multi-
-    shank recordings"""
-
     def plot_medlat_prevalence(self) -> None:
+        """plot_prevalence returns number of lateral and medial neurons for multi-
+        shank recordings"""
         med_neuron, lat_neuron = plotmedLat(self.sp, self.wf, self.shank_dict)
         self.med_count = med_neuron
         self.lat_count = lat_neuron
@@ -462,10 +448,9 @@ class ClusterAnalysis:
         waveform_depths = self.waveform_depth
         plotDepthSpike(sp, wf, waveform_depths, units_marked=mark_units)
 
-    """takes the responsive_neurons dictionary from plot_z and converts to a 
-    pd.DataFrame"""
-
     def gen_respdf(self, qcthres: float, isi=None) -> None:
+        """takes the responsive_neurons dictionary from plot_z and converts to a
+        pd.DataFrame"""
         try:
             isiv = self.isiv
         except AttributeError:
