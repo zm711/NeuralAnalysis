@@ -354,13 +354,14 @@ class ClusterAnalysis:
     separateing by trial groups. `eb` is the flag for including error shading
     for firing rate plot."""
 
-    def plot_spikes(self, tg=True, eb=True) -> None:
+    def plot_spikes(self, labels=False, tg=True, eb=True) -> None:
         psthvalues = self.psthvalues
         eventTimes = self.eventTimes
-        try:
+        if labels is None:
             labels = self.labels
-        except AttributeError:
-            labels = None
+        elif type(labels)==dict:
+            continue
+        
         plotPSTH(
             psthvalues,
             eventTimes,
