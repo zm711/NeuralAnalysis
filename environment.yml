@@ -1,0 +1,14 @@
+name: na_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python 3.10
+  - numpy=1.23
+  - pandas
+  - scipy
+  - matplotlib
+  - h5py
+  - seaborn
+  - scikit-learn
+  - numba
