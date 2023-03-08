@@ -38,7 +38,7 @@ The counting algorithms used by `psthfns` are sped up using jit and cached in th
  The class is initialized by the spike data `sp` and the stimuli data `eventTimes`.
  
  ```python
- from ClusterAnalysis import ClusterAnalysis
+ from neuralanalysis import ClusterAnalysis
  myNeuron = ClusterAnalysis(sp, eventTimes)
  ```
  **I will use myNeuron as the name for an instance of `ClusterAnalysis` for the rest of this doc**
