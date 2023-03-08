@@ -1,7 +1,7 @@
 import numpy as np
-from ClusterAnalysis import ClusterAnalysis
-from analysis.histdiff import histdiff
-from analysis.psthfunctions import time_stamps_to_bins
+from neuralanalysis.ClusterAnalysis import ClusterAnalysis
+from neuralanalysis.analysis.histdiff import histdiff
+from neuralanalysis.analysis.psthfunctions import time_stamps_to_bins
 
 def test():
     
