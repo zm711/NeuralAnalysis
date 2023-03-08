@@ -208,11 +208,12 @@ def plotPSTH(
                     ax1.set(ylim=(0, np.max(psthSm) + 1))
 
                 if labels:  # if we have appropriate labels for the figure then add them
+                    sub_label = labels[stim]
                     legend_list = list()
-                    keys_list = sorted([float(key) for key in labels.keys()])
+                    keys_list = sorted([float(key) for key in sub_label.keys()])
                     keys_list_str = [str(item) for item in keys_list]
                     for key in keys_list_str:
-                        legend_list.append(labels[key])
+                        legend_list.append(sub_label[key])
 
                     ax1.legend(all_plots, legend_list)
 
