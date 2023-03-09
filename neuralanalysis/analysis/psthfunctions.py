@@ -112,7 +112,7 @@ of all our stimuli with all events and their lengths. timeBinSize will be binsiz
 seconds"""
 
 
-def rasterPSTH(sp: dict, eventTimes: dict, time_bins: list) -> tuple[dict, list]:
+def rasterPSTH(sp: dict, eventTimes: dict, time_bins: list,window_list: list) -> tuple[dict, list]:
     spikeTimes = np.squeeze(sp["spikeTimes"])
     clu = np.squeeze(sp["clu"])
     clusterIDs = list(sp["cids"])
@@ -125,14 +125,19 @@ def rasterPSTH(sp: dict, eventTimes: dict, time_bins: list) -> tuple[dict, list]
             continue
         else:
             psthvalues[eventTimes[stim]["Stim"]] = {}
-            windowIn = input(
-                "Enter stimulus window to be analyzed for each event in format x.y for stimulus {stim}".format(
-                    stim=eventTimes[stim]["Stim"]
+            if window_list:
+                sub_window = window_list[index]
+                window = [float(sub_window[0]), float(sub_window[1])]
+                windowlst.append(window)
+            else:
+                windowIn = input(
+                    "Enter stimulus window to be analyzed for each event in format x.y for stimulus {stim}".format(
+                        stim=eventTimes[stim]["Stim"]
+                    )
                 )
-            )
-            windowStr = windowIn.split(",")
-            window = [float(windowStr[0]), float(windowStr[-1])]
-            windowlst.append(window)
+                windowStr = windowIn.split(",")
+                window = [float(windowStr[0]), float(windowStr[-1])]
+                windowlst.append(window)
             eventTimesOnset = eventTimes[stim]["EventTime"]
             # psthvalues[eventTimes[stim]['Stim']]['Window'] = window[-1]-window[0]
             time_bin_size = time_bins[index]

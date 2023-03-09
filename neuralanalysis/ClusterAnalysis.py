@@ -330,13 +330,13 @@ class ClusterAnalysis:
         self.responsive_neurons = responsive_neurons
         self.raw_responsive_neurons = raw_responsive_neurons
 
-    def spike_raster(self, time_bin_size=0.05) -> tuple[dict, list]:
+    def spike_raster(self, time_bin_size=0.05, window_list=None) -> tuple[dict, list]:
         """spike_raster calculates psthvalues which can be used to create firing
         rate and raster plots. it takes in `time_bin_size` in seconds, ie the default
         is 50 ms, but if using for raster plot 1 ms (0.001) is much better."""
         if type(time_bin_size) == float:
             time_bin_size = [time_bin_size]
-        psthvalues, window = psthfn.rasterPSTH(self.sp, self.eventTimes, time_bin_size)
+        psthvalues, window = psthfn.rasterPSTH(self.sp, self.eventTimes, time_bin_size,window_list)
         self.psthvalues: dict = psthvalues
         self.time_bin: float = time_bin_size
         self.raster_window: list = window
