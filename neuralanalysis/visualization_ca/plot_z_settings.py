@@ -20,28 +20,25 @@ for raw_count you need to give an actual count. So in the else portion of the lo
 says you need a minimum of at least 75 spikes to count.
 """
 
-import os
+
+import yaml
 
 """change inhib, sustained, onset, offset with notes from above here."""
+
+
 def z_score_cutoff(func):
     def cut_off(*args, **kwargs):
+        with open("na_settings.yaml") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        zscore = config[0]
+        new_func = func(
+            *args,
+            inhib=zscore["inhib"],
+            sustained=zscore["sustained"],
+            onset=zscore["onset"],
+            offset=zscore["offset"]
+        )
 
-        if "zach" in os.getcwd().lower():
-            new_func = func(
-                *args, inhib=[-2, 3], sustained=[3.3, 5], onset=[4, 3], offset=[2.5, 3]
-            )
-        elif "charl" in os.getcwd().lower():
-            new_func = func(
-                *args, inhib=[-2, 3], sustained=[1.5, 10], onset=[3, 3], offset=[2.5, 3]
-            )
-        elif "lyub" in os.getcwd().lower():
-            new_func = func(
-                *args, inhib=[-2, 3], sustained=[3.1, 10], onset=[3, 3], offset=[2.5, 3]
-            )
-        else:
-            new_func = func(
-                *args, inhib=[-2, 3], sustained=[3.4, 10], onset=[3, 3], offset=[2.5, 3]
-            )
         return new_func
 
     return cut_off
@@ -49,37 +46,30 @@ def z_score_cutoff(func):
 
 def raw_count(func):
     def cut_off_raw(*args, **kwargs):
-        if "zach" in os.getcwd().lower():
-            new_func = func(*args, sustained=75)
-        elif "charl" in os.getcwd().lower():
-            new_func = func(*args, sustained=75)
-        elif "lyub" in os.getcwd().lower():
-            new_func = func(*args, sustained=75)
-        else:
-            new_func = func(*args, sustained=75)
+        with open("na_settings.aml") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        raw = config[1]
+
+        new_func = func(*args, sustained=raw["sustained"])
+
         return new_func
 
     return cut_off_raw
 
+
 """change me to change the time bins observed for determining
 responsiveness see if "charl" example for set-up. Change
 values in sorter_dict"""
+
+
 def sorter_dict_adder(func):
     def dict_adder(*args, **kwargs):
-        if "charl" in os.getcwd().lower():
-            new_func = func(
-                *args,
-                sorter_dict={
-                    "Sustained": [50, 100],
-                    "Onset": [50, 65],
-                    "Onset-Offset": [50, 65, 90, 110],
-                    "Relief": [100, 150],
-                    "Inhib": [50, 67],
-                },
-                **kwargs
-            )
-        else:
-            new_func = func(*args, sorter_dict=None, **kwargs)
+        with open("na_settings.yaml") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        sorter_dict = config[3]
+
+        new_func = func(*args, sorter_dict=sorter_dict, **kwargs)
+
         return new_func
 
     return dict_adder
