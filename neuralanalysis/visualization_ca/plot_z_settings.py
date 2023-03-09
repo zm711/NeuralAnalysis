@@ -22,15 +22,49 @@ says you need a minimum of at least 75 spikes to count.
 
 
 import yaml
+from pathlib import Path
 
 """change inhib, sustained, onset, offset with notes from above here."""
 
 
+def create_defaults():
+    config_file = Path("./na_settings.yaml")
+
+    if config_file.is_file():
+        pass
+    else:
+        defaults = [
+            {
+                "zscore": {
+                    "inhib": [-2, 3],
+                    "sustained": [3.3, 5],
+                    "onset": [4, 3],
+                    "offset": [2.5, 3],
+                }
+            },
+            {"raw": {"sustained": [75]}},
+            {
+                "sorter_dict": {
+                    "Sustained": [50, 100],
+                    "Onset": [50, 65],
+                    "Onset-Offset": [50, 65, 90, 110],
+                    "Relief": [100, 150],
+                    "Inhib": [50, 67],
+                }
+            },
+        ]
+
+        with open("na_settings.yaml", "w") as f:
+            yaml.dump(defaults, f)
+
+
 def z_score_cutoff(func):
     def cut_off(*args, **kwargs):
+        create_defaults()
         with open("na_settings.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        zscore = config[0]
+        zscore = config[0]["zscore"]
+
         new_func = func(
             *args,
             inhib=zscore["inhib"],
@@ -46,11 +80,12 @@ def z_score_cutoff(func):
 
 def raw_count(func):
     def cut_off_raw(*args, **kwargs):
-        with open("na_settings.aml") as f:
+        create_defaults()
+        with open("na_settings.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        raw = config[1]
+        raw = config[1]["raw"]
 
-        new_func = func(*args, sustained=raw["sustained"])
+        new_func = func(*args, sustained=raw["sustained"][0])
 
         return new_func
 
@@ -64,9 +99,10 @@ values in sorter_dict"""
 
 def sorter_dict_adder(func):
     def dict_adder(*args, **kwargs):
+        create_defaults()
         with open("na_settings.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-        sorter_dict = config[3]
+        sorter_dict = config[2]["sorter_dict"]
 
         new_func = func(*args, sorter_dict=sorter_dict, **kwargs)
 
