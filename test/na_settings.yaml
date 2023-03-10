@@ -1,0 +1,34 @@
+- zscore:
+    inhib:
+    - -2
+    - 3
+    offset:
+    - 2.5
+    - 3
+    onset:
+    - 4
+    - 3
+    sustained:
+    - 3.3
+    - 5
+- raw:
+    sustained:
+    - 75
+- sorter_dict:
+    Inhib:
+    - 50
+    - 67
+    Onset:
+    - 50
+    - 65
+    Onset-Offset:
+    - 50
+    - 65
+    - 90
+    - 110
+    Relief:
+    - 100
+    - 150
+    Sustained:
+    - 50
+    - 100
