@@ -111,7 +111,7 @@ class MCA(ClusterAnalysis):
     def m_zscore(
         self,
         window_list,
-        time_bin_size=0.05,
+        time_bin_list=[0.05],
         tg=True,
     ) -> None:
         """runs `clu_zscore` on multiple datasets. It can accept a `window_list` to
@@ -123,13 +123,14 @@ class MCA(ClusterAnalysis):
         allP, normVal, hash_idx = clu_z_score_merged(
             self.sp_list,
             self.event_list,
-            time_bin_size=time_bin_size,
+            time_bin_list=time_bin_list,
             window_list=window_list,
             tg=tg,
+            label_list=self.label_list,
         )
         self.allP = allP
         self.normVal = normVal
-        self.timeBin = time_bin_size
+        self.timeBin = time_bin_list
         self.eventTimes = self.event_list[0]
         self.zwindow = [window_list[1]]
 
