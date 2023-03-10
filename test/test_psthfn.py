@@ -10,6 +10,7 @@ import numpy as np
 from numpy.random import RandomState
 import numpy.testing
 from neuralanalysis.analysis import psthfunctions as psfn
+from test.test_clusterAnalysis import gen_data
 
 
 def test_histdiff():
@@ -62,3 +63,28 @@ def test_rasterize():
     assert yy[0, 1] == 1
     assert xx[0, 0] == xx[0, 1]
     assert np.isnan(xx[0, 2])
+
+
+def test_psthAndBA():
+    sp, eventTimes = gen_data(1234567890)
+    spike_times = sp["spikeTimes"]
+    clu = sp["clu"]
+    events = eventTimes["DIG1"]["EventTime"]
+
+    psth, bins, raster_x, raster_y, spike_counts, binned_array = psfn.psthAndBA(
+        spike_times[clu == 0], event_times=events, window=[0, 10], psthBinSize=0.05
+    )
+
+    assert np.shape(psth) == (200,)
+    assert psth[26] == 2
+    assert psth[0] == 0
+
+    assert bins[0] == 0.025
+    assert np.shape(bins) == np.shape(psth)
+
+    assert np.shape(raster_x) == np.shape(raster_y)
+
+    numpy.testing.assert_array_equal(
+        spike_counts, np.array([1.0, 0, 1, 0, 0, 1, 1, 2, 0, 0])
+    )
+    assert np.shape(binned_array) == (10, 200)
