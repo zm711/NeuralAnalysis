@@ -19,3 +19,15 @@
  
  #### Intan_helpers Folder
  Includes functions to run intan data automatically along with my functions for prepping the stimulus data from the `.rhd` file. To generate an appropriate `eventTimes` for the class reading through these functions will be key. For the most up to date intan functions they offer their functions as a zip file although *if downloading from their website* I changed the import structure to fit with my pipeline (ie from intan_helpers.file import function)
+ 
+## Importing
+
+neuralanalysis can be imported by submodule or overall
+```python
+from neuralanalysis.ClusterAnalysis import ClusterAnalysis
+```
+or, 
+
+```python
+import neuralanalysis.full as na
+```
