@@ -39,12 +39,11 @@ def plotZscores(
     window: list[list[float, float]],
     time_bin_list: list,
     tg: bool,
-    sorter_dict=None,
+    sorter_dict: dict,
     labels=None,
     time_point=0,
     plot=True,
 ) -> tuple[dict, dict]:
-
     eventLst = (
         list()
     )  # need to create a list of the stim since allP only stores stim name not Intan channel
@@ -55,7 +54,7 @@ def plotZscores(
     responsive_neurons_raw = {}
 
     """First we iterate over each stimulus and generate a sub zscore in allP_sub"""
-    for (i, stim) in enumerate(allP.keys()):
+    for i, stim in enumerate(allP.keys()):
         curr_window: list = window[i]
         allP_sub: np.array = allP[stim]
         normVal_sub: np.array = normVal[stim]
@@ -106,19 +105,21 @@ def plotZscores(
         final_raw = list()
         raw_spikes_list = list()
 
-        if sorter_dict is None:
-            sorter_dict = {
-                "sustained": [zero_point, event_len],
-                "relief": [event_len, len(time_bins)],
-                "onset": [zero_point, zero_point + time_point],
-                "onset-offset": [
-                    zero_point,
-                    zero_point + time_point,
-                    event_len - time_point,
-                    event_len + time_point,
-                ],
-                "inhib": [zero_point, zero_point + time_point],
-            }
+        # =============================================================================
+        #         if sorter_dict is None:
+        #             sorter_dict = {
+        #                 "sustained": [zero_point, event_len],
+        #                 "relief": [event_len, len(time_bins)],
+        #                 "onset": [zero_point, zero_point + time_point],
+        #                 "onset-offset": [
+        #                     zero_point,
+        #                     zero_point + time_point,
+        #                     event_len - time_point,
+        #                     event_len + time_point,
+        #                 ],
+        #                 "inhib": [zero_point, zero_point + time_point],
+        #             }
+        # =============================================================================
 
         if tg == False:  # if we didn't separate by trial groups
             to_keep = list(
@@ -133,7 +134,7 @@ def plotZscores(
             and zscore value, so I create duplicate values so that the nClu becomes nClu x ntimebin
             structure"""
 
-            for (idx, i) in enumerate(to_keep):
+            for idx, i in enumerate(to_keep):
                 final_time_bins += time_bins
                 final_to_keep += len(time_bins) * [i]
                 zscore_final += list(allP_subKeep[idx, :])
@@ -157,7 +158,7 @@ def plotZscores(
             """we also need to account for neurons which are low baseline activity 
             which only respond to the stimulus. These neurons are not z-scoreable since
             their mean and std = 0 . So we take raw spike counts/sec only. """
-            for (idy, spike) in enumerate(raw_spikes):
+            for idy, spike in enumerate(raw_spikes):
                 final_raw_time_bins += time_bins
                 final_raw += len(time_bins) * [spike]
                 raw_spikes_list += list(allP_raw_spikes[idy, :])
@@ -207,8 +208,9 @@ def plotZscores(
                 )
 
         else:  # if we do have trial group separated out
-
-            trialGroups = np.array(list(eventTimes[eventLst[i]]["TrialGroup"]),dtype=np.float64)
+            trialGroups = np.array(
+                list(eventTimes[eventLst[i]]["TrialGroup"]), dtype=np.float64
+            )
             tgs = sorted(list(set(trialGroups)))  # need the set of trial groups
 
             """As above we need to generate a dataframe with rows = to nClu x ntimeBins for
@@ -235,7 +237,7 @@ def plotZscores(
                 responsive_neurons[stim][trial] = {}
                 responsive_neurons_raw[stim][trial] = {}
 
-                for (idx, i) in enumerate(to_keep):
+                for idx, i in enumerate(to_keep):
                     final_time_bins += time_bins
                     final_to_keep += len(time_bins) * [i]
                     zscore_final += list(allP_sub_toKeep[idx, :])
@@ -248,7 +250,7 @@ def plotZscores(
                     }
                 )
 
-                for (idy, spike) in enumerate(raw_spikes):
+                for idy, spike in enumerate(raw_spikes):
                     final_raw_time_bins += time_bins
                     final_raw += len(time_bins) * [spike]
                     if len(np.shape(allP_sub_raw)) > 1:
@@ -350,7 +352,6 @@ def plotZscoreCore(
     sorter: str,
     trial=False,
 ) -> None:
-
     """So I set by highest Z score sum ocurring within the stimulus time
     `ie` between zero_point and event_len. Then we argsort the negative
     values to get the descending id's of clusters. finally we create our
@@ -456,7 +457,6 @@ def responsive_neurons_calculator(
     time_bin_size: float,
     **kwargs,
 ) -> dict:
-
     for key, value in kwargs.items():
         if key == "inhib":
             inhib = value[0]
@@ -492,8 +492,7 @@ def responsive_neurons_calculator(
     responsive_neurons = {}
 
     for sorter in sorter_dict.keys():
-
-        responsive_neurons[sorter] = list()
+        # responsive_neurons[sorter] = list()
         event_window = sorter_dict[sorter]
         sorter = sorter.lower()
         if len(event_window) == 4:  # this indicates onset-offset only
@@ -523,7 +522,7 @@ def responsive_neurons_calculator(
                     z_sorter.max(axis=1) > 3,
                 )
             )
-        elif sorter == "onoff":
+        elif sorter == "onset-offset":
             resp_neurons = list(
                 np.logical_and(
                     z_sorter1[z_sorter1 > onset].count(axis=1) > onset_len,
@@ -546,9 +545,7 @@ def responsive_neuron_calculator_nonz(
     time_bin_size: float,
     **kwargs,
 ) -> dict:
-
     for key, value in kwargs.items():
-
         if key == "sustained":
             sust = value
 
@@ -557,8 +554,7 @@ def responsive_neuron_calculator_nonz(
 
     responsive_neurons = {}
     for sorter in sorter_dict.keys():
-
-        responsive_neurons[sorter] = list()
+        # responsive_neurons[sorter] = list()
         event_window = sorter_dict[sorter]
         sorter = sorter.lower()
         if len(event_window) == 4:  # this indicates onset-offset only
