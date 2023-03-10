@@ -21,11 +21,11 @@ def clusterzscore(
     clu = np.squeeze(sp["clu"])
     clusterIDs = list(sp["cids"])
     windowlst = list()
-    
-    if len(eventTimes.keys()) >1 and len(time_bins)==1:
+
+    if len(eventTimes.keys()) > 1 and len(time_bins) == 1:
         time_bins *= len(eventTimes.keys())
-    
-    for (index, stim) in enumerate(eventTimes.keys()):
+
+    for index, stim in enumerate(eventTimes.keys()):
         if len(eventTimes[stim]["EventTime"]) == 0:
             continue
         else:
@@ -52,7 +52,7 @@ def clusterzscore(
             normVal[eventTimes[stim]["Stim"]] = {}
             eventTimesOnset: np.array = eventTimes[stim]["EventTime"]
             bslEventTime: np.array = eventTimesOnset
-                
+
             timeBinSize = time_bins[index]
             if tg == False:
                 suballP = np.empty(
@@ -172,7 +172,7 @@ def clusterzscore(
 def clu_z_score_merged(
     sp_list: list[dict],
     event_list: list[dict],
-    time_bin_size: float,
+    time_bin_list: list,
     window_list: list[list[float, float], list[float, float]],
     tg: bool,
     label_list: list,
@@ -193,7 +193,7 @@ def clu_z_score_merged(
         allP, normVal, _ = clusterzscore(
             sp=curr_sp,
             eventTimes=curr_eventTimes,
-            timeBinSize=time_bin_size,
+            time_bins=time_bin_list,
             tg=tg,
             window_list=window_list,
         )
@@ -203,27 +203,52 @@ def clu_z_score_merged(
         for stim in allP.keys():
             sub_allP = allP[stim]
             sub_normVal = normVal[stim]
+            curr_label = curr_label[stim]
 
             if idx == 0:
                 final_allP[stim] = sub_allP
                 final_normVal[stim] = sub_normVal
                 file_ids = curr_file_hash
+                final_trialgroups = list(curr_label.keys())
             else:
                 n_trial = np.shape(final_allP[stim])[1]
 
                 if np.shape(sub_allP)[1] != n_trial:
-                    past_labels = label_list[idx - 1]
-                    missing_groups = [
-                        int(key)
-                        for key, value in past_labels.items()
-                        if value not in list(curr_label.values())
+                    missing_groups_bool = [
+                        True if key not in list(curr_label.keys()) else False
+                        for key in final_trialgroups
                     ]
-                    missing_index = np.array([int(key) for key in past_labels.keys()])[
-                        missing_groups
-                    ]
+                    missing_groups = np.array(final_trialgroups)[missing_groups_bool]
+                    missing_index = [int(float(value)) for value in missing_groups]
                     for index in missing_index:
-                        np.insert(sub_allP, index, np.nan, axis=1)
-                        np.insert(sub_normVal, index, np.nan, axis=1)
+                        if index < np.shape(sub_allP)[1]:
+                            np.insert(sub_allP, index, np.nan, axis=1)
+                            np.insert(sub_normVal, index, np.nan, axis=1)
+                        else:
+                            sub_allP = np.append(
+                                sub_allP,
+                                np.zeros(
+                                    (
+                                        np.shape(sub_allP)[0],
+                                        1,
+                                        np.shape(sub_allP)[2],
+                                    )
+                                ),
+                                axis=1,
+                            )
+                            sub_normVal = np.append(
+                                sub_normVal,
+                                np.zeros(
+                                    (
+                                        np.shape(sub_normVal)[0],
+                                        1,
+                                        np.shape(sub_normVal)[2],
+                                    )
+                                ),
+                                axis=1,
+                            )
+                            sub_allP[:, index - 1, :] = np.nan
+                            sub_normVal[:, index - 1, :] = np.nan
                 final_allP[stim] = np.vstack((final_allP[stim], sub_allP))
                 final_normVal[stim] = np.vstack((final_normVal[stim], sub_normVal))
                 file_ids = np.append(file_ids, curr_file_hash)
