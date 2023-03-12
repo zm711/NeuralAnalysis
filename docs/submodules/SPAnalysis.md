@@ -15,7 +15,14 @@ myNeuron.wf = copy.deepcopy(wf)
 A file path can optionally be given otherwise the `SPAnalysis` class can be initialized with no inputs:
 
 ```python
+from neuralanlaysis.SPAnalysis() import SPanalysis
 spikes = SPAnalysis()
+```
+
+or
+```python
+import neuralanalysis.full as na
+spikes = na.SPAnalysis()
 ```
 
 To load the `sp` dictionary into an instance of the class the `loadsp` method can be called.
@@ -23,6 +30,7 @@ To load the `sp` dictionary into an instance of the class the `loadsp` method ca
 ```python
 sp = spikes.loadsp()
 ```
+
 ## QC
 
 The same `qcfn` is available. It will store and return `qcvalues` in `self.qc` as well as `isiv` in `isiv`. `isi` is the minimum interspike interval of the neurons and the `ref_dur` is the refractory period as above. 
@@ -32,9 +40,9 @@ qcvalues, isiv = spikes.qcfn()
 
 ## Waveforms
 
-Raw waveforms can be generated using the `get_waveforms` method call. It requires `num_chans` as above (see explanation above).
+Raw waveforms can be generated using the `get_waveforms` method call. It requires `num_chans` as in `ClusterAnalysis` documentation.
 
 ## Plotting Functions
 
-For images and explanations in depth of plotting see the `readme.md` in the `visualization_ca` folder. In short the following plotting can be used
+For images and explanations in depth of plotting see the `plotting.md` module documentation. In short the following plotting can be used
 `plot_wfs`, `acg`, `plot_pc`, `plot_drift`, and `plot_cdf`.
