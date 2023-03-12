@@ -25,23 +25,23 @@
             } 
  ```
  
-In addition the depth of the probe if measured can be factored into the analysis (500 um or 1000 um). If depth is included then all graphing and outputs will be relative to this probe measure. (*e.g.* a probe inserted 1000um registering a spike at 400um would mean that relative to the insertion into the tissue is 600um deep, +/- measurement error etc). Finally since most of the nervous system is bilateral indicating whether the recording was done on the 'l' or 'r' may be useful. So running the `set_labels` methods of `ClusterAnalysis` allows for inputting these values.
+In addition the depth of the probe if measured can be factored into the analysis (*e.g.* 500 um or 1000 um). If depth is included then all graphing and outputs will be relative to this probe measure. (*e.g.* a probe inserted 1000um registering a spike at 400um would mean that relative to the insertion into the tissue the spike is 600um deep, +/- measurement error etc). Finally since most of the nervous system is bilateral indicating whether the recording was done on the 'l' or 'r' may be useful. So running the `set_labels` methods of `ClusterAnalysis` allows for inputting these values. *In addition I am working on a universal way to determine shank id based on the weighted density of the spike amplitudes, (less accurate, but faster)*.
  
  ```python
- myNeuron.set_labels(labels = my_stim, depth = 1000, laterality='l')
+ myNeuron.set_labels(labels=my_stim, depth = 1000, laterality='l')
  ```
  
  ### Generating raw waveform data
- Raw waveform data as opposed to the templates from phy can be beneficial for assessing peak-trough duration, amplitude etc. We can load this data from the `.bin` file that had been generated for kilosort based on our post-curation neural data. Of note this is a slow, RAM hungry process that performs a memory map of the binary file. It may need to be done on a server or a high-RAM workstation (For 20 gb bin I often see usage of 60-70gb of RAM). Since Kilosort is written in Matlab, the function also assumes that the `.bin` file was generated in Matlab, which will be Fortran ordered rather than the NumPy standard of `C`. So I load the structure in the `F` key of the `wf` attribute of kilosort. If you inspect `wf` you will see it also has a `C` key. This was historical since I had experimented with generating the `.bin` file in python. If you see nonsense values it could be that your file is using  `C` order. In `getWaveForms.py` I have commented out creating a `C`-ordered memory map, but this can be run by remove the comment hashes. Then this method can be run to see if this is the issue. This means that down stream in the `waveform_vals()` method the order would need to be switched to `C`. The one optional paramater is `num_chan` this is because kilosort gives only the number of useful channels rather than total channels. And the raw `.bin` final is organized by total number of channels. Thus to organize the memory map the `num_chans` must be entered as an int.
+ Raw waveform data as opposed to the templates from `phy` can be beneficial for assessing peak-trough duration, amplitude etc. We can load this data from the `.bin` file that had been generated for kilosort based on our post-curation neural data. Of note this is a slow, RAM hungry process that performs a memory map of the binary file. It may need to be done on a server or a high-RAM workstation (For 20 gb bin I often see usage of 60-70gb of RAM). Since Kilosort is written in Matlab, the function also assumes that the `.bin` file was generated in Matlab, which will be Fortran ordered rather than the NumPy standard of `C`. So I load the structure in the `F` key of the `wf` attribute of kilosort. If you inspect `wf` you will see it also has a `C` key. This was historical since I had experimented with generating the `.bin` file in python. If you see nonsense values it could be that your file is using  `C` order. In `getWaveForms.py` I have commented out creating a `C`-ordered memory map, but this can be run by removing the comment hashes. Then this method can be run to see if this is the issue. This means that down stream in the `waveform_vals()` method the order would need to be switched to `C`. The one optional paramater is `num_chan` this is because kilosort gives only the number of useful channels rather than total channels. And the raw `.bin` final is organized by total number of channels. Thus to organize the memory map the `num_chans` must be entered as an `int`.
  
  ```python
- myNeuron.get_waveforms(num_chans=64)
+ myNeuron.get_waveforms(num_chans=64) # 64 channel recording probe.
  ```
  
  ### Generating quality metrics
- Based on Nick Steinmetz's sortingQuality repo the `qcfn` method returns the isolation distance (Harris et al 2001) based on mahalobnis distance between pc values of clusters and the interspike interval violations (Schmitzer-Tobert et al. 2005). In short we can approximate the separation of units in our recording based on the distance in the pc spaces used by kilosort. Since Euclidean distance is prone to be influenced by less important features use of mahalobnis which uses the covariance matrix is less prone to these errors. These values are stored as `qc` in a dictionary with `uQ` the isolation distance and `cR` the contamination rate (see function for explanation of this value)
+ Based on Nick Steinmetz's `sortingQuality` repo the `qcfn` method returns the isolation distance (Harris et al 2001) based on mahalobnis distance (which is dependent on the covariance matrix so it is less prone to being influenced by less important dimensions as Euclidean is) between pc values of clusters and the interspike interval violations (Schmitzer-Tobert et al. 2005, Hill 2011, Hill 2012). In short we can approximate the separation of units in our recording based on the distance in the pc spaces used by kilosort. These values are stored as `qc` in a dictionary with `uQ` the isolation distance and `cR` the contamination rate (see function for explanation of this value). I find that `uQ` unit quality is more consistent so for downstream methods I use that.
  
- ISI violations depend on the existence of neural refractory periods. It is based on Nick's Matlab code based on Hill et al 2011, and adapted based on UltraMegaSort from Hill 2012. In short it generates a false positive rate of spikes along with the raw number of violations. The benefit of false positive rate is it accounts for changes in spike number, but use of raw number of refractory period violations is relatively common (Chirila et al. 2023, Emanuel et al. 2021). this is stored as `isiv` with keys related to `fp` and `nViol` which is the fraction rate of violations.
+ ISI violations depend on the existence of neural refractory periods. It is based on Nick's Matlab code based on Hill et al 2011, and adapted based on UltraMegaSort from Hill 2012. In short it generates a false positive rate of spikes along with the raw number of violations. The benefit of false positive rate is it accounts for changes in spike number, but use of raw number of refractory period violations is relatively common (Chirila et al. 2023, Emanuel et al. 2021). this is stored as `isiv` with keys related to `fp` and `nViol` which is the fraction rate of violations. Of note the original method as proposed by Hill 2011 could lead to complex numbers (due to 'hidden' correlations between neurons), but I take the Hill 2011 approach with a flag that returns `fp=5` to indicate that the unit is failing the assumptions (d/t correlations or bursting activity). Downstream I just use raw violations, but I could include the false positive rate in a future addition.
  
  **There are no hard cutoffs for either value. Appropriate cutoffs must be determined based on your analysis**
  
@@ -50,18 +50,18 @@ In addition the depth of the probe if measured can be factored into the analysis
  ```
  
  ## If loading a previous analysis
- Although the class requires `sp` and `eventTimes` for each initialization. There are load previous and save methods which can reduce the number of times methods must be run. Once waveform data and qcvalues have been generated files are saved and can be loaded for future analysis. This is accomplished with the `get_files` methods. Of note there is the `title` flag. This flag is to line up with the `title` flag in the `save_analysis` method. If some sort of subanalysis (for instance use of a different qc threshold) could be saved as separate files each given a unique title value.
+ Although the class requires `sp` and `eventTimes` for each initialization. There are load previous and save methods which can reduce the number of times methods must be run (although these methods save to the drive so if storage limited they are not required). Once waveform data and qcvalues have been generated files are saved and can be loaded for future analysis. This is accomplished with the `get_files` methods. Of note there is the `title` flag. This flag is to line up with the `title` flag in the `save_analysis` method. If some sort of subanalysis (for instance use of a different qc threshold) could be saved as separate files each given a unique title value.
  
  ```python
  myNeuron.get_files(title='')
  ```
  ## Analyzing Data
  
-All analysis is split among generating values which are stored as class attributes and plotting functions which use these attributes for plotting. But to do your own analyses based on these values just access the appropriate attributes (list at bottom of this document). Methods where I often inspect values return from the class into the terminal, but most methods just store their returns internally in the class as attributes.
+All analysis is split among generating values which are stored as class attributes and plotting functions which use these attributes for plotting and generate dataframe functions to allow for additional analysis or export. But to do your own analyses based on these values just access the appropriate attributes (list in ClusterAnalysisAttribute document). Methods where I often inspect values return from the class into the terminal, but most methods just store their returns internally in the class as attributes.
  
  ### Firing Rate Data
  
- Spike counts are the fundamental neural data for *in vivo* analysis. In order to generate these counts we need a `time_bin_size` given in seconds. 10-50 milliseconds work pretty well, but for slower neurons longer time bins provides more smoothing of the data and smaller time bins provides more 0 count bins. This function generates the `psthvalues` attribute of the `ClusterAnalysis` class which is organized as a dictionary of neurons with each neuron having a `'BinnedArray'` with the matrix of firing rates give as an `nEvents x nTimeBins`. Additionally this function will ask window info for each stimulus. The window info should be given as start,end. So for -10 before stimulus to 10 after for a 10 second stimulus I would write -10,20 when prompted.
+ Spike counts are the fundamental neural data for *in vivo* analysis. In order to generate these counts we need a `time_bin_size` given in seconds. 10-50 milliseconds works pretty well, but for slower neurons longer time bins provides more smoothing of the data and smaller time bins provides more 0 count bins (looking at firing rate works better with smoothing whereas raster plots only work when each bins has values of 0 or 1). This function generates the `psthvalues` attribute of the `ClusterAnalysis` class which is organized as a dictionary of neurons with each neuron having a `'BinnedArray'` with the matrix of firing rates give as an `nEvents x nTimeBins`. Additionally this function will ask window info for each stimulus. The window info should be given as start,end. So for -10 before stimulus to 10 after for a 10 second stimulus I would write -10,20 when prompted. There is a window option in the api call if you plan to always use the same windows.
  
  ```python
  psthvalues, windowlst = myNeuron.spike_raster(time_bin_size=0.05) # 50 millisecond example
@@ -100,7 +100,7 @@ Once this value has been prepped the function will generate raw firing rates for
 
 
 ### Latency Data
-Generating latency values can be a bit tricky since they rely on a lot of assumptions about the underlying distribution of the spiking data. There are multiple strategies. I'm working on generating a permutation based code, but currently I've implemented two different latency calculations. One is based on Chase and Young 2007 where they use a poisson distribution to check for the first spike which causes deviation from the base rate, lambda. Since many neurons I'm interested have low baseline rates and likly do not follow a poisson I also implement a strategy adapted from Mormann et al. 2008 taking first spike among events and then taking the median among each trial. The decision point is my code is currently firing rates of less than 2 Hz (as suggested by Mormann et al). Stored as an attribute in the class under `ClusterAnalysis.latency` in the form of a nested dict with np.arrays inside.
+Generating latency values can be a bit tricky since they rely on a lot of assumptions about the underlying distribution of the spiking data. There are multiple strategies. I'm working on generating a permutation based code, but currently I've implemented two different latency calculations. One is based on Chase and Young 2007 where they use a poisson distribution to check for the first spike which causes deviation from the base rate, lambda. Since many neurons I'm interested inhave low baseline rates and likley do not follow a poisson I also implement a strategy adapted from Mormann et al. 2008 taking first spike among events and then taking the median among each trial. The decision point in my code is currently firing rates of less than 2 Hz (as suggested by Mormann et al). Stored as an attribute in the class under `ClusterAnalysis.latency` in the form of a nested dict with np.arrays inside.
 
 ```python
 myNeuron.latency(time_bin_size=0.05, bsl_win=[[-10,-5]], event_win=[[0,10]]) # nested lists are required
@@ -116,27 +116,43 @@ myNeuron.gen_wfdf()
 The dataframe is stored as an attribute `waveform_df`.
 
 ### Responsive Neurons
-Currently I am using user defined responsive neuron properties. Cutoffs vary (Emmanuel et al. 2021 uses 2.58 for the 99% CI, Chirila et al 2023 uses clustering to generate profiles). For historic reasons this function is a sub function stored in the `plot_z` function. It can be used to just generate the responsive neurons by setting the `plot` flag to `False`. With that out of the way, I use a decorator found in `plot_z_settings.py` to allow for multiple people in the same group to set their own z score cutoffs (filepath is `/visualization_ca/plot_z_settings.py`). So that file can be re-formated with desired cutoffs. If only one person is using this code delete the conditional logic and just put in the values. `inhib` for inhibitory, `onset` for onset neurons, `sustained` for sustained neurons, `offset` for near end of stimulus and `relief` for after discharge. The first value is desired z score and the second number is the number of bins required to count as the type given by the keyword. So this will depend on the `time_bin_size` set in `clu_zscore`. Once this decorator is set the method can be run. `plot_z` has a few flags, most of them are optional to override the attributes set. So `labels` will pull from the attribute `labels` but can be overridden, `tg` is a boolean for trial group (it should match with what was done in `clu_zscore`), and `time_pt` is required for use with the default `sorter_dict`. I don't currently recommend this since the default is based on my analysis and not your current analysis. So the key parameter is setting a `sorter_dict` which is also done with the `plot_z_settings.py` file. In that file you find a section called `sorter_dict_adder` where defaults can be set as a I explain below:
-
-#### Creating a sorter_dict
-this is a dictionary of the time periods that should be analyzed (in time bins) for each time of response. The general structure would follow:
-
-```python
-sorter_dict = {
-                "sustained": [zero_point, event_len],
-                "relief": [event_len, len(time_bins)],
-                "onset": [zero_point, zero_point + time_point],
-                "onset-offset": [
-                    zero_point,
-                    zero_point + time_point,
-                    event_len - time_point,
-                    event_len + time_point,
-                ],
-                "inhib": [zero_point, zero_point + time_point],
-            }
-            
+Currently I am using user defined responsive neuron properties. Cutoffs vary (Emmanuel et al. 2021 uses 2.58 for the 99% CI, Chirila et al 2023 uses clustering to generate profiles). For historic reasons this function is a sub function stored in the `plot_z` function. It can be used to just generate the responsive neurons by setting the `plot` flag to `False`. With that out of the way, I use a decorator found in `plot_z_settings.py` to allow for multiple people in the same group to set their own z score cutoffs (filepath is `/visualization_ca/plot_z_settings.py`). So that file can be re-formated with desired cutoffs. If only one person is using this code delete the conditional logic and just put in the values. `inhib` for inhibitory, `onset` for onset neurons, `sustained` for sustained neurons, `offset` for near end of stimulus and `relief` for after discharge. The first value is desired z score and the second number is the number of bins required to count as the type given by the keyword. So this will depend on the `time_bin_size` set in `clu_zscore`. Once this decorator is set the method can be run. `plot_z` has a few flags, most of them are optional to override the attributes set. So `labels` will pull from the attribute `labels` but can be overridden, `tg` is a boolean for trial group (it should match with what was done in `clu_zscore`), `time_pt` is historic and will be removed soon. In order to control how neurons are classified as responsive the `na_settings.yaml` is used. This file is generated in the `pyanlaysis` folder if it does not exist, but can be edited for future analyses. Settings are below. First the desired z scores for a subtype are given. The first value is the value needed and the second number is the number of timebins with this value required. Then the `sorter_dict` values are the time bin starts and endtime for assessing the desired z score values
+```yaml
+- zscore:
+    inhib:
+    - -2
+    - 3
+    offset:
+    - 2.5
+    - 3
+    onset:
+    - 4
+    - 3
+    sustained:
+    - 3.3
+    - 5
+- raw:
+    sustained:
+    - 75
+- sorter_dict:
+    Inhib:
+    - 50
+    - 67
+    Onset:
+    - 50
+    - 65
+    Onset-Offset:
+    - 50
+    - 65
+    - 90
+    - 110
+    Relief:
+    - 100
+    - 150
+    Sustained:
+    - 50
+    - 100
 ```
-
 The `zero_point` is the time_bin in which the stimulus starts. I prefer calculating with some baseline in `allP` meaning that the first bin with stimulus is not 0 (start of baseline), but for example bin 20. The `event_len` will be the final bin of the stimulus in this case, eg bin 80. For relief in this example I start at bin 80 and go to the final length of bins for example 100. For onset, I do only a subset of bins etc. For two sub periods you just generate a list of 4 numbers. Currently 4 time points (ie two time periods) are the max you can do for the sorter dict.
 
 #### Running `plot_z`. Once this is done for generating responsive neurons just run as 
