@@ -366,10 +366,9 @@ def tipping_point(x: np.array, y: np.array) -> int:
         min_index = countdown[count] < countup[:, count]
         if len(np.nonzero(min_index)[0]) != 0:
             final_index = np.nonzero(min_index)[0]
+            pos = final_index[0]
             break
         else:
             pos = nX
-
-    pos = final_index[0]
 
     return pos
