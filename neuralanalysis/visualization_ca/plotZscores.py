@@ -198,7 +198,10 @@ def plotZscores(
                 plotZscoreCore(
                     zscore_pivot, zero_point, event_len, stim, sorter="relief"
                 )
-                if raw_spike_dict['Spikes/sec'].max() != raw_spike_dict['Spikes/sec'].min()
+                if (
+                    raw_spike_dict["Spikes/sec"].max()
+                    != raw_spike_dict["Spikes/sec"].min()
+                ):
                     plotZscoreCore(
                         raw_spike_pivot,
                         zero_point,
@@ -314,7 +317,10 @@ def plotZscores(
                     )
 
                     # for non-z scoreable values
-                    if raw_spike_dict['Spikes/sec'].max() != raw_spike_dict['Spikes/sec'].min()
+                    if (
+                        raw_spike_dict["Spikes/sec"].max()
+                        != raw_spike_dict["Spikes/sec"].min()
+                    ):
                         plotZscoreCore(
                             raw_spike_pivot,
                             zero_point,
