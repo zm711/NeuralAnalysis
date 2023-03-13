@@ -89,3 +89,12 @@ def test_count_unique():
 
     assert values[45] == 129
     assert instances[45] == 1
+
+
+def test_count_unique_simple():
+    test_array = np.array([1, 1, 2, 3, 4, 5, 5, 5])
+    values, instance = qcfns.count_unique(test_array)
+
+    assert len(values) == 5
+    numpy.testing.assert_allclose(np.array(values), np.array([1, 2, 3, 4, 5]))
+    numpy.testing.assert_allclose(np.array(instance), np.array([2, 1, 1, 1, 3]))
