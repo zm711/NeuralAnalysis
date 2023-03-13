@@ -114,3 +114,6 @@ def test_baro():
     numpy.testing.assert_allclose(total[0, :], [3.8, 31.4])
 
     assert np.isclose(total[1, 1], 19.6)
+
+    assert total[2, 1] == 52
+    assert total[2, 0] == 52
