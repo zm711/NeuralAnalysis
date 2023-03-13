@@ -29,6 +29,42 @@ def test_histdiff():
     )
 
 
+def test_histdiff_acg_simple():
+    test_array = np.array([1, 2, 3, 4, 5])
+    bins = np.array([0, 1, 2])
+    cnts, centers = histdiff.histdiff(test_array, test_array, bins)
+    assert len(cnts) == 2
+    numpy.testing.assert_allclose(cnts, np.array([5.0, 4.0]))
+    numpy.testing.assert_allclose(centers, np.array([0.5, 1.5]))
+
+
+def test_histdiff_refpt_simple():
+    test_array = np.array([1, 2, 3, 4, 5])
+    ref_pt = np.array([1, 5])
+    bins = np.array([0, 1, 2])
+
+    cnts, centers = histdiff.histdiff(test_array, ref_pt, bins)
+    assert len(cnts) == 2
+    numpy.testing.assert_allclose(cnts, np.array([2.0, 1.0]))
+    numpy.testing.assert_allclose(centers, np.array([0.5, 1.5]))
+
+
+def test_time_stamps_simple():
+    test_array = np.array([1, 2, 3, 4, 5])
+    bin_size = 1.0
+    start = 0.0
+    end = 2.0
+    cnts, centers = psfn.time_stamps_to_bins(
+        test_array, test_array, bin_size, start, end
+    )
+    numpy.testing.assert_allclose(centers, np.array([0.5, 1.5]))
+
+    assert np.shape(cnts) == (5, 2)
+    numpy.testing.assert_allclose(
+        cnts, np.array([[1.0, 2], [1, 2], [1, 2], [1, 1], [1, 0]])
+    )
+
+
 def test_time_stamps_to_bins():
     seq = RandomState(1234567890)
     timestamps = np.array(sorted(list(seq.randint(0, 1000, size=500) * 0.15)))
