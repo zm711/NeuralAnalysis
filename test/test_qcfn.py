@@ -53,6 +53,20 @@ def test_tipping_point():
     assert final_pos == 7
 
 
+def test_tipping_point_simple():
+    x = np.array([1, 4, 5])
+    y = np.array([2, 3, 6])
+    final_pos = qcfns.tipping_point(x, y)
+    assert final_pos == 3
+
+
+def test_tipping_point_simple_low_tip():
+    x = np.array([1, 7, 8, 9, 10])
+    y = np.array([2, 3, 4, 5, 6, 11])
+    pos = qcfns.tipping_point(x, y)
+    assert pos == 2
+
+
 def test_masked_cluster_quality_core():
     seq = RandomState(1234567890)
     this_cluster = np.array(seq.rand(20, 15))
@@ -62,16 +76,19 @@ def test_masked_cluster_quality_core():
     unit_quality, contam_rate = qcfns.masked_cluster_quality_core(
         this_cluster, that_cluster
     )
-
+    # good unit 0 contam, high unit quality
     contam_rate = int(contam_rate)
     assert np.isclose(unit_quality, 74.78633819077363)
     assert contam_rate == 0
 
+    # fail because n< nfeat -> contam is nan
     this_cluster_fail = np.array(seq.rand(10, 15))
     unit_quality, contam_rate = qcfns.masked_cluster_quality_core(
         this_cluster_fail, that_cluster
     )
     assert np.isnan(contam_rate)
+
+    # fail because n > nOther -> contam is nan
     this_cluster_fail2 = np.array(seq.rand(40, 15))
     unit_quality, contam_rate = qcfns.masked_cluster_quality_core(
         this_cluster_fail2, that_cluster
