@@ -58,7 +58,7 @@ def responseDF(
     cids = sp["cids"]
     noise = sp["noise"]
     if len(cids) != len(unit_quality) and qcthres > 0:
-        unit_quality = unit_quality[~noise]
+        unit_quality = unit_quality[np.isin('cids', noise,invert=True) ]
 
     if isiv is not None:
         viol_percent = list()
@@ -167,14 +167,19 @@ def qc_only(
     cids = sp["cids"]
     noise = sp["noise"]
     qc_list = qcvalues["uQ"]
-    qc_list = qc_list[~noise]
+    qc_list = qc_list[np.isin(cids, noise,invert=True)]
 
     threshold = np.squeeze(np.argwhere(qc_list > qcthres))
 
-    final_cids = cids[threshold]
-    final_qc = qc_list[threshold]
-    filename_list = [neuron_idx] * len(final_cids)
-    hash_idx = [hash(str(ids) + filename) for ids in final_cids]
+    final_cids = np.array(cids[threshold])
+    final_qc = np.array(qc_list[threshold])
+    if np.size(final_cids)!=1:
+        filename_list = [neuron_idx] * len(final_cids)
+        hash_idx = [hash(str(ids) + filename) for ids in final_cids]
+    else:
+        filename_list = [neuron_idx]
+        hash_idx = [hash(str(final_cids)+filename)]
+    
 
     quality_df = pd.DataFrame(
         {
