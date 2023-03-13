@@ -47,7 +47,6 @@ def maskedClusterQuality(sp=None) -> tuple[np.array, np.array, dict]:
             if "pyanalysis" in os.getcwd():
                 os.chdir("..")
         else:
-
             _, curr_dir, filename = getdir()
             os.chdir(curr_dir)
 
@@ -128,12 +127,10 @@ def maskedClusterQuality(sp=None) -> tuple[np.array, np.array, dict]:
         spike_clusters = np.load("spike_templates.npy")
 
     if np.shape(pc_features)[1] != 3:
-
         print("Error generating pc features. Problem in code fix please.")
         return
 
     else:
-
         print("computing cluster qualities....\n")
         unitQuality, contaminationRate = masked_cluster_quality_sparse(
             spike_clusters, pc_features, pc_features_ind
@@ -153,11 +150,11 @@ implementation"""
 
 @jit(nopython=True, cache=True)
 def count_unique(x: np.array) -> tuple[int, int]:
-    # x = [np.int32(val) for val in x]
+    x = [np.int32(val) for val in x]
     values = [np.int32(x_val) for x_val in set(x)]
     instance = [np.int32(ins) for ins in range(0)]
     for val in values:
-        instance.append(values.count(val))
+        instance.append(x.count(val))
     return values, instance
 
 
@@ -170,7 +167,6 @@ using the PC space/features that we have pulled"""
 def masked_cluster_quality_sparse(
     clu: np.array, fet: np.array, fetInds: np.array, fetNchans=0
 ) -> tuple[float, float]:
-
     """fet is a nSpike x 3 x 4 matrix and fetInd is a nClu x 4 matrix
     This is where Nick decided to stick with 4 features, so I left the default to be
     4"""
@@ -197,7 +193,6 @@ def masked_cluster_quality_sparse(
     print("Quality metrics values being calculated")
     print("Cluster Number/ Isolation Distance/ Contamination Rate")
     for cluster in range(len(clusterIDs)):
-
         theseSpikes = clu == clusterIDs[cluster]
         n = np.sum(theseSpikes)
         if n < fetN or n >= N / 2:
@@ -215,7 +210,6 @@ def masked_cluster_quality_sparse(
         """And now we do the other feature space generation"""
 
         for nonCluster in range(len(clusterIDs)):
-
             if nonCluster != cluster:
                 chansC2Has = fetInds[nonCluster]
                 theseOtherSpikes = clu == clusterIDs[nonCluster]
@@ -312,7 +306,6 @@ distance etc see those papers"""
 def masked_cluster_quality_core(
     fetThisCluster: np.array, fetOtherClusters: np.array
 ) -> tuple[float, float]:
-
     n: int = np.shape(fetThisCluster)[0]
     nOther: int = np.shape(fetOtherClusters)[0]
     nfet: int = np.shape(fetThisCluster)[1]
