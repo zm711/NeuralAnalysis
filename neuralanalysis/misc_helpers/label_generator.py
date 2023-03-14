@@ -8,6 +8,7 @@ Created on Wed Jan 18 16:05:32 2023
 
 import pandas as pd
 import numpy as np
+import hashlib
 
 
 """labelGenerator is a function which takes in the eventTimes dict and automatically
@@ -58,7 +59,7 @@ def responseDF(
     cids = sp["cids"]
     noise = sp["noise"]
     if len(cids) != len(unit_quality) and qcthres > 0:
-        unit_quality = unit_quality[np.isin('cids', noise,invert=True) ]
+        unit_quality = unit_quality[np.isin("cids", noise, invert=True)]
 
     if isiv is not None:
         viol_percent = list()
@@ -103,7 +104,9 @@ def responseDF(
                             viol_list.append(viol_percent[idx])
 
     neuron_idx_list = [neuron_idx] * len(stim_list)  # same id for number of neurons
-    hash_idx_list = [hash(str(ids) + filename) for ids in idx_list]
+    hash_idx_list = [
+        hashlib.sha256((str(ids) + filename).encode()).hexdigest() for ids in idx_list
+    ]
 
     if labels:  # if we have labels change the int trial group to the actual stim value
         for idx, value in enumerate(trialgroup_list):
@@ -132,7 +135,9 @@ def responseDF(
             non_resp.append(cluster)
             non_resp_qc.append(unit_quality[idx])
 
-    non_resp_hash_idx = [hash(str(ids) + filename) for ids in non_resp]
+    non_resp_hash_idx = [
+        hashlib.sha256((str(ids) + filename).encode()).hexdigest() for ids in non_resp
+    ]
     non_neuron_idx_list = [neuron_idx] * len(non_resp_hash_idx)
 
     non_resp_df = pd.DataFrame(
@@ -167,26 +172,28 @@ def qc_only(
     cids = sp["cids"]
     noise = sp["noise"]
     qc_list = qcvalues["uQ"]
-    qc_list = qc_list[np.isin(cids, noise,invert=True)]
+    qc_list = qc_list[np.isin(cids, noise, invert=True)]
 
     threshold = np.squeeze(np.argwhere(qc_list > qcthres))
 
     final_cids = np.array(cids[threshold])
     final_qc = np.array(qc_list[threshold])
-    if np.size(final_cids)!=1:
+    if np.size(final_cids) != 1:
         filename_list = [neuron_idx] * len(final_cids)
-        hash_idx = [hash(str(ids) + filename) for ids in final_cids]
+        hash_idx = [
+            hashlib.sha256((str(ids) + filename).encode()).hexdigest()
+            for ids in final_cids
+        ]
     else:
         filename_list = [neuron_idx]
-        hash_idx = [hash(str(final_cids)+filename)]
-    
+        hash_idx = [hashlib.sha256((str(final_cids + filename).encode()).hexdigest())]
 
     quality_df = pd.DataFrame(
         {
             "IDs": final_cids,
             "QC": final_qc,
             "File Hash": filename_list,
-            "Hash ID": hash_idx,
+            "HashID": hash_idx,
         }
     )
 
@@ -205,7 +212,10 @@ def waveform_vals_DF(
 ) -> pd.DataFrame:
     cluster_ids = wf["F"]["ClusterIDs"]
     filename = sp["filename"]
-    ids_hash = [hash(str(cluster_id) + filename) for cluster_id in cluster_ids]
+    ids_hash = [
+        hashlib((str(cluster_id) + filename).encode()).hexdigest()
+        for cluster_id in cluster_ids
+    ]
 
     if shank_dict is None:
         laterality_list = [np.nan] * len(ids_hash)
