@@ -8,6 +8,7 @@ Created on Wed Nov 23 10:11:16 2022
 
 import numpy as np
 import pandas as pd
+import hashlib
 
 
 def lookup_table_gen(sp_list: list) -> pd.DataFrame:
@@ -19,7 +20,10 @@ def lookup_table_gen(sp_list: list) -> pd.DataFrame:
         curr_filename = sp["filename"]
         curr_cids = sp["cids"]
 
-        hash_ids = [hash(str(cid) + curr_filename) for cid in curr_cids]
+        hash_ids = [
+            hashlib.sha256((str(cid) + curr_filename).encode()).hexdigest()
+            for cid in curr_cids
+        ]
 
         filename_list += [curr_filename] * len(hash_ids)
         cids_list += list(curr_cids)
