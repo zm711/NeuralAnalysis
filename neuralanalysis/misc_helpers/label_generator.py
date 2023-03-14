@@ -213,7 +213,7 @@ def waveform_vals_DF(
     cluster_ids = wf["F"]["ClusterIDs"]
     filename = sp["filename"]
     ids_hash = [
-        hashlib((str(cluster_id) + filename).encode()).hexdigest()
+        hashlib.sha256((str(cluster_id) + filename).encode()).hexdigest()
         for cluster_id in cluster_ids
     ]
 
