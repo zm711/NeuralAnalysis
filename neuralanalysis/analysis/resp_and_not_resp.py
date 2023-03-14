@@ -10,16 +10,18 @@ neurons can be analyzed. It automatically loads the responsive cluster ids into 
 well as loading the non-responsive cluster ids and returns a new ClusterAnalysis object
 which can be analyzed with only the non-responsive Neurons"""
 
-from ClusterAnalysis import ClusterAnalysis
-import numpy as np
-import pandas as pd
+from ..ClusterAnalysis import ClusterAnalysis
 import copy
-from labelGenerator import genResp
+from ..misc_helpers.label_generator import genResp
 
 
 def resp_and_not_resp(
     myNeuron: ClusterAnalysis,
 ) -> tuple[ClusterAnalysis, ClusterAnalysis]:
+    """This mutates in place the current `ClusterAnalysis` object
+    to only list the responsive neurons and then returns a new
+    `ClusterAnalysis` instance of the non_responsive neurons
+    in case the user wants to compare these populations."""
     resp_neurons = myNeuron.resp_neuro_df
     non_resp = myNeuron.non_resp_df
 
