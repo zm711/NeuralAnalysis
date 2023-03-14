@@ -186,7 +186,7 @@ def qc_only(
         ]
     else:
         filename_list = [neuron_idx]
-        hash_idx = [hashlib.sha256((str(final_cids + filename).encode()).hexdigest())]
+        hash_idx = [hashlib.sha256((str(final_cids) + filename).encode()).hexdigest()]
 
     quality_df = pd.DataFrame(
         {
