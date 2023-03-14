@@ -69,9 +69,6 @@ def stim_alignment(baro=False) -> dict:
         eventTimes["ADC1tot"]["TrialGroup"] = eventTimewRamp[2]
     except AttributeError:
         print("No adc data")
-    # if os.path.isfile(glob.glob('*board_adc_data*')):
-    # filename2 = glob.glob('*board_dig_in_data')[0]
-    # board_adc_data = np.load(filename2, allow_pickle=True)
 
     if os.path.basename(os.path.normpath(os.getcwd())) == "pyanalysis":
         filename: str = glob.glob("*npy")[0]
