@@ -30,14 +30,11 @@ def plotPSTH(
     groupSep=True,
     eb=False,
 ) -> None:
-    
-
     eventLst = list()
     for stimE in eventTimes.keys():
         eventLst.append(stimE)
 
-    for (index, stim) in enumerate(psthvalues.keys()):
-        
+    for index, stim in enumerate(psthvalues.keys()):
         """smoothing in general applies a gaussian to average adjacent bins. It should help make
         baseline right around 0 and the firing peaks should stay relatively. Based on my reading
         smoothing factor is more of an empiric decision. Too smooth would destory all peaks. No
@@ -47,13 +44,13 @@ def plotPSTH(
             round(param * 6), (round(param * 6) - 1) / 6
         )  # this takes std vs alpha for matlab version
         # std = (L-1)/2alpha (matlab alpha = 3)
-        
+
         window = raster_window[index]
         windowS = window[0]
         windowE = (
             window[-1] + (window[-1] - window[0]) / 20
         )  # add 1/20 of stimulus length for spacing
-        trial_groups = np.array(eventTimes[eventLst[index]]["trial_groups"])
+        trial_groups = np.array(eventTimes[eventLst[index]]["TrialGroup"])
         event_lengths = eventTimes[eventLst[index]]["Lengths"]
         eventLength = np.mean(
             eventTimes[eventLst[index]]["Lengths"]
