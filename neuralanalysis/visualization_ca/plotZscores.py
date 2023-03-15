@@ -387,9 +387,9 @@ def plotZscoreCore(
         z_max = z_sorted.max(axis=1).max()
 
         if z_max > 40:
-            vmax_val = 35
+            vmax_val = 10
         elif z_max > 20:
-            vmax_val = z_max - 10
+            vmax_val = 5
         else:
             vmax_val = z_max - 5
 
