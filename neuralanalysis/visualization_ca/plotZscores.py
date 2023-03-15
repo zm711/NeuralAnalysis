@@ -129,10 +129,10 @@ def plotZscores(
             raw_spikes = list(set(np.where(np.isnan(normVal_sub))[0]))
             allP_raw_spikes = allP_sub[raw_spikes]
 
-            """Since the dataframe needs a value for each row I basically need to take my values
-            and repeat them the appropriate number of times.... ie each cluster needs a timebin
-            and zscore value, so I create duplicate values so that the nClu becomes nClu x ntimebin
-            structure"""
+            """Since the dataframe needs a value for each row I basically need to take 
+            my values and repeat them the appropriate number of times.... ie each 
+            cluster needs a timebin and zscore value, so I create duplicate values so 
+            that the nClu becomes nClu x ntimebin structure"""
 
             for idx, i in enumerate(to_keep):
                 final_time_bins += time_bins
@@ -158,6 +158,7 @@ def plotZscores(
             """we also need to account for neurons which are low baseline activity 
             which only respond to the stimulus. These neurons are not z-scoreable since
             their mean and std = 0 . So we take raw spike counts/sec only. """
+
             for idy, spike in enumerate(raw_spikes):
                 final_raw_time_bins += time_bins
                 final_raw += len(time_bins) * [spike]
@@ -188,8 +189,9 @@ def plotZscores(
                 )
 
             if plot == True:
-                """I plot organized by during stimulus and after stimulus which are common
-                for my baro neuros. The `event` flag should look pretty nice for most stims
+                """I plot organized by during stimulus and after stimulus which are
+                common for my baro neuros. The `event` flag should look pretty nice for
+                most stims
                 """
                 plotZscoreCore(
                     zscore_pivot, zero_point, event_len, stim, sorter="event"
@@ -216,9 +218,9 @@ def plotZscores(
             )
             tgs = sorted(list(set(trialGroups)))  # need the set of trial groups
 
-            """As above we need to generate a dataframe with rows = to nClu x ntimeBins for
-            each TrialGroups seaparately, so the loops below create all the data needed for 
-            each trial group"""
+            """As above we need to generate a dataframe with rows = to nClu x ntimeBins 
+            for each TrialGroups seaparately, so the loops below create all the data 
+            needed for each trial group"""
             for trial in tgs:
                 final_time_bins = list()
                 final_to_keep = list()
