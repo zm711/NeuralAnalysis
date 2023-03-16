@@ -48,9 +48,9 @@ def getWaveForms(
     sample_rate: float = sp["sampleRate"]
     wfWin: list = wfWin
     nWf = int(nWf)
-    spikeTimes: np.array = sp["spikeTimes"]
-    spikeTimes = np.ceil(np.multiply(spikeTimes, sample_rate))  # convert to samples
-    spikeClusters: np.array = sp["clu"]
+    spike_times: np.array = sp["spikeTimes"]
+    spike_times = np.ceil(np.multiply(spike_times, sample_rate))  # convert to samples
+    spike_clusters: np.array = sp["clu"]
     file_name = sp["filename"]
     if file_name in os.getcwd():
         if "pyanalysis" in os.getcwd():
@@ -76,13 +76,11 @@ def getWaveForms(
     )  # we use the bytes to see the samples
     wfNSamples = int(wfWin[1] - wfWin[0] + 1)  # put our number of samples into variable
 
-    """Now we are ready to load our binary file into memory to allow quicker 
-    access during the next few steps. For a laptop <30gb of RAM this may be 
-    difficult, but without this step everything would be much slower. Also for 
-    32-bit systems (hopefully no one actually has, but just in case) the file 
-    size limit would be 2gb."""
+    """Currently I use a memory map which doesn't require loading the full file into
+    the RAM. Since I use the int16 this should work as long as there is at least
+    8ish gb of RAM"""
 
-    print("Creating C & F-ordered memory maps...")
+    print("Creating F-ordered memory maps...")
     # mmf = np.memmap(fileName, dtype="int16", mode="r", shape=(nCh, nSamp))
     mmfF = np.memmap(fileName, dtype="int16", mode="r", shape=(nCh, nSamp), order="F")
 
@@ -93,15 +91,12 @@ def getWaveForms(
 
     nCluster = len(clusterIDs)
 
-    """to explain below we are limited to the 4gb, so I look at number of 
-    clusters need * number of waveforms * number of samples/waveform * 28 (size
-    of int32) I plan to store in int16 which only take 26 bytes, but the two 
-    bytes help contribute to a safety range. Then 3.91e-10 is the conversion 
-    from bytes to gigabytes. It is easier to compare to the gigabyte limit of 
-    pickling"""
+    """to create the int16 np.array takes 116 + number of elements *4. So for safety
+    I use 120 base and 5 bytes/element. This accounts for the megabytes of memory that
+    the mean and keeps arrays require. The 3.91e-10 converts to gigabytes"""
     gbs_needed: float = (
-        nCluster * nWf * wfNSamples * nChInMap * (28 * 3.91e-10)
-    )  # file size need
+        120 + nCluster * nWf * wfNSamples * nChInMap * 5
+    ) * 3.91e-10  # file size need
 
     """if the file is going to be bigger than 4gb it will fail.So if it will be
     bigger than 3.9 then change the nWf to to be able to save. My logic is that
@@ -112,8 +107,8 @@ def getWaveForms(
     only value we can change is number of waveforms analyzed. So below I 
     calculate the max number of waveforms possible within a margin of error."""
 
-    if gbs_needed > 3.9:
-        nWf = int(round(3.9 / (nCluster * wfNSamples * nChInMap * 28 * 3.91e-10)))
+    if gbs_needed > 3.95:
+        nWf = int(nWf * (3.95 / gbs_needed))
 
     """memory allocation with nan's to tell the difference between 0 as a value
     and an actual not present value"""
@@ -121,9 +116,7 @@ def getWaveForms(
     spikeTimeKeeps = np.empty((nCluster, nWf))
     spikeTimeKeeps[:] = np.nan
     # waveForms = np.empty((nCluster, nWf, nChInMap, wfNSamples))
-    # waveForms[:] = np.nan
-    waveFormsF = np.empty((nCluster, nWf, nChInMap, wfNSamples))
-    waveFormsF[:] = np.nan
+    waveFormsF = np.empty((nCluster, nWf, nChInMap, wfNSamples), dtype=datatype)
     # waveFormsMean = np.empty((nCluster, nChInMap, wfNSamples))
     # waveFormsMean[:] = np.nan
     waveFormsMeanF = np.empty((nCluster, nChInMap, wfNSamples))
@@ -131,7 +124,7 @@ def getWaveForms(
 
     """iterate through clusters and get the spikes which belong to that cluster"""
     for curUnit in range(nCluster):
-        curSpikeTimes = spikeTimes[spikeClusters == clusterIDs[curUnit]]
+        curSpikeTimes = spike_times[spike_clusters == clusterIDs[curUnit]]
         curUnitNSpikes = np.shape(curSpikeTimes)[0]
         spikeTimesRP = curSpikeTimes[np.random.permutation(curUnitNSpikes)]
         spikeTimeKeeps[curUnit, : min(nWf, curUnitNSpikes)] = sorted(
@@ -168,21 +161,13 @@ def getWaveForms(
 
     wf["F"]["ClusterIDs"] = clusterIDs
     wf["F"]["spikeTimeKeeps"] = spikeTimeKeeps
-    wf["F"]["waveForms"] = np.array(waveFormsF, dtype=datatype)
-    wf["F"]["waveFormsMean"] = np.array(waveFormsMeanF, dtype=datatype)
+    wf["F"]["waveForms"] = waveFormsF
+    wf["F"]["waveFormsMean"] = waveFormsMeanF
 
     try:  # first we try to save both 'c' and 'f' ordered files
         savefile(fileName[:-3] + "wf.npy", wf)
     except OverflowError:  # if this fails we delete the 'c' since 'f' are important
-        try:
-            wfF = (
-                wf.copy()
-            )  # deep copy because we will return the full dataset to the work space
-            del wfF["C"]
-            savefile(fileName[:-3] + "wf.npy", wfF)  # try to save 1/2 the data
-            return wfF  # if this works just return this and try to use it
-        except OverflowError:
-            print("wf file is too large to be saved")
+        print("wf file is too large to be saved")
     finally:
         return wf  # even w/o save return the value to analyze during the session
 
