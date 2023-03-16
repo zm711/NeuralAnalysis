@@ -150,14 +150,6 @@ class ClusterAnalysis:
         filename = self.sp["filename"]
         np.save(filename + "labels.npy", labels, allow_pickle=True)
 
-    """Function for converting event times based on the infusion of capsaicin
-    requires time point"""
-
-    def cap_conversion(self, time_pt: float) -> None:
-        eventTimes, labels = cap_conversion(self.eventTimes, time_pt, self.sp)
-        self.eventTimes = eventTimes
-        self.labels = labels
-
     def save_analysis(self, note=None, title="") -> None:
         """This save allows us to keep track of the responsive_neurons by saving a
         copy of a previous ClusterAnalysis Class. I'm working on making this save
@@ -484,22 +476,20 @@ class ClusterAnalysis:
         self.resp_neuro_df = resp_neurons_df
         self.non_resp_df = non_resp_df
 
-    """prevalence_calculator generates the counts for responsive neuron subtypes. 
-    Currently it just displays in terminal, but in the future I may store in a structure
-    """
 
     def prevalence_calculator(self) -> None:
+        """prevalence_calculator generates the counts for responsive neuron subtypes. 
+        Currently it just displays in terminal, but in the future I may store in a 
+        structure """
         prevalence_calculator(self.resp_neuro_df)
 
-    """genResp loads sp['cids'] with only responsive neurons that passed qc. This allows
-    for subanalysis of neurons. Can be reverted with `revertClu`"""
+    
 
     def gen_resp(self) -> None:
+        """genResp loads sp['cids'] with only responsive neurons that passed qc. 
+        This allows for subanalysis of neurons. Can be reverted with `revertClu`"""
         sp = genResp(self.resp_neuro_df, self.sp)
         self.sp = sp
-
-    """I have a separate function that does this better, but if just a qc threshold is
-    desired without thinking about use of responsivity this can be used instead"""
 
     def qc_only(self, qcthres: float) -> None:
         """This function ignores any responsiveness of neurons and instead only uses
@@ -511,7 +501,6 @@ class ClusterAnalysis:
         self.quality_df = quality_df
 
     
-
     def revert_cids(self) -> None:
         """After masking data based on unit quality or responsiveness this function will
         unmask the low quality or unresponsive data to go back to reanalyze all data"""
