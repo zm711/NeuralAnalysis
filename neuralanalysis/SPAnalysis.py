@@ -128,4 +128,6 @@ class SPAnalysis:
         plotDriftmap(self.sp["spikeTimes"], spike_amps, spike_depths)
 
     def plot_cdf(self) -> None:
+        """plot_cdf creates a pdf and cdf-like figure with depth on the y axis and amps
+        on the x axis. The colormap is based on the number of spikes occurring."""
         makeCDF(self.sp)
