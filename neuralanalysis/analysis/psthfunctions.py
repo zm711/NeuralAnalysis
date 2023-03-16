@@ -11,9 +11,6 @@ INPUTS: st: spike times nSpikes
         psthBinSize: float of time bin in seconds
 """
 import numpy as np
-import numpy.matlib
-
-#import analysis.histdiff as hd
 from numba import jit
 
 """ collected the psth, rasters, bins, spikeCounts"""
@@ -48,7 +45,7 @@ def psthAndBA(
     b = binned_index[:, 1]
     bins = bins.T
     rasterX, yy = rasterize(bins[b])
-    rasterY = yy + np.reshape(np.matlib.repmat(tr.T, 3, 1), (1, len(tr.T) * 3))
+    rasterY = yy + np.reshape(np.tile(tr.T, (3, 1)), (1, len(tr.T) * 3))
 
     return psth, bins, rasterX, rasterY, spike_counts, binned_array
 
