@@ -358,12 +358,12 @@ def tipping_point(x: np.array, y: np.array) -> int:
 
     xInds = inds2[:nX]
     countdown = list(np.arange(nX, 0, -1))
-    countup = np.zeros((nX, len(countdown)))
-    for value in range(nX):
-        countup[:, value] = xInds - value
+    # countup = np.zeros((nX, len(countdown)))
+    # for value in range(nX):
+    #    countup[:, value] = xInds - value
 
     for count in range(nX):
-        min_index = countdown[count] < countup[:, count]
+        min_index = countdown[count] < (xInds - count)
         if len(np.nonzero(min_index)[0]) != 0:
             final_index = np.nonzero(min_index)[0]
             pos = final_index[0]
