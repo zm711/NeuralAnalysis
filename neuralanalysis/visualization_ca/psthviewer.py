@@ -104,7 +104,7 @@ def plotPSTH(
 
             raster_x, yy = psfn.rasterize(bins[b])
             raster_x = np.squeeze(raster_x)
-            raster_y = yy + np.reshape(np.matlib.repmat(tr.T, 3, 1), (1, len(tr.T) * 3))
+            raster_y = yy + np.reshape(np.tile(tr.T, (3, 1)), (1, len(tr.T) * 3))
             raster_y = np.squeeze(raster_y)
             raster_y[1:-1:3] = raster_y[1:-1:3] + raster_scale  # apply scale
 
