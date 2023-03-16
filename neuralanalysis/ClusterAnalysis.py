@@ -184,8 +184,6 @@ class ClusterAnalysis:
                 self.sp["filename"] + title + "analysis.npy", self, allow_pickle=True
             )
 
-    
-
     def firingratedf(self, window_dict=None, time_bin_size=0.05) -> None:
         """generates firing rate df based on the window given in `window_dict`
         based on the `time_bin_size` given. Default is 50 ms."""
@@ -200,7 +198,7 @@ class ClusterAnalysis:
         labels=None,
     ) -> None:
         """plots the firing rate df as either a violinplot `graph=v`
-        or as a lineplot `graph=l`. `labels` allow for overriding 
+        or as a lineplot `graph=l`. `labels` allow for overriding
         internal labels"""
         if not labels:
             try:
@@ -330,14 +328,16 @@ class ClusterAnalysis:
         self.responsive_neurons = responsive_neurons
         self.raw_responsive_neurons = raw_responsive_neurons
 
-    def spike_raster(self, time_bin_size=0.05, window_list=None) -> tuple[dict, list]:
+    def spike_raster(self, time_bin_size=0.001, window_list=None) -> tuple[dict, list]:
         """spike_raster calculates psthvalues which can be used to create firing
         rate and raster plots. it takes in `time_bin_size` in seconds, ie the default
-        is 50 ms, but if using for raster plot 1 ms (0.001) is much better because a 
+        is 50 ms, but if using for raster plot 1 ms (0.001) is much better because a
         raster plot requires all bins to be 0 or 1."""
         if type(time_bin_size) == float:
             time_bin_size = [time_bin_size]
-        psthvalues, window = psthfn.rasterPSTH(self.sp, self.eventTimes, time_bin_size,window_list)
+        psthvalues, window = psthfn.rasterPSTH(
+            self.sp, self.eventTimes, time_bin_size, window_list
+        )
         self.psthvalues: dict = psthvalues
         self.time_bin: float = time_bin_size
         self.raster_window: list = window
@@ -446,7 +446,7 @@ class ClusterAnalysis:
 
     def plot_depth_scatter(self, mark_units=False) -> None:
         """plots a scatter plot of the depth of neural units. If
-        `mark_units` is `True` it will mark neurons labeled as 
+        `mark_units` is `True` it will mark neurons labeled as
         'good' in red vs other neurons in black"""
         wf = self.wf
         sp = self.sp
@@ -455,8 +455,8 @@ class ClusterAnalysis:
 
     def gen_respdf(self, qcthres: float, isi=None) -> None:
         """takes the responsive_neurons dictionary from plot_z and converts to a
-        pd.DataFrame. At the same time it can optionally take in a `qcthres` as 
-        a min isolation distance for cluster. Set to `0` to ignore as well as a 
+        pd.DataFrame. At the same time it can optionally take in a `qcthres` as
+        a min isolation distance for cluster. Set to `0` to ignore as well as a
         raw refractory spike violation number as a float (ie 0.02 would be less
         2% violations). `isi=None` ignores violations."""
         try:
@@ -476,31 +476,27 @@ class ClusterAnalysis:
         self.resp_neuro_df = resp_neurons_df
         self.non_resp_df = non_resp_df
 
-
     def prevalence_calculator(self) -> None:
-        """prevalence_calculator generates the counts for responsive neuron subtypes. 
-        Currently it just displays in terminal, but in the future I may store in a 
-        structure """
+        """prevalence_calculator generates the counts for responsive neuron subtypes.
+        Currently it just displays in terminal, but in the future I may store in a
+        structure"""
         prevalence_calculator(self.resp_neuro_df)
 
-    
-
     def gen_resp(self) -> None:
-        """genResp loads sp['cids'] with only responsive neurons that passed qc. 
+        """genResp loads sp['cids'] with only responsive neurons that passed qc.
         This allows for subanalysis of neurons. Can be reverted with `revertClu`"""
         sp = genResp(self.resp_neuro_df, self.sp)
         self.sp = sp
 
     def qc_only(self, qcthres: float) -> None:
         """This function ignores any responsiveness of neurons and instead only uses
-        the isolation distance to mark units as high enough quality. `qcthres` is a 
-        float of the min isolation distance required. It automatically makes the 
+        the isolation distance to mark units as high enough quality. `qcthres` is a
+        float of the min isolation distance required. It automatically makes the
         dataframe of these units"""
         sp, quality_df = qc_only(self.qcvalues, self.sp, qcthres=qcthres)
         self.sp = sp
         self.quality_df = quality_df
 
-    
     def revert_cids(self) -> None:
         """After masking data based on unit quality or responsiveness this function will
         unmask the low quality or unresponsive data to go back to reanalyze all data"""
