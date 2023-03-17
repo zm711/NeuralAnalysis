@@ -156,7 +156,7 @@ in your current folder"""
 def getFiles(filename: str) -> namedtuple:
 
     Filevals = namedtuple("Filevals", "wf firingrate qcvalues labels")
-    _, filepath, _ = getdirzm()
+    _, filepath, _ = getdir()
 
     os.chdir(filepath)
     try:
@@ -208,7 +208,7 @@ def loadPreviousAnalysis(title="") -> namedtuple:
     print(
         "Please select folder with previous analysis.\n If ClusterAnalysis save used it will be stored in pyanalysis"
     )
-    _, filepath, _ = getdirzm()
+    _, filepath, _ = getdir()
     os.chdir(filepath)
 
     Value = namedtuple(
