@@ -45,11 +45,11 @@ def create_defaults():
             {"raw": {"sustained": [75]}},
             {
                 "sorter_dict": {
-                    "Sustained": [50, 100],
-                    "Onset": [50, 65],
-                    "Onset-Offset": [50, 65, 90, 110],
-                    "Relief": [100, 150],
-                    "Inhib": [50, 67],
+                    "Sustained": [1.0],
+                    "Onset": [0.1],
+                    "Onset-Offset": [0.1, 0.1],
+                    "Relief": [0.2],
+                    "Inhib": [0.2],
                 }
             },
         ]
