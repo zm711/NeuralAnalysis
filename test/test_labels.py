@@ -14,14 +14,15 @@ import pandas as pd
 def test_labels():
     eventTimes = {"ADC1tot": {"TrialGroup": np.array([13.0])}}
     labels = label_generator.labelGenerator(eventTimes)
-    assert labels["13.0"] == "65.0 mmHg"
+    assert "Barostat" in labels.keys()
+    assert labels["Barostat"]["13.0"] == "65.0 mmHg"
 
 
 def test_qc_only():
     sp = dict()
     sp["filename"] = "test"
     sp["cids"] = np.array([0, 1, 2])
-    sp["noise"] = np.array([2])
+    sp["noise"] = np.array([False, False, True])
     qc = dict()
     qc["uQ"] = np.array([75.0, 10.0, 0.2])
     qcthres = 15.0
