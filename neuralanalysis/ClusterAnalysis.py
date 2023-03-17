@@ -121,9 +121,9 @@ class ClusterAnalysis:
                     self.labels: dict = clustermetrics.labels
                 if clustermetrics.isiv:
                     self.isiv: dict = clustermetrics.isiv
-                if clustermetrics.resp_neuro_df:
+                if clustermetrics.resp_neuro_df is not None:
                     self.resp_neuro_df: pd.DataFrame = clustermetrics.resp_neuro_df
-                if clustermetrics.non_resp_df:
+                if clustermetrics.non_resp_df is not None:
                     self.non_resp_df: pd.DataFrame = clustermetrics.non_resp_df
             else:
                 print("error loading previous analysis")
