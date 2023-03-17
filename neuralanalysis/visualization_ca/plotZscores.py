@@ -508,7 +508,7 @@ def responsive_neurons_calculator(
         offset_len = 3
 
     responsive_neurons = {}
-    event = event_len * time_bin_size
+    event = (event_len - zero_point) * time_bin_size
     for sorter in sorter_dict.keys():
         # responsive_neurons[sorter] = list()
         event_window = sorter_dict[sorter]
@@ -570,7 +570,7 @@ def responsive_neuron_calculator_nonz(
 
     if len(kwargs) == 0:
         sust = 75
-    event = event_len * time_bin_size
+    event = (event_len - zero_point) * time_bin_size
     responsive_neurons = {}
     for sorter in sorter_dict.keys():
         # responsive_neurons[sorter] = list()
