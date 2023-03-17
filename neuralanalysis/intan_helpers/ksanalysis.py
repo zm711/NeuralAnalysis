@@ -25,8 +25,7 @@ sp['temps'] = np.array of the kilosort templates used
 sp['winv'] = np.array of whitening matrix
 sp['xcoords'] np.array of xcoords of the recording probe
 sp['ycoords'] np.array of ycoords of recording probe
-sp['noise'] np.array of bool for
-
+sp['noise'] np.array of bool for noise clusterIDs
 
 eventTimes is split into digital or analog channels (DIG1 or ADC1) and then subdivided
 e.g. 
