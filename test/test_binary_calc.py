@@ -37,7 +37,7 @@ def test_spike_prep():
     sample_rate = 30_000.0
 
     length, time, trial = stimulushelpers.spike_prep(
-        final_array, sample_rate, trialGroup=0
+        final_array, sample_rate, trial_group=0
     )
 
     assert len(length) == len(time)
