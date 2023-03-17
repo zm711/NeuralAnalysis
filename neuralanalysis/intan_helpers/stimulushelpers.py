@@ -10,22 +10,20 @@ import glob
 
 
 def spike_prep(
-    board_dig_data: np.array, frameRate: float, trialGroup=0
+    board_dig_data: np.array, sample_rate: float, trial_group=0
 ) -> tuple[np.array, np.array, np.array]:
 
     # frameRate = paramread()
-    eventTimeLength, eventTime = calculate_binary(board_dig_data, frameRate)
+    eventTimeLength, eventTime = calculate_binary(board_dig_data, sample_rate)
     # if trialGroup == 0:
     # number = len(eventTime)
     # trialGroupList = list(map(int,input("\nEnter the numbers : ").strip().split()))[:number]
     # trialGroup = np.array(trialGroupList)
-    return eventTimeLength, eventTime, trialGroup
-
-
-"""this helper function calculates onset and offsets of 1s and 0s"""
+    return eventTimeLength, eventTime, trial_group
 
 
 def calculate_binary(binary: np.array, sample_rate: float) -> tuple[np.array, np.array]:
+    """Generates array of event lengths and event onsets"""
     binary_array = np.array(np.squeeze(binary), dtype=int)
     onset = np.where(np.diff(binary_array) == 1)[0] / sample_rate
     offset = (
@@ -49,21 +47,16 @@ def calculate_binary(binary: np.array, sample_rate: float) -> tuple[np.array, np
     return event_time_length, event_times
 
 
-"""this function gets the sample frequency I use in the spsteupzm function"""
-
-
 def paramread() -> float:
+    """Reads the `sample_rate from the params.py file"""
     if glob.glob("params.py"):
         with open("params.py", "r") as p:
             params = p.readlines()
-        paramList = params[4].split()
-        frequency = float(paramList[-1])
+        param_list = params[4].split()
+        frequency = float(param_list[-1])
         return frequency
     else:
         print("Find params.py file in folder")
-
-
-"""insert trial groups and eventTimes data"""
 
 
 def metadatafn(eventTimes: dict) -> dict:
@@ -106,20 +99,12 @@ def metadatafn(eventTimes: dict) -> dict:
             .strip()
             .title()
         )
-        try:
-            eventTimes[stim]["Rest"] = float(
-                input("Please enter the rest period for {stim}\n".format(stim=stim))
-            )
-        except ValueError:
-            eventTimes[stim]["Rest"] = np.nan
 
     return eventTimes
 
 
-"""Processing opto data from intan"""
-
-
 def optoproc(eventTimes: dict) -> dict:
+    """converts opto stimuli from individual stimuli into opto trains."""
     print("Processing Opto-Data")
     optochannel = ""
     for stim in eventTimes.keys():
@@ -183,12 +168,10 @@ def optoproc(eventTimes: dict) -> dict:
                     )
 
         eventTimeOptoTrialFinal = np.ones(len(eventTimeOptoFinal))
-
         eventTimes["OptoTrain"] = {}
         eventTimes["OptoTrain"]["EventTime"] = np.array(eventTimeOptoFinal)
         eventTimes["OptoTrain"]["Lengths"] = np.array(eventTimeOptoLenFinal)
         eventTimes["OptoTrain"]["TrialGroup"] = eventTimeOptoTrialFinal
         eventTimes["OptoTrain"]["Stim"] = "OptoTrain"
-        eventTimes["OptoTrain"]["Rest"] = 2  # place filler for now
 
         return eventTimes
