@@ -53,15 +53,13 @@ from ..intan_helpers.stimulushelpers import metadatafn, optoproc
 from ..intan_helpers.zmbin import binConvert
 from ..misc_helpers.genhelpers import getdir
 
-"""loadKS allows us to get sp and eventTimes for creating our class Basically we
-rerun the loadsp function each time in order to allow for any new phy curation
-I do save an *sp.npy file, but this is not loaded. This slows the code down a
-little bit. Then we try to find the eventTimes structure. There are a couple 
-steps in setting this up. But once it is done, the code just loads the eventTimes
-that has been generated."""
-
 
 def loadKS(baro=False):
+    """loadKS automatically generates `sp` and `eventTimes` if using Intan.
+    It runs `loadsp` to account for any new Phy curation. An *sp.npy file is save
+    but is not loaded. Then we try to find the `*eventTimes.npy`. If this file
+    doesn't not exist this function will generate it automatically for Intan users.
+    Eventually other data types will be incorporated."""
     print("Select the directory with the *sp.npy file")
     sp: dict = loadsp()
     print("Select the directory with the *eventTimes.npy file.")
