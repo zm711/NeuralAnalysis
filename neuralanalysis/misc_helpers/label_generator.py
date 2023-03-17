@@ -23,10 +23,10 @@ def labelGenerator(eventTimes: dict) -> dict:
 
     trials = set(trial_groups)  # will have repeats so take the set
 
-    labels = dict()
+    labels = {"Barostat": {}}
 
     for trial in trials:
-        labels[str(trial)] = str(trial * 0.25 * 20) + " mmHg"
+        labels["Barostat"][str(trial)] = str(trial * 0.25 * 20) + " mmHg"
 
     return labels
 
@@ -55,11 +55,11 @@ def responseDF(
         print("no qcvalues")
         run_qc = False
     filename = sp["filename"]
-    neuron_idx = hash(filename)
+    neuron_idx = hashlib.sha256((filename).encode()).hexdigest()
     cids = sp["cids"]
     noise = sp["noise"]
     if len(cids) != len(unit_quality) and qcthres > 0:
-        unit_quality = unit_quality[np.isin("cids", noise, invert=True)]
+        unit_quality = unit_quality[~noise]
 
     if isiv is not None:
         viol_percent = list()
@@ -110,7 +110,7 @@ def responseDF(
 
     if labels:  # if we have labels change the int trial group to the actual stim value
         for idx, value in enumerate(trialgroup_list):
-            trialgroup_list[idx] = labels[str(value)]
+            trialgroup_list[idx] = labels[stim_list[idx]][str(value)]
 
     resp_neuron_df = pd.DataFrame({})
     if len(trialgroup_list) != 0:
@@ -172,7 +172,7 @@ def qc_only(
     cids = sp["cids"]
     noise = sp["noise"]
     qc_list = qcvalues["uQ"]
-    qc_list = qc_list[np.isin(cids, noise, invert=True)]
+    qc_list = qc_list[~noise]
 
     threshold = np.squeeze(np.argwhere(qc_list > qcthres))
 
