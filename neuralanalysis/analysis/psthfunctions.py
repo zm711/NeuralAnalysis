@@ -104,12 +104,11 @@ def time_stamps_to_bins(
     return bin_array, bin_centers
 
 
-"""sp is are master dictionary of the neural data. eventTimes here is our dictionary
-of all our stimuli with all events and their lengths. timeBinSize will be binsize in 
-seconds"""
-
 
 def rasterPSTH(sp: dict, eventTimes: dict, time_bins: list,window_list: list) -> tuple[dict, list]:
+    """takes in `sp` neural data, `eventTimes` the stimulus dict, `time_bins` a list of time bin
+    sizes, and `window_list` a list of windows to analyze. Function returns psthvalues and 
+    the windows used."""
     spikeTimes = np.squeeze(sp["spikeTimes"])
     clu = np.squeeze(sp["clu"])
     clusterIDs = list(sp["cids"])
@@ -154,54 +153,3 @@ def rasterPSTH(sp: dict, eventTimes: dict, time_bins: list,window_list: list) ->
                     psthvalues[eventTimes[stim]["Stim"]][str(cluster)]["Bins"] = bins
 
     return psthvalues, windowlst
-
-
-""" sets up the data to run the histdiff--DEPRECATING
-
-
-def timestampsToBinned(
-    timeStamps: np.array, referencePoints: np.array, binSize: float, window: list
-):
-    stepNumber = int(abs((window[1] - window[0]) / binSize + 1))
-    binBorders = np.linspace(window[0], window[1], num=stepNumber)
-    binNumber = len(binBorders) - 1
-    we make two deep copies of our bins. Since we will be mutating things with rust we need these copies to
-    have their own pointers so we can use them without just changing the same data over and over
-    totalBins = np.broadcast_to(
-        binBorders, (len(referencePoints),) + binBorders.shape
-    ).copy()
-    binCenters = binBorders.copy()
-
-    if len(referencePoints) == 0:
-        binArray = list()
-        binCenters = binBorders[0:-2] + binSize / 2
-        return binArray, binCenters
-    binArray = np.zeros((len(referencePoints), binNumber))
-    if len(timeStamps) == 0:
-        binCenters = binBorders[0:-2] + binSize / 2
-        return binArray, binCenters
-
-    try:
-        bincenterpy(binCenters)
-    except NameError:
-        print("Rust error")
-    finally:
-        for r in range(len(referencePoints)):
-            try:  # if ordhist module generate our binCenters once. Remove last point
-                hd.rusthist(
-                    timeStamps, np.array(referencePoints[r]), totalBins[r]
-                )  # then we run our rust histo alogrithm, which mutates in place in totalBins
-            except (
-                NameError
-            ):  # if we can't use rust, we default back to the slower, but functional python-native algorithm
-                n, binCenters, test = hd.histdiff(
-                    timeStamps, referencePoints[r], totalBins[r]
-                )
-                binArray[r] = n
-
-        if len(binCenters) > binNumber:  # if rust code check for extra collumn
-            binCenters = binCenters[:-1]  # delete the extra column
-            binArray = totalBins[:, :-1]  #
-
-        return binArray, binCenters
-"""
