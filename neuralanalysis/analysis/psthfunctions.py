@@ -4,11 +4,6 @@ Created on Fri Aug 12 09:41:39 2022
 
 @author: ZacharyMcKenzie
 
-
-INPUTS: st: spike times nSpikes
-        eventTimes: list of eventtimes
-        window are list with [start, stop]
-        psthBinSize: float of time bin in seconds
 """
 import numpy as np
 from numba import jit
@@ -50,11 +45,10 @@ def psthAndBA(
     return psth, bins, rasterX, rasterY, spike_counts, binned_array
 
 
-"""creates rasters in x and y dimension in case we need to do python raster plots"""
-
-
 @jit(nopython=True, cache=True)
 def rasterize(time_stamps: np.array) -> tuple[np.array, np.array]:
+    """creates raster values for generating raster plots, based on 
+    counts in time bins"""
     min_val: int = 0
     max_val: int = 1
     x_out = np.empty((len(time_stamps) * 3))
