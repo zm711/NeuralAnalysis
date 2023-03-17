@@ -152,7 +152,11 @@ def plotZscores(
             )
 
             resp_dict = responsive_neurons_calculator(
-                zscore_pivot, zero_point, sorter_dict, timeBinSize
+                zscore_pivot,
+                zero_point,
+                event_len,
+                timeBinSize,
+                sorter_dict,
             )
 
             """we also need to account for neurons which are low baseline activity 
@@ -177,7 +181,11 @@ def plotZscores(
             )
 
             resp_raw_dict = responsive_neuron_calculator_nonz(
-                raw_spike_pivot, zero_point, sorter_dict, timeBinSize
+                raw_spike_pivot,
+                zero_point,
+                event_len,
+                timeBinSize,
+                sorter_dict,
             )
 
             for sorter in resp_dict.keys():
@@ -285,10 +293,18 @@ def plotZscores(
                 )
 
                 resp_dict = responsive_neurons_calculator(
-                    zscore_pivot, zero_point, sorter_dict, timeBinSize
+                    zscore_pivot,
+                    zero_point,
+                    event_len,
+                    timeBinSize,
+                    sorter_dict,
                 )
                 resp_raw_dict = responsive_neuron_calculator_nonz(
-                    raw_spike_pivot, zero_point, sorter_dict, timeBinSize
+                    raw_spike_pivot,
+                    zero_point,
+                    event_len,
+                    timeBinSize,
+                    sorter_dict,
                 )
 
                 for sorter in resp_dict.keys():
@@ -462,8 +478,9 @@ the zscore data, and the sorter_dict to check for responsivity values"""
 def responsive_neurons_calculator(
     zscore_pivot: pd.DataFrame,
     zero_point: int,
-    sorter_dict: dict,
+    event_len: int,
     time_bin_size: float,
+    sorter_dict: dict,
     **kwargs,
 ) -> dict:
     for key, value in kwargs.items():
@@ -490,27 +507,19 @@ def responsive_neurons_calculator(
         offset = 2.5
         offset_len = 3
 
-    # = zscore_pivot.iloc[:, :zero_point].mean(
-    #    axis=1
-    # ) + 0.75 * zscore_pivot.iloc[:, :zero_point].std(axis=1)
-    # mean_baseline_below = zscore_pivot.iloc[:, :zero_point].mean(
-    #     axis=1
-    # ) - zscore_pivot.iloc[:, :zero_point].std(axis=1)
-
-    # print(sust) uncomment to see what value function is currently using
     responsive_neurons = {}
-
+    event = event_len * time_bin_size
     for sorter in sorter_dict.keys():
         # responsive_neurons[sorter] = list()
         event_window = sorter_dict[sorter]
         sorter = sorter.lower()
-        if len(event_window) == 4:  # this indicates onset-offset only
-            z_sorter1 = zscore_pivot.iloc[:, event_window[0] : event_window[1]]
-            z_sorter2 = zscore_pivot.iloc[:, event_window[2] : event_window[3]]
+        if len(event_window) == 2:  # this indicates onset-offset only
+            z_sorter1 = zscore_pivot.loc[:, 0.0 : event + (event * event_window[0])]
+            z_sorter2 = zscore_pivot.loc[:, event : event + (event * event_window[1])]
+        elif sorter == "relief":
+            z_sorter = zscore_pivot.loc[:, event : event + (event * event_window[0])]
         else:
-            z_sorter = zscore_pivot.iloc[
-                :, event_window[0] : event_window[1]
-            ]  # all others
+            z_sorter = zscore_pivot.loc[:, 0.0 : event + (event * event_window[0])]
 
         """if inhib we look for -2 std Chirella et al used -1.
         for sustained I used >3SDs (Alan Emanuel et al 2021 Nature used 2.58 to get the
@@ -550,8 +559,9 @@ def responsive_neurons_calculator(
 def responsive_neuron_calculator_nonz(
     raw_pivot: pd.DataFrame,
     zero_point: int,
-    sorter_dict: dict,
+    event_len: int,
     time_bin_size: float,
+    sorter_dict: dict,
     **kwargs,
 ) -> dict:
     for key, value in kwargs.items():
@@ -560,21 +570,23 @@ def responsive_neuron_calculator_nonz(
 
     if len(kwargs) == 0:
         sust = 75
-
+    event = event_len * time_bin_size
     responsive_neurons = {}
     for sorter in sorter_dict.keys():
         # responsive_neurons[sorter] = list()
         event_window = sorter_dict[sorter]
         sorter = sorter.lower()
-        if len(event_window) == 4:  # this indicates onset-offset only
+        if len(event_window) == 2:  # this indicates onset-offset only
             raw_pivot_sorter = (
-                raw_pivot.iloc[:, event_window[0] : event_window[1]]
-                + raw_pivot.iloc[:, event_window[2] : event_window[3]]
+                raw_pivot.loc[:, 0.0 : event + (event * event_window[0])]
+                + raw_pivot.loc[:, event : event + (event * event_window[1])]
             )
+        elif sorter == "relief":
+            raw_pivot_sorter = raw_pivot.loc[
+                :, event : event + (event * event_window[0])
+            ]
         else:
-            raw_pivot_sorter = raw_pivot.iloc[
-                :, event_window[0] : event_window[1]
-            ]  # all o
+            raw_pivot_sorter = raw_pivot.loc[:, 0.0 : event + (event * event_window[0])]
 
         if sorter == "inhib":
             resp_neurons = list()
