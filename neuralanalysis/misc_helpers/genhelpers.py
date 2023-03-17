@@ -63,7 +63,7 @@ def findindex(matrix: np.array) -> tuple[np.array, np.array]:
 def savefile(filename: str, file: str) -> None:
     if len(filename) > 90:
         filename = filename[:90]
-        
+
     if os.path.isfile(filename):
         print("File already exists.")
         overWrite = input("Would you like to overwrite y/n?\n")
@@ -154,7 +154,6 @@ in your current folder"""
 
 
 def getFiles(filename: str) -> namedtuple:
-
     Filevals = namedtuple("Filevals", "wf firingrate qcvalues labels")
     _, filepath, _ = getdir()
 
@@ -206,7 +205,7 @@ it doesn't exist in the current folder"""
 
 def loadPreviousAnalysis(title="") -> namedtuple:
     print(
-        "Please select folder with previous analysis.\n If ClusterAnalysis save used it will be stored in pyanalysis"
+        "Please select folder with previous analysis.\nIf ClusterAnalysis save used it will be stored in pyanalysis"
     )
     _, filepath, _ = getdir()
     os.chdir(filepath)
