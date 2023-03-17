@@ -31,3 +31,11 @@ def test_gen_res(mocker):
     sp, eventTimes = gen_data(1234567890)
     neuron = ClusterAnalysis(sp, eventTimes)
     assert neuron.gen_resp() == 5
+
+
+def test_gen_resdf(mocker):
+    mocker.patch.object(ClusterAnalysis, "gen_respdf", return_value=5)
+
+    sp, eventTimes = gen_data(1234567890)
+    neuron = ClusterAnalysis(sp, eventTimes)
+    assert neuron.gen_respdf() == 5
