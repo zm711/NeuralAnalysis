@@ -109,7 +109,7 @@ def test_masked_cluster_quality_core():
         this_cluster_fail, that_cluster
     )
     assert np.isnan(contam_rate), "failed testing for n>nfeat"
-    assert np.isnan(sil), "failed testing for n>nfeat"
+    assert sil == 0.0, "failed testing for n>nfeat"
 
     # fail because n > nOther -> contam is nan
     this_cluster_fail2 = np.array(seq.rand(40, 15))
@@ -117,7 +117,7 @@ def test_masked_cluster_quality_core():
         this_cluster_fail2, that_cluster
     )
     assert np.isnan(contam_rate), "failed testing for n > nOther"
-    assert np.isnan(sil), "failed testing for n > nOther"
+    assert sil == 0.0, "failed testing for n > nOther"
 
 
 def test_qc_masked_cluster_quality_sparse():
@@ -155,4 +155,4 @@ def test_qc_masked_cluster_quality_sparse():
     assert len(cr) == 2
     assert uq[0] == 0.0
     assert np.isnan(cr[0])
-    assert np.isnan(sil[0])
+    assert sil[0] == 0.0
