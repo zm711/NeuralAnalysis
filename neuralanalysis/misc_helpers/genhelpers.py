@@ -154,7 +154,7 @@ in your current folder"""
 
 
 def getFiles(filename: str) -> namedtuple:
-    Filevals = namedtuple("Filevals", "wf firingrate qcvalues labels")
+    Filevals = namedtuple("Filevals", "wf firingrate qcvalues labels isiv")
     _, filepath, _ = getdir()
 
     os.chdir(filepath)
@@ -174,11 +174,16 @@ def getFiles(filename: str) -> namedtuple:
         labels_file = glob.glob("*labels*.npy")[0]
     except IndexError:
         labels_file = False
+    try:
+        isiv_file = glob.glob("*isiv*.npy")[0]
+    except IndexError:
+        isiv_file = False
 
     wf = None
     firingrate = None
     qcvalues = None
     labels = None
+    isiv = None
 
     if wf_file:
         wf = np.load(wf_file, allow_pickle=True)[()]
@@ -192,7 +197,10 @@ def getFiles(filename: str) -> namedtuple:
     if labels_file:
         labels = np.load(labels_file, allow_pickle=True)[()]
 
-    metrics = Filevals(wf, firingrate, qcvalues, labels)
+    if isiv_file:
+        isiv = np.load(isiv_file, allow_pickle=True)[()]
+
+    metrics = Filevals(wf, firingrate, qcvalues, labels, isiv)
 
     return metrics
 
