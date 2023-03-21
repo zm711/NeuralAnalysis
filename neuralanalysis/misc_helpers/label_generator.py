@@ -45,6 +45,7 @@ def responseDF(
     sp: dict,
     labels: dict,
     qcthres: float,
+    sil: float,
     isi=None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     # cids = sp["cids"]
@@ -54,12 +55,21 @@ def responseDF(
     except TypeError:
         print("no qcvalues")
         run_qc = False
+    try:
+        sil_quality = qcvalues["sil"]
+        run_sil = True
+    except TypeError:
+        print("no silhouette scores")
+        run_sil = False
     filename = sp["filename"]
     neuron_idx = hashlib.sha256((filename).encode()).hexdigest()
     cids = sp["cids"]
     noise = sp["noise"]
-    if len(cids) != len(unit_quality) and qcthres > 0:
+
+    if qcthres > 0 and len(cids) != len(unit_quality):
         unit_quality = unit_quality[~noise]
+    if sil > 0 and len(cids) != len(sil_quality):
+        sil_quality = sil_quality[~noise]
 
     if isiv is not None:
         viol_percent = list()
@@ -73,6 +83,7 @@ def responseDF(
     qc_list = list()
     viol_list = list()
     resp_list = list()
+    sil_list = list()
 
     """need to account for if trial groups exist"""
     for stim in responsive_neurons.keys():
@@ -88,6 +99,8 @@ def responseDF(
                         qc_list.append(unit_quality[idx])
                     if isiv is not None:
                         viol_list.append(viol_percent[idx])
+                    if run_sil:
+                        sil_list.append(sil_quality[idx])
         else:
             for tg in resp_stim.keys():
                 resp_stim_tg = resp_stim[tg]
@@ -102,6 +115,8 @@ def responseDF(
                             qc_list.append(unit_quality[idx])
                         if isiv is not None:
                             viol_list.append(viol_percent[idx])
+                        if run_sil:
+                            sil_list.append(sil_quality[idx])
 
     neuron_idx_list = [neuron_idx] * len(stim_list)  # same id for number of neurons
     hash_idx_list = [
@@ -125,15 +140,24 @@ def responseDF(
     resp_neuron_df["HashID"] = hash_idx_list
     if isiv is not None:
         resp_neuron_df["ISI Violation Fraction"] = viol_list
+    if run_sil:
+        resp_neuron_df["Silhouette Score"] = sil_quality
 
     """Following section makes the non-responsive neurons into a dataframe so we can
     analyze them separately"""
     non_resp = list()
     non_resp_qc = list()
+    non_resp_sil = list()
+    non_viol_list = list()
     for idx, cluster in enumerate(cids):
         if cluster not in idx_list:
             non_resp.append(cluster)
-            non_resp_qc.append(unit_quality[idx])
+            if run_qc:
+                non_resp_qc.append(unit_quality[idx])
+            if run_sil:
+                non_resp_sil.append(sil_quality[idx])
+            if isiv is not None:
+                non_viol_list.append(viol_percent[idx])
 
     non_resp_hash_idx = [
         hashlib.sha256((str(ids) + filename).encode()).hexdigest() for ids in non_resp
@@ -143,11 +167,17 @@ def responseDF(
     non_resp_df = pd.DataFrame(
         {
             "IDs": non_resp,
-            "QC": non_resp_qc,
             "File Hash": non_neuron_idx_list,
             "HashID": non_resp_hash_idx,
         }
     )
+
+    if run_qc:
+        non_resp_df["QC"] = non_resp_qc
+    if run_sil:
+        non_resp_df["Silhouette Score"] = non_resp_sil
+    if isiv is not None:
+        non_resp_df["ISI Violation Fraction"] = non_viol_list
 
     # final quality run through if offered
     if qcthres and run_qc:
@@ -158,14 +188,17 @@ def responseDF(
         resp_neuron_df = resp_neuron_df.loc[
             resp_neuron_df["ISI Violation Fraction"] < isi
         ]
+        non_resp_df = non_resp_df.loc[non_resp_df["ISI Violation Fraction"] > isi]
+
+    if sil and run_sil:
+        resp_neuron_df = resp_neuron_df.loc[resp_neuron_df["Silhouette Score"] > sil]
+        non_resp_df = non_resp_df.loc[non_resp_df["Silhouette Score"] > sil]
 
     return resp_neuron_df, non_resp_df
 
 
 def qc_only(
-    qcvalues: dict,
-    sp: dict,
-    qcthres: float,
+    qcvalues: dict, isiv: dict, sp: dict, qcthres: float, sil: float, isi: float
 ) -> tuple[dict, pd.DataFrame]:
     filename = sp["filename"]
     neuron_idx = hash(filename)
@@ -173,11 +206,29 @@ def qc_only(
     noise = sp["noise"]
     qc_list = qcvalues["uQ"]
     qc_list = qc_list[~noise]
+    sil_list = qcvalues["sil"]
+    sil_list = sil_list[~noise]
 
-    threshold = np.squeeze(np.argwhere(qc_list > qcthres))
+    if isiv is not None:
+        isi_list = list()
+        for key in isiv.keys():
+            isi_list.append(isiv[key]["nViol"])
 
+        isi_list = np.array(isi_list)
+        isi_list = isi_list[~noise]
+
+    qc_threshold = np.where(qc_list > qcthres, True, False)
+    sil_threshold = np.where(sil_list > sil, True, False)
+    isi_threshold = np.where(np.array(isi_list) < isi, True, False)
+
+    threshold = np.logical_and(qc_threshold, sil_threshold)
+    threshold = np.logical_and(threshold, isi_threshold)
+    if len(cids) != len(threshold):
+        cids = cids[~noise]
     final_cids = np.array(cids[threshold])
     final_qc = np.array(qc_list[threshold])
+    final_sil = np.array(sil_list[threshold])
+    final_isi = np.array(np.array(isi_list)[threshold])
     if np.size(final_cids) != 1:
         filename_list = [neuron_idx] * len(final_cids)
         hash_idx = [
@@ -192,6 +243,8 @@ def qc_only(
         {
             "IDs": final_cids,
             "QC": final_qc,
+            "Silhouette Score": final_sil,
+            "ISI Violation Fraction": final_isi,
             "File Hash": filename_list,
             "HashID": hash_idx,
         }
