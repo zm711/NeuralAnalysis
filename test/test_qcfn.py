@@ -10,6 +10,7 @@ import numpy as np
 
 from neuralanalysis.qcfn import isiVqc
 from neuralanalysis.qcfn import qcfns
+from neuralanalysis.qcfn import silhouette_score
 
 from numpy.random import RandomState
 import numpy.testing
@@ -25,7 +26,7 @@ def test_isisv():
     fp, num_viol = isiVqc.isiVCore(timestamps, isi, ref_dur)
     num_viol = int(num_viol)
     assert np.isnan(fp)
-    assert num_viol == 91
+    assert num_viol == 91, "Failed counting number of violations"
 
     ref_dur_long = 0.1
     fp, num_viol = isiVqc.isiVCore(timestamps, isi, ref_dur_long)
@@ -38,8 +39,8 @@ def test_count_unique():
     timestamps = np.array(seq.randint(0, 1000, size=500))
     values, instances = qcfns.count_unique(timestamps)
 
-    assert len(values) == 409
-    assert len(values) == len(instances)
+    assert len(values) == 409, "count unique failed"
+    assert len(values) == len(instances), "values and instances need to be same length"
 
     assert values[45] == 129
     assert instances[45] == 1
@@ -49,7 +50,7 @@ def test_count_unique_simple():
     test_array = np.array([1, 1, 2, 3, 4, 5, 5, 5])
     values, instance = qcfns.count_unique(test_array)
 
-    assert len(values) == 5
+    assert len(values) == 5, "count unique function failed"
     numpy.testing.assert_allclose(np.array(values), np.array([1, 2, 3, 4, 5]))
     numpy.testing.assert_allclose(np.array(instance), np.array([2, 1, 1, 1, 3]))
 
@@ -78,14 +79,14 @@ def test_tipping_point_simple():
     x = np.array([1, 4, 5])
     y = np.array([2, 3, 6])
     final_pos = qcfns.tipping_point(x, y)
-    assert final_pos == 2
+    assert final_pos == 2, "Tipping point failed--contam rate"
 
 
 def test_tipping_point_simple_low_tip():
     x = np.array([1, 7, 8, 9, 10])
     y = np.array([2, 3, 4, 5, 6, 11])
     pos = qcfns.tipping_point(x, y)
-    assert pos == 1
+    assert pos == 1, "tipping point failed"
 
 
 def test_masked_cluster_quality_core():
@@ -155,4 +156,14 @@ def test_qc_masked_cluster_quality_sparse():
     assert len(cr) == 2
     assert uq[0] == 0.0
     assert np.isnan(cr[0])
-    assert sil[0] == 0.0
+
+
+def test_silhouette_score():
+    seq = RandomState(1234567890)
+    this_cluster = np.array(seq.rand(20, 15))
+    seq2 = RandomState(1234567895)
+    that_cluster = np.array(seq2.rand(30, 15))
+
+    sil = silhouette_score.silhouette_score(this_cluster, that_cluster)
+
+    assert np.isclose(sil, 0.030694767371927844), "failed silhouette test"
