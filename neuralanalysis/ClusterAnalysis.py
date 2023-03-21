@@ -26,7 +26,6 @@ import pandas as pd
 
 # general functions--glue for the class
 from .misc_helpers.genhelpers import getFiles, loadPreviousAnalysis, getdir
-from .misc_helpers.cap_conversion import cap_conversion
 from .misc_helpers.label_generator import (
     labelGenerator,
     responseDF,
@@ -104,6 +103,8 @@ class ClusterAnalysis:
             self.qc: dict = metrics.qcvalues
         if metrics.labels:
             self.labels: dict = metrics.labels
+        if metrics.isiv:
+            self.isiv: dict = metrics.isiv
         try:
             clustermetrics = loadPreviousAnalysis(title=title)
             if type(clustermetrics) != str:
@@ -453,7 +454,7 @@ class ClusterAnalysis:
         waveform_depths = self.waveform_depth
         plotDepthSpike(sp, wf, waveform_depths, units_marked=mark_units)
 
-    def gen_respdf(self, qcthres: float, isi=None) -> None:
+    def gen_respdf(self, qcthres: float, sil: float, isi=None) -> None:
         """takes the responsive_neurons dictionary from plot_z and converts to a
         pd.DataFrame. At the same time it can optionally take in a `qcthres` as
         a min isolation distance for cluster. Set to `0` to ignore as well as a
@@ -471,6 +472,7 @@ class ClusterAnalysis:
             self.sp,
             self.labels,
             qcthres=qcthres,
+            sil=sil,
             isi=isi,
         )
         self.resp_neuro_df = resp_neurons_df
@@ -488,12 +490,14 @@ class ClusterAnalysis:
         sp = genResp(self.resp_neuro_df, self.sp)
         self.sp = sp
 
-    def qc_only(self, qcthres: float) -> None:
+    def qc_only(self, qcthres: float, sil: float, isi: float) -> None:
         """This function ignores any responsiveness of neurons and instead only uses
         the isolation distance to mark units as high enough quality. `qcthres` is a
         float of the min isolation distance required. It automatically makes the
         dataframe of these units"""
-        sp, quality_df = qc_only(self.qcvalues, self.sp, qcthres=qcthres)
+        sp, quality_df = qc_only(
+            self.qcvalues, self.isiv, self.sp, qcthres=qcthres, sil=sil, isi=isi
+        )
         self.sp = sp
         self.quality_df = quality_df
 
