@@ -25,19 +25,25 @@ def test_qc_only():
     sp["noise"] = np.array([False, False, True])
     qc = dict()
     qc["uQ"] = np.array([75.0, 10.0, 0.2])
+    qc["sil"] = np.array([0.9, 0.8, 0.8])
     qcthres = 15.0
+    sil = 0.75
+    isiv = {"0": {"nViol": 0.002}, "1": {"nViol": 0.001}, "2": {"nViol": 0.0001}}
+    isi = 0.02
 
-    sp, quality_df = label_generator.qc_only(qc, sp, qcthres)
+    sp, quality_df = label_generator.qc_only(qc, isiv, sp, qcthres, sil, isi)
 
-    assert np.shape(sp["cids"]) == ()
+    assert np.shape(sp["cids"]) == (1,)
     assert sp["cids"] == 0
 
-    assert np.shape(quality_df) == (1, 4)
+    assert np.shape(quality_df) == (1, 6)
     assert quality_df["QC"][0] == 75.0
+    assert quality_df["Silhouette Score"][0] == 0.9
+    assert quality_df["ISI Violation Fraction"][0] == 0.002
 
     assert (
         quality_df["HashID"][0]
-        == "a96e0beb59a16b085a7d2b3b5ffd6e5971870aa2903c6df86f26fa908ded2e21"
+        == "37a45319b07f1d11b65476f871f4d47ecdc719223decdb1c20a7b7b4ea03c51f"
     )
 
 
