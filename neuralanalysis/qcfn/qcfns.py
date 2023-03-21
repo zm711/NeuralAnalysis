@@ -198,9 +198,9 @@ def masked_cluster_quality_sparse(
         theseSpikes = clu == clusterIDs[cluster]
         n = np.sum(theseSpikes)
         if n < fetN or n >= N / 2:
-            unitQuality[cluster] = 0
+            unitQuality[cluster] = 0.0
             contaminationRate[cluster] = np.NaN
-            sil_score[cluster] = np.NaN
+            sil_score[cluster] = 0.0
             continue
 
         fetThisCluster = np.reshape(fet[theseSpikes, :, :fetNchans], (n, -1))
@@ -343,9 +343,9 @@ def masked_cluster_quality_core(
         )  # we calculate the point at which we are more contamination then not
 
     else:  # if we fail our conditions above we report that for this cluster
-        unit_quality = 0
+        unit_quality = 0.0
         contamination_rate = np.NaN
-        mean_sil_score = np.NaN
+        mean_sil_score = 0.0
 
     return unit_quality, contamination_rate, mean_sil_score
 
