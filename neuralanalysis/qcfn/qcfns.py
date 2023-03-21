@@ -29,6 +29,7 @@ from scipy.spatial.distance import cdist
 import os
 from ..misc_helpers.genhelpers import getdir, savefile, findindex
 from numba import jit
+from .silhouette_score import silhouette_score
 
 """ This is the initialization function. We pull in our PC features and then organize 
 the current cluster features compared to the nearest other cluster features. We are 
@@ -132,12 +133,13 @@ def maskedClusterQuality(sp=None) -> tuple[np.array, np.array, dict]:
 
     else:
         print("computing cluster qualities....\n")
-        unitQuality, contaminationRate = masked_cluster_quality_sparse(
+        unitQuality, contaminationRate, sil_score = masked_cluster_quality_sparse(
             spike_clusters, pc_features, pc_features_ind
         )
         print("Finalizing output")
         qcvalues["uQ"] = unitQuality
         qcvalues["cR"] = contaminationRate
+        qcvalues["sil"] = sil_score
         savefile(filename + "qcvalues.npy", qcvalues)
 
         return unitQuality, contaminationRate, qcvalues
@@ -187,17 +189,18 @@ def masked_cluster_quality_sparse(
     contaminationRate = np.zeros(
         len(clusterIDs),
     )  # memory allocation
-
+    sil_score = np.zeros(len(clusterIDs))
     """Iterate through the clusters now to get the this vs other we start by 
     geting all the this feature space"""
     print("Quality metrics values being calculated")
-    print("Cluster Number/ Isolation Distance/ Contamination Rate")
+    print("Cluster Number/ Isolation Distance/ Contamination Rate/ Silhouette Score")
     for cluster in range(len(clusterIDs)):
         theseSpikes = clu == clusterIDs[cluster]
         n = np.sum(theseSpikes)
         if n < fetN or n >= N / 2:
             unitQuality[cluster] = 0
             contaminationRate[cluster] = np.NaN
+            sil_score[cluster] = np.NaN
             continue
 
         fetThisCluster = np.reshape(fet[theseSpikes, :, :fetNchans], (n, -1))
@@ -277,20 +280,21 @@ def masked_cluster_quality_sparse(
             )
         else:  # this puts in a small array which allows for the Core function to fail.
             fetOtherClusters = np.array([0])
-        uQ, cR = masked_cluster_quality_core(
+        uQ, cR, sil = masked_cluster_quality_core(
             fetThisCluster, fetOtherClusters
         )  # dist fn
 
         unitQuality[cluster] = uQ  # load each isolation distance into our final output
         contaminationRate[cluster] = cR * 100.00  # load the contaimnation rate
+        sil_score[cluster] = sil
 
         print(
-            "      {cluster}                 {uQ:.2f}               {cR:.2f}%       ".format(
-                cluster=clusterIDs[cluster], uQ=uQ, cR=cR * 100
+            "      {cluster}                 {uQ:.2f}               {cR:.2f}%        {sil:.2f}".format(
+                cluster=clusterIDs[cluster], uQ=uQ, cR=cR * 100, sil=sil
             )
         )
 
-    return unitQuality, contaminationRate
+    return unitQuality, contaminationRate, sil_score
 
 
 """Finally we are at the core where the data is ready to be processed. We bring in 
@@ -315,6 +319,7 @@ def masked_cluster_quality_core(
     can't do this type of analysis"""
 
     if nOther > n and n > nfet:
+        mean_sil_score = silhouette_score(fetThisCluster, fetOtherClusters)
         cov_fetThisCluster = np.linalg.inv(np.cov(fetThisCluster, rowvar=False))
         mean_fetThisCluster = np.reshape(np.mean(fetThisCluster, axis=0), (1, -1))
         md = cdist(
@@ -340,8 +345,9 @@ def masked_cluster_quality_core(
     else:  # if we fail our conditions above we report that for this cluster
         unit_quality = 0
         contamination_rate = np.NaN
+        mean_sil_score = np.NaN
 
-    return unit_quality, contamination_rate
+    return unit_quality, contamination_rate, mean_sil_score
 
 
 """This function determines the point at which we take a ball of good spikes and bad 
