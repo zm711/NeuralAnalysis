@@ -23,11 +23,12 @@ OUTPUTS: the dict isiV which has three keys for each cluster:
 """
 
 import numpy as np
+from ..misc_helpers.genhelpers import savefile
 
 
 def isiV(sp: dict, isi=0.0005, ref_dur=0.0015) -> dict:
-
     spike_times = np.squeeze(sp["spikeTimes"])
+    filename = sp["filename"]
 
     clu = np.squeeze(sp["clu"])  # need clusters to reference spikes from spikeTimes
 
@@ -43,7 +44,6 @@ def isiV(sp: dict, isi=0.0005, ref_dur=0.0015) -> dict:
         ):  # need to check if there are at least 2 spikes for that cluster
             continue
         else:
-
             fp_rate, nViolations = isiVCore(spike_times[clu == cluster], isi, ref_dur)
 
             isiV[str(cluster)] = {}
@@ -59,12 +59,11 @@ def isiV(sp: dict, isi=0.0005, ref_dur=0.0015) -> dict:
                     cluster, fp_rate, nViolations / nSpikes * 100
                 )
             )
-
+    savefile(filename + "isiv.npy", isiV)
     return isiV
 
 
 def isiVCore(spikes: np.array, isi: float, ref_dur: float) -> tuple[float, int]:
-
     total_rate = float(len(spikes) / (spikes[-1] - spikes[0]))
     num_violations = float(len(np.where(np.diff(spikes) <= ref_dur)[0]))
 
