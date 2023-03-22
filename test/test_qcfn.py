@@ -95,30 +95,29 @@ def test_masked_cluster_quality_core():
     seq2 = RandomState(1234567891)
     that_cluster = np.array(seq2.rand(30, 15))
 
-    unit_quality, contam_rate, sil = qcfns.masked_cluster_quality_core(
+    unit_quality, contam_rate = qcfns.masked_cluster_quality_core(
         this_cluster, that_cluster
     )
     # good unit 0 contam, high unit quality
     contam_rate = int(contam_rate)
     assert np.isclose(unit_quality, 74.78633819077363), " unit quality calc wrong"
     assert contam_rate == 0, "contam rate failed"
-    assert np.isclose(sil, 0.0440813454804565), "sil score failed"
 
     # fail because n< nfeat -> contam is nan
     this_cluster_fail = np.array(seq.rand(10, 15))
-    unit_quality, contam_rate, sil = qcfns.masked_cluster_quality_core(
-        this_cluster_fail, that_cluster
-    )
+    (
+        unit_quality,
+        contam_rate,
+    ) = qcfns.masked_cluster_quality_core(this_cluster_fail, that_cluster)
     assert np.isnan(contam_rate), "failed testing for n>nfeat"
-    assert sil == 0.0, "failed testing for n>nfeat"
 
     # fail because n > nOther -> contam is nan
     this_cluster_fail2 = np.array(seq.rand(40, 15))
-    unit_quality, contam_rate, sil = qcfns.masked_cluster_quality_core(
-        this_cluster_fail2, that_cluster
-    )
+    (
+        unit_quality,
+        contam_rate,
+    ) = qcfns.masked_cluster_quality_core(this_cluster_fail2, that_cluster)
     assert np.isnan(contam_rate), "failed testing for n > nOther"
-    assert sil == 0.0, "failed testing for n > nOther"
 
 
 def test_qc_masked_cluster_quality_sparse():
@@ -164,6 +163,6 @@ def test_silhouette_score():
     seq2 = RandomState(1234567895)
     that_cluster = np.array(seq2.rand(30, 15))
 
-    sil = silhouette_score.silhouette_score(this_cluster, that_cluster)
-
+    dist, sil = silhouette_score.silhouette_score(this_cluster, that_cluster)
+    assert np.isclose(dist, 0.294613), "distance score failed"
     assert np.isclose(sil, 0.030694767371927844), "failed silhouette test"
