@@ -336,7 +336,8 @@ class ClusterAnalysis:
         self.raw_responsive_neurons = raw_responsive_neurons
 
     def gen_zdf(self) -> None:
-        """Will create a dataframe of zscored firing rates"""
+        """Will create a dataframe of zscored firing rates with HashID, and time bins
+        numbered from 0 to n bins."""
         z_df = gen_zscore_df(self.sp, self.labels, self.allP)
         self.z_df = z_df
 
@@ -525,7 +526,8 @@ class ClusterAnalysis:
         wf_df = self.waveform_df
         z_df = self.z_df
 
-        merge_datasets(self.sp, df1, wf_df, z_df, dtype=dtype)
+        final_df = merge_datasets(self.sp, df1, wf_df, z_df, dtype=dtype)
+        self.all_data_df = final_df
 
     def revert_cids(self) -> None:
         """After masking data based on unit quality or responsiveness this function will
