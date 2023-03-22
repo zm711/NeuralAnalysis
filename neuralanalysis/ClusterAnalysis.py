@@ -4,7 +4,7 @@ Created on Thu Feb 16 08:34:43 2023
 
 @author: ZacharyMcKenzie
 
-ClusterAnalysis is an oop class for analyzing neural data. It initialzed by load a spike
+ClusterAnalysis is an oop class for analyzing neural data. It is initialized by loading a spike
 property dictionary (sp) and a stimuli data dictionary (eventTimes). Use of loadsp will
 automatically generate the necessary sp dictionary, but to do it by hand look for keys
 in the ksanalysis file. eventTimes keys are also listed there. After intialization a 
@@ -219,10 +219,9 @@ class ClusterAnalysis:
 
     def get_waveforms(self, num_chans: int) -> None:
         """`get_waveforms` will return the true waveforms (post phy curation),
-        which can then be analyzed for various metrics. This is RAM-limited since
-        it needs to load the whole binary file into memory. Please look at your RAM
-        amount and if binary bile of raw waveforms is > 60% of your RAM this
-        function will likely fail due to memory limitations"""
+        which can then be analyzed for various metrics. Uses a memory map
+        to reduce RAM usage. Optionally enter number of channels as `num_chans`
+        otherwise a prompt will appear."""
         wf = getWaveForms(self.sp, nCh=num_chans)
         self.wf = wf
 
@@ -269,11 +268,16 @@ class ClusterAnalysis:
         self.waveform_df = waveform_df
 
     def qcfn(self, isi=0.0005, ref_dur=0.0015) -> tuple[dict, dict]:
-        """qcfn will run the isolation distance of clusters. It will also run the
-        interspike interval violation caluclation based on Dan Hill's paper. `isi`
-        is the minimal interspike interval as suggested. the `ref_dur` is your
-        hypothesized refractory period for your neurons currently set to 1.5 ms,
-        but can be changed depending on neural population"""
+        """qcfn will run the isolation distance of clusters (Harris 2001). It will 
+        also run the interspike interval violation caluclation based on Dan Hill's 
+        paper (2011). `isi` is the minimal interspike interval as suggested. The
+        `ref_dur` is your hypothesized refractory period for your neurons currently 
+        set to 1.5 ms, but can be changed depending on neural population. qcValues 
+        also stores the simplified silhouette score (Huruschka 2004).
+        
+        Returns:
+        qcValues:dict
+        isiv: dict"""
         unitQuality, contaminationRate, qcValues = maskedClusterQuality(self.sp)
         self.qc = qcValues
         isiv = isiV(self.sp, isi=isi, ref_dur=ref_dur)
@@ -291,7 +295,11 @@ class ClusterAnalysis:
         whereas `True` indicates to keep data separated. `window` is optional parameter
         which gives the user the option to enter a baseline window and a stimulus
         window if they use the same windows for their stimuli. Format is
-        [[bslStart:float, bslStop:float], [stimStart:float, stimStop:float]]"""
+        [[bslStart:float, bslStop:float], [stimStart:float, stimStop:float]].
+        RETURNS:
+        AllP: dict of z scores
+        nomrVal: dict of mean and std of baseline
+        window: list of windows used"""
         if type(time_bin_size) == float:
             time_bin_size = [time_bin_size]
         allP, normVal, window = clusterzscore(
@@ -303,7 +311,7 @@ class ClusterAnalysis:
         self.zwindow: list = window
         return allP, normVal, window
 
-    def plot_z(self, labels=None, tg=True, time_point=0, plot=True) -> None:
+    def plot_z(self, labels=None, tg=True, plot=True) -> None:
         """plot_z plots of Z score data from clu_zscore. `tg` is the trial group
         flag. It automatically take time_bin_size self. Labels are what word
         should be used for graphing the trial groups. If you haven't set labels or
@@ -323,7 +331,7 @@ class ClusterAnalysis:
             time_bin_list=time_bin_size,
             tg=tg,
             labels=labels,
-            time_point=time_point,
+            time_point=0,
             plot=plot,
         )
         self.responsive_neurons = responsive_neurons
@@ -333,7 +341,10 @@ class ClusterAnalysis:
         """spike_raster calculates psthvalues which can be used to create firing
         rate and raster plots. it takes in `time_bin_size` in seconds, ie the default
         is 50 ms, but if using for raster plot 1 ms (0.001) is much better because a
-        raster plot requires all bins to be 0 or 1."""
+        raster plot requires all bins to be 0 or 1.
+        RETURNS:
+        psthvalues: dict of firing rates
+        window: list of windows used"""
         if type(time_bin_size) == float:
             time_bin_size = [time_bin_size]
         psthvalues, window = psthfn.rasterPSTH(
