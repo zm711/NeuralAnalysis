@@ -88,7 +88,7 @@ def responseDF(
     """need to account for if trial groups exist"""
     for stim in responsive_neurons.keys():
         resp_stim = responsive_neurons[stim]
-        if "event" in resp_stim:
+        if "sustained" in resp_stim:
             for sorter in resp_stim.keys():
                 for idx in resp_stim[sorter]:
                     stim_list += [stim]
@@ -141,8 +141,7 @@ def responseDF(
     if isiv is not None:
         resp_neuron_df["ISI Violation Fraction"] = viol_list
     if run_sil:
-        resp_neuron_df["Silhouette Score"] = sil_quality
-
+        resp_neuron_df["Silhouette Score"] = sil_list
     """Following section makes the non-responsive neurons into a dataframe so we can
     analyze them separately"""
     non_resp = list()
@@ -183,17 +182,14 @@ def responseDF(
     if qcthres and run_qc:
         resp_neuron_df = resp_neuron_df.loc[resp_neuron_df["QC"] >= qcthres]
         non_resp_df = non_resp_df.loc[non_resp_df["QC"] >= qcthres]
-
     if isi is not None:
         resp_neuron_df = resp_neuron_df.loc[
             resp_neuron_df["ISI Violation Fraction"] < isi
         ]
         non_resp_df = non_resp_df.loc[non_resp_df["ISI Violation Fraction"] > isi]
-
     if sil and run_sil:
         resp_neuron_df = resp_neuron_df.loc[resp_neuron_df["Silhouette Score"] > sil]
         non_resp_df = non_resp_df.loc[non_resp_df["Silhouette Score"] > sil]
-
     return resp_neuron_df, non_resp_df
 
 
