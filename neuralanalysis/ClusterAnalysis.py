@@ -26,6 +26,7 @@ import pandas as pd
 
 # general functions--glue for the class
 from .misc_helpers.genhelpers import getFiles, loadPreviousAnalysis, getdir
+from .misc_helpers.dataframe_fns import merge_datasets, gen_zscore_df
 from .misc_helpers.label_generator import (
     labelGenerator,
     responseDF,
@@ -77,8 +78,6 @@ class ClusterAnalysis:
         self.normVal = None
         self.depth = None
         self.laterality = None
-        self.resp_neuro_df = None
-        self.non_resp_df = None
 
     """The repr will just print out the filename being analyzed--repr instead of str"""
 
@@ -336,6 +335,11 @@ class ClusterAnalysis:
         self.responsive_neurons = responsive_neurons
         self.raw_responsive_neurons = raw_responsive_neurons
 
+    def gen_zdf(self) -> None:
+        """Will create a dataframe of zscored firing rates"""
+        z_df = gen_zscore_df(self.sp, self.labels, self.allP)
+        self.z_df = z_df
+
     def spike_raster(self, time_bin_size=0.001, window_list=None) -> tuple[dict, list]:
         """spike_raster calculates psthvalues which can be used to create firing
         rate and raster plots. it takes in `time_bin_size` in seconds, ie the default
@@ -352,7 +356,6 @@ class ClusterAnalysis:
         self.psthvalues: dict = psthvalues
         self.time_bin: float = time_bin_size
         self.raster_window: list = window
-        return psthvalues, window
 
     def plot_spikes(self, labels=None, tg=True, eb=True) -> None:
         """plot_spikes will generate a 2 figure plot with firing rate on top and
@@ -510,6 +513,19 @@ class ClusterAnalysis:
         )
         self.sp = sp
         self.quality_df = quality_df
+
+    def merge_dfs(self, dtype="resp"):
+        """loads all dataframes together. requires specifying `resp` for fusing the
+        responsive neuron dataframe or `qc` for just using qc cutoffs`. Requires that
+        a waveform dataframe and the z_df to be generated before"""
+        if dtype == "resp":
+            df1 = self.resp_neuro_df
+        elif dtype == "qc":
+            df1 = self.quality_df
+        wf_df = self.waveform_df
+        z_df = self.z_df
+
+        merge_datasets(self.sp, df1, wf_df, z_df, dtype=dtype)
 
     def revert_cids(self) -> None:
         """After masking data based on unit quality or responsiveness this function will
