@@ -260,15 +260,17 @@ def masked_cluster_quality_sparse(
                             axis=2,
                         )
 
-                clu_dist, sil_score_clu = silhouette_score(
-                    fetThisCluster, thisClusterOtherFet
-                )
+                    clu_dist, sil_score_clu = silhouette_score(
+                        fetThisCluster, thisClusterOtherFet
+                    )
 
-                clu_dist_list.append(clu_dist)
-                sil_score_list.append(sil_score_clu)
+                    clu_dist_list.append(clu_dist)
+                    sil_score_list.append(sil_score_clu)
 
-                min_dist_index = np.argmin(np.array(clu_dist_list))
-                sil = sil_score_list[min_dist_index]
+                    min_dist_index = np.argmin(np.array(clu_dist_list))
+                    sil = sil_score_list[min_dist_index]
+                else:
+                    sil = 0.0
                 # spikesAlready = np.isin(thisClusterOtherFet, fetOtherClusters)
                 # & np.all(spikesAlready,where=[False])
                 if sum(np.isin(chansC2Has, theseChans) != 0):
