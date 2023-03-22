@@ -14,14 +14,13 @@ from . import genhelpers as gh
 
 def merge_datasets(sp, df1, df2, df3, dtype: str):
     final_df = pd.merge(
-        df1, df2, left_on="HashID", right_on="HashID", how="outer", suffixes=("", "_y")
+        df1, df2, left_on="HashID", right_on="HashID", suffixes=("", "_y")
     )
     final_df = pd.merge(
         final_df,
         df3,
         left_on="HashID",
         right_on="HashID",
-        how="outer",
         suffixes=("", "_y"),
     )
     final_df.drop(final_df.filter(regex="_y$").columns, axis=1, inplace=True)
@@ -32,7 +31,7 @@ def merge_datasets(sp, df1, df2, df3, dtype: str):
             if "pyanalysis" not in os.getcwd():
                 os.chdir("pyanalysis")
         else:
-            _, curr_dir, filename = gh.getdir()
+            _, curr_dir, _ = gh.getdir()
             os.chdir(curr_dir)
     final_df.to_csv(filename + dtype + "df.csv", index=False)
     return final_df
@@ -64,7 +63,7 @@ def gen_zscore_df(sp, labels, allP):
     final_df = pd.DataFrame(allP_list[0])
 
     for idx in range(1, len(allP_list)):
-        final_df = pd.concat(final_df, allP_list[idx])
+        final_df = pd.concat([final_df, allP_list[idx]], ignore_index=True)
 
     final_df["HashID"] = final_df["IDs"].apply(
         lambda x: hashlib.sha256((str(x) + filename).encode()).hexdigest()
