@@ -15,6 +15,8 @@ def clusterzscore(
     tg=False,
     window_list=None,
 ) -> tuple[dict, dict, list]:
+    """clusterzscore takes in `sp` `eventTimes` `time_bins` and flag `tg` in order to
+    calculate z-scored firing rates. It uses the counting algo from psthfn"""
     allP = {}
     normVal = {}
     spikeTimes = np.squeeze(sp["spikeTimes"])
