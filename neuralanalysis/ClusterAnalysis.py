@@ -510,7 +510,7 @@ class ClusterAnalysis:
         float of the min isolation distance required. It automatically makes the
         dataframe of these units"""
         sp, quality_df = qc_only(
-            self.qcvalues, self.isiv, self.sp, qcthres=qcthres, sil=sil, isi=isi
+            self.qc, self.isiv, self.sp, qcthres=qcthres, sil=sil, isi=isi
         )
         self.sp = sp
         self.quality_df = quality_df
