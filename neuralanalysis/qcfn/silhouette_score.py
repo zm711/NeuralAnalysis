@@ -8,7 +8,9 @@ In short use simplified to reduce from O(n**2) down to O(n). Data is already org
 into this_cluster and nearest_other clusters so no need to search through k clusters. In
 short we measure each a(i)=d(i,C_i) where C_i=centroid of i followed by b(i) =d(i, C_j) 
 where C_j=centroid of nearest neighboring cluster. We then take the silhouette score for
-all i  such that s(i) = b(i)-b=a(i)/(max(a(i), b(i))). Finally I take the mean of s.
+all i  such that s(i) = b(i)-b=a(i)/(max(a(i), b(i))). Finally I take the mean of s. I 
+return the distance between centroids, so that in the outer function I can take the min
+cluster distance and use that silhouette score.
 """
 
 
@@ -19,9 +21,17 @@ from scipy.spatial.distance import cdist
 def silhouette_score(
     fetThisCluster: np.array,
     fetOtherClusters: np.array,
-):
+) -> tuple[float, float]:
     """calculate the simplified silhouette score based on Hruschka et al. 2004 currently
     with euclidean distance since malahobnis fails for singular matrices"""
+
+    cluster_distance = np.squeeze(
+        cdist(
+            np.reshape(np.mean(fetThisCluster, axis=0), (1, -1)),
+            np.reshape(np.mean(fetOtherClusters, axis=0), (1, -1)),
+        )
+    )
+
     md_self = np.squeeze(
         cdist(
             fetThisCluster,
@@ -41,4 +51,4 @@ def silhouette_score(
     sil_scores = (md_other - md_self) / np.maximum(md_self, md_other)
 
     mean_sil_score = np.mean(sil_scores)
-    return mean_sil_score
+    return cluster_distance, mean_sil_score
