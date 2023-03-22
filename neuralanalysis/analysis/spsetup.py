@@ -11,7 +11,6 @@ from ..intan_helpers.stimulushelpers import paramread
 
 
 def loadsp() -> dict:
-
     """First I grab the directory where are numpy files are open that directory and save
     the title in case we decide to save things later"""
 
@@ -83,24 +82,6 @@ def loadsp() -> dict:
             cgs = np.array(cgs)
             cids = np.array(cids)
 
-        """need to account for if kilosort does merges or splits that phy doesn't 
-        account for. So I look at some sets of what values could be and if they don't 
-        exist I remove them from the pcFeatInd since those guys must've been split or 
-        merged"""
-
-        """
-        clu_set = set(cids) # our list of current cluster ids
-        possible_clu_set = set(range(np.shape(pcFeatInd)[0])) # range of the pc feat space
-
-        if len(clu_set) != len(possible_clu_set):
-            merge_splits = list()
-            for value in possible_clu_set:
-                if value in clu_set:
-                    merge_splits.append(value) # append values still present so we can index and delete values lost
-
-            pcFeatInd = pcFeatInd[merge_splits,:] # this lets us get rid of any pc spaces not in use
-        """
-
         """np.isin is equivalent to matlab ismember(). invert this to take all our values
         which are not within our noise dataset"""
 
@@ -109,7 +90,6 @@ def loadsp() -> dict:
         spikeTemplates = spikeTemplates[np.isin(clu, NoiseCluster, invert=True)]
 
         pcFeat = pcFeat[np.squeeze(np.isin(clu, NoiseCluster, invert=True))]
-        # pcFeatInd = pcFeatInd[np.squeeze(np.isin(cids, NoiseCluster, invert=True))] Nick's code doesn't do this...
 
         clu = clu[np.isin(clu, NoiseCluster, invert=True)]
 
@@ -135,6 +115,10 @@ def loadsp() -> dict:
     winv = np.load("whitening_mat_inv.npy")
 
     """Finally loading on the data into the sp dict for easy return and access"""
+    if len(cids) != sum(np.isin(cids, np.array(list(set(clu)), dtype=np.int32))):
+        final_threshold = np.isin(cids, np.array(list(set(clu)), dtype=np.int32))
+        cids = cids[final_threshold]
+        noise = noise[final_threshold]
 
     sp["spikeTimes"] = st
     sp["spikeTemplates"] = spikeTemplates
@@ -148,7 +132,7 @@ def loadsp() -> dict:
     sp["winv"] = winv
     sp["pcFeat"] = pcFeat
     sp["pcFeatInd"] = pcFeatInd
-    if len(fileName) >90:
+    if len(fileName) > 90:
         fileName = fileName[:90]
     sp["filename"] = fileName
     sp["noise"] = noise
