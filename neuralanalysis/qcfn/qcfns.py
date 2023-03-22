@@ -211,10 +211,9 @@ def masked_cluster_quality_sparse(
         fetOtherClusters = np.empty((0, np.shape(fet)[1], fetNchans))  #
 
         """And now we do the other feature space generation"""
-
+        clu_dist_list = list()
+        sil_score_list = list()
         for nonCluster in range(len(clusterIDs)):
-            clu_dist_list = list()
-            sil_score_list = list()
             if nonCluster != cluster:
                 chansC2Has = fetInds[nonCluster]
                 theseOtherSpikes = clu == clusterIDs[nonCluster]
@@ -267,12 +266,12 @@ def masked_cluster_quality_sparse(
                     clu_dist_list.append(clu_dist)
                     sil_score_list.append(sil_score_clu)
 
-                    min_dist_index = np.argmin(np.array(clu_dist_list))
-                    sil = sil_score_list[min_dist_index]
                 else:
-                    sil = 0.0
+                    clu_dist_list.append(10000000)
+                    sil_score_list.append(np.NaN)
                 # spikesAlready = np.isin(thisClusterOtherFet, fetOtherClusters)
                 # & np.all(spikesAlready,where=[False])
+
                 if sum(np.isin(chansC2Has, theseChans) != 0):
                     fetOtherClusters = np.vstack(
                         (fetOtherClusters, thisClusterOtherFet)
@@ -298,7 +297,8 @@ def masked_cluster_quality_sparse(
         uQ, cR = masked_cluster_quality_core(
             fetThisCluster, fetOtherClusters
         )  # dist fn
-
+        min_dist_index = np.argmin(np.array(clu_dist_list))
+        sil = sil_score_list[min_dist_index]
         unitQuality[cluster] = uQ  # load each isolation distance into our final output
         contaminationRate[cluster] = cR * 100.00  # load the contaimnation rate
         sil_score[cluster] = sil
