@@ -213,6 +213,8 @@ def masked_cluster_quality_sparse(
         """And now we do the other feature space generation"""
 
         for nonCluster in range(len(clusterIDs)):
+            clu_dist_list = list()
+            sil_score_list = list()
             if nonCluster != cluster:
                 chansC2Has = fetInds[nonCluster]
                 theseOtherSpikes = clu == clusterIDs[nonCluster]
@@ -257,6 +259,16 @@ def masked_cluster_quality_sparse(
                             ),
                             axis=2,
                         )
+
+                clu_dist, sil_score_clu = silhouette_score(
+                    fetThisCluster, thisClusterOtherFet
+                )
+
+                clu_dist_list.append(clu_dist)
+                sil_score_list.append(sil_score_clu)
+
+                min_dist_index = np.argmin(np.array(clu_dist_list))
+                sil = sil_score_list[min_dist_index]
                 # spikesAlready = np.isin(thisClusterOtherFet, fetOtherClusters)
                 # & np.all(spikesAlready,where=[False])
                 if sum(np.isin(chansC2Has, theseChans) != 0):
@@ -280,7 +292,8 @@ def masked_cluster_quality_sparse(
             )
         else:  # this puts in a small array which allows for the Core function to fail.
             fetOtherClusters = np.array([0])
-        uQ, cR, sil = masked_cluster_quality_core(
+
+        uQ, cR = masked_cluster_quality_core(
             fetThisCluster, fetOtherClusters
         )  # dist fn
 
@@ -319,7 +332,6 @@ def masked_cluster_quality_core(
     can't do this type of analysis"""
 
     if nOther > n and n > nfet:
-        mean_sil_score = silhouette_score(fetThisCluster, fetOtherClusters)
         cov_fetThisCluster = np.linalg.inv(np.cov(fetThisCluster, rowvar=False))
         mean_fetThisCluster = np.reshape(np.mean(fetThisCluster, axis=0), (1, -1))
         md = cdist(
@@ -345,9 +357,11 @@ def masked_cluster_quality_core(
     else:  # if we fail our conditions above we report that for this cluster
         unit_quality = 0.0
         contamination_rate = np.NaN
-        mean_sil_score = 0.0
 
-    return unit_quality, contamination_rate, mean_sil_score
+    return (
+        unit_quality,
+        contamination_rate,
+    )
 
 
 """This function determines the point at which we take a ball of good spikes and bad 
