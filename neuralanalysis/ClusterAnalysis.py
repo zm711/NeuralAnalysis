@@ -268,13 +268,13 @@ class ClusterAnalysis:
         self.waveform_df = waveform_df
 
     def qcfn(self, isi=0.0005, ref_dur=0.0015) -> tuple[dict, dict]:
-        """qcfn will run the isolation distance of clusters (Harris 2001). It will 
-        also run the interspike interval violation caluclation based on Dan Hill's 
+        """qcfn will run the isolation distance of clusters (Harris 2001). It will
+        also run the interspike interval violation caluclation based on Dan Hill's
         paper (2011). `isi` is the minimal interspike interval as suggested. The
-        `ref_dur` is your hypothesized refractory period for your neurons currently 
-        set to 1.5 ms, but can be changed depending on neural population. qcValues 
+        `ref_dur` is your hypothesized refractory period for your neurons currently
+        set to 1.5 ms, but can be changed depending on neural population. qcValues
         also stores the simplified silhouette score (Huruschka 2004).
-        
+
         Returns:
         qcValues:dict
         isiv: dict"""
@@ -283,7 +283,6 @@ class ClusterAnalysis:
         isiv = isiV(self.sp, isi=isi, ref_dur=ref_dur)
 
         self.isiv = isiv
-        return qcValues, isiv
 
     def clu_zscore(
         self, time_bin_size=0.05, tg=True, window=None
