@@ -197,7 +197,7 @@ def qc_only(
     qcvalues: dict, isiv: dict, sp: dict, qcthres: float, sil: float, isi: float
 ) -> tuple[dict, pd.DataFrame]:
     filename = sp["filename"]
-    neuron_idx = hash(filename)
+    neuron_idx = hashlib.sha256((filename).encode()).hexdigest()
     cids = sp["cids"]
     noise = sp["noise"]
     qc_list = qcvalues["uQ"]
@@ -211,7 +211,7 @@ def qc_only(
             isi_list.append(isiv[key]["nViol"])
 
         isi_list = np.array(isi_list)
-        isi_list = isi_list[~noise]
+        # isi_list = isi_list[~noise]
 
     qc_threshold = np.where(qc_list > qcthres, True, False)
     sil_threshold = np.where(sil_list > sil, True, False)
@@ -219,9 +219,10 @@ def qc_only(
 
     threshold = np.logical_and(qc_threshold, sil_threshold)
     threshold = np.logical_and(threshold, isi_threshold)
+
     if len(cids) != len(threshold):
-        cids = cids[~noise]
-    final_cids = np.array(cids[threshold])
+        cids = np.array(cids)[~noise]
+    final_cids = np.array(cids)[threshold]
     final_qc = np.array(qc_list[threshold])
     final_sil = np.array(sil_list[threshold])
     final_isi = np.array(np.array(isi_list)[threshold])
