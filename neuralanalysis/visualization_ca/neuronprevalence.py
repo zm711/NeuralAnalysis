@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 
 
 def plotmedLat(sp, wf, shank_dict):
-
     cids = sp["cids"]
     clusterIDs = wf["F"]["ClusterIDs"]
 
@@ -35,12 +34,19 @@ def plotmedLat(sp, wf, shank_dict):
 
 
 def plotmedlatCore(medial_neurons: int, lateral_neurons: int):
-
     wedges = ["Medial", "Lateral"]
     counts = [medial_neurons, lateral_neurons]
 
     f, ax = plt.subplots(figsize=(10, 8))
-    colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
+    colors = [
+        "#ff9999",
+        "#66b3ff",
+        "#99ff99",
+        "#FEC8D8",
+        "#ffcc99",
+        "#F6BF85",
+        "#B7ADED",
+    ]
     ax.pie(
         counts,
         labels=wedges,
