@@ -277,7 +277,7 @@ def waveform_vals_DF(
             "HashID": ids_hash,
             "Waveform Duration (s)": waveform_dur,
             "Waveform Depth (um)": waveform_depth,
-            "Waveform Amplitude (p or n Amps)": waveform_amps,
+            "Waveform Amplitude (uV)": waveform_amps,
             "Laterality": laterality_list,
         }
     )
