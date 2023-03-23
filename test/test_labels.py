@@ -28,7 +28,7 @@ def test_qc_only():
     qc["sil"] = np.array([0.9, 0.8, 0.8])
     qcthres = 15.0
     sil = 0.75
-    isiv = {"0": {"nViol": 0.002}, "1": {"nViol": 0.001}, "2": {"nViol": 0.0001}}
+    isiv = {"0": {"nViol": 0.002}, "1": {"nViol": 0.001}}
     isi = 0.02
 
     sp, quality_df = label_generator.qc_only(qc, isiv, sp, qcthres, sil, isi)
@@ -66,7 +66,7 @@ def test_waveform_vals():
         neuron_char["HashID"][2]
         == "ead312b5d9795fee67deb9b6251732cffab8f6daa93edb10805fe0bbfb620371"
     )
-    assert neuron_char["Waveform Amplitude (p or n Amps)"][2] == 100
+    assert neuron_char["Waveform Amplitude (uV)"][2] == 100
     assert neuron_char["Waveform Duration (s)"][1] == 1.3
     assert neuron_char["Waveform Depth (um)"][0] == 500
 
