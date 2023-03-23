@@ -17,3 +17,6 @@ I've tested python 3.8-3.10. I've also tested some other packages and these are 
  **I'm going to create an environment `yaml` soon--ie don't use the yaml yet.**
  **Also this isn't packaged yet so only with git clone can this package be used**
 
+
+## todo
+fix mca when different stimuli used
