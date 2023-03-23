@@ -79,9 +79,9 @@ def test_responsive_neurons_generation_tg_false():
 def test_spike_raster():
     sp, eventTimes = gen_data(1234567890)
     myNeuron = ClusterAnalysis.ClusterAnalysis(sp, eventTimes)
-    psthvalues, window = myNeuron.spike_raster(
-        time_bin_size=0.001, window_list=[[-1, 5]]
-    )
+    myNeuron.spike_raster(time_bin_size=0.001, window_list=[[-1.0, 5.0]])
+    psthvalues = myNeuron.psthvalues
+    window = myNeuron.raster_window
     assert window == [[-1.0, 5.0]]
 
     psthvalues_ba = psthvalues["Test"]["0"]["BinnedArray"]
