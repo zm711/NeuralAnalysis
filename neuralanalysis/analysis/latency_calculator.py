@@ -20,6 +20,7 @@ def latency_calculator(
     event_win: list[float, float],
     num_shuffle: int,
 ) -> dict:
+    np.random.seed(42)
     spike_times: np.array = np.squeeze(sp["spikeTimes"])
     clu: np.array = np.squeeze(sp["clu"])
     cluster_ids: np.array = np.squeeze(sp["cids"])
@@ -60,7 +61,7 @@ def latency_calculator(
 
                 ba_tg = ba[trial_groups == trial]
 
-                if bsl_mean < 1:  # Mormann et al. 2008 J Neuro use 2 Hz cut off
+                if bsl_mean < 2:  # Mormann et al. 2008 J Neuro use 2 Hz cut off
                     median_lat, lat_std = latency_median(
                         ba_tg, time_bin_size=timeBinSize
                     )
@@ -114,7 +115,6 @@ def latency_calculator(
 p_tn(>=n) = 1 - sum_m_n-1 ((rt)^m e^(-rt))/m!"""
 
 
-@jit(nopython=True, cache=True)
 def latency_core(
     bsl_fr: float, firing_counts: np.array, time_bin_size: float
 ) -> tuple[float, float]:
@@ -178,7 +178,7 @@ def latency_median(
 
     exclude_count = 0
     for lat in latency:  # Mormann et al. JNeuro2008 use 0.2s as cutoff
-        if lat > 0.4 + final_latency or lat < (final_latency - 0.4):
+        if lat > 0.2 + final_latency or lat < (final_latency - 0.2):
             exclude_count += 1
     if exclude_count >= 3:  # Morman does 3 closest
         final_latency = np.nan
