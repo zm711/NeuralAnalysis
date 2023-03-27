@@ -116,7 +116,7 @@ myNeuron.gen_wfdf()
 The dataframe is stored as an attribute `waveform_df`.
 
 ### Responsive Neurons
-Currently I am using user defined responsive neuron properties. Cutoffs vary (Emmanuel et al. 2021 uses 2.58 for the 99% CI, Chirila et al 2023 uses clustering to generate profiles). For historic reasons this function is a sub function stored in the `plot_z` function. It can be used to just generate the responsive neurons by setting the `plot` flag to `False`. With that out of the way, I use a decorator found in `plot_z_settings.py` to allow for multiple people in the same group to set their own z score cutoffs (filepath is `/visualization_ca/plot_z_settings.py`). So that file can be re-formated with desired cutoffs. If only one person is using this code delete the conditional logic and just put in the values. `inhib` for inhibitory, `onset` for onset neurons, `sustained` for sustained neurons, `offset` for near end of stimulus and `relief` for after discharge. The first value is desired z score and the second number is the number of bins required to count as the type given by the keyword. So this will depend on the `time_bin_size` set in `clu_zscore`. Once this decorator is set the method can be run. `plot_z` has a few flags, most of them are optional to override the attributes set. So `labels` will pull from the attribute `labels` but can be overridden, `tg` is a boolean for trial group (it should match with what was done in `clu_zscore`), `time_pt` is historic and will be removed soon. In order to control how neurons are classified as responsive the `na_settings.yaml` is used. This file is generated in the `pyanlaysis` folder if it does not exist, but can be edited for future analyses. Settings are below. First the desired z scores for a subtype are given. The first value is the value needed and the second number is the number of timebins with this value required. Then the `sorter_dict` values are the time bin starts and endtime for assessing the desired z score values
+Currently I am using user defined responsive neuron properties. Cutoffs vary (Emmanuel et al. 2021 uses 2.58 for the 99% CI, Chirila et al 2023 uses clustering to generate profiles). For historic reasons this function is a sub function stored in the `plot_z` function. It can be used to just generate the responsive neurons by setting the `plot` flag to `False`. With that out of the way, I use a decorator found in `plot_z_settings.py` to allow for multiple people in the same group to set their own z score cutoffs (filepath is `/visualization_ca/plot_z_settings.py`). So that file can be re-formated with desired cutoffs. If only one person is using this code delete the conditional logic and just put in the values. `inhib` for inhibitory, `onset` for onset neurons, `sustained` for sustained neurons, `offset` for near end of stimulus and `relief` for after discharge. The first value is desired z score and the second number is the number of bins required to count as the type given by the keyword. So this will depend on the `time_bin_size` set in `clu_zscore`. Once this decorator is set the method can be run. `plot_z` has a few flags, most of them are optional to override the attributes set. So `labels` will pull from the attribute `labels` but can be overridden, `tg` is a boolean for trial group (it should match with what was done in `clu_zscore`), `time_pt` is historic and will be removed soon. In order to control how neurons are classified as responsive the `na_settings.yaml` is used. This file is generated in the `pyanlaysis` folder if it does not exist, but can be edited for future analyses. Settings are below. First the desired z scores for a subtype are given. The first value is the value needed and the second number is the number of timebins with this value required. Then the `sorter_dict` values are percent of the stimulus to be used.
 ```yaml
 - zscore:
     inhib:
@@ -136,22 +136,16 @@ Currently I am using user defined responsive neuron properties. Cutoffs vary (Em
     - 75
 - sorter_dict:
     Inhib:
-    - 50
-    - 67
+    - .2
     Onset:
-    - 50
-    - 65
+    - .1
     Onset-Offset:
-    - 50
-    - 65
-    - 90
-    - 110
+    - .2
+    - .2
     Relief:
-    - 100
-    - 150
+    - .2
     Sustained:
-    - 50
-    - 100
+    - 1
 ```
 The `zero_point` is the time_bin in which the stimulus starts. I prefer calculating with some baseline in `allP` meaning that the first bin with stimulus is not 0 (start of baseline), but for example bin 20. The `event_len` will be the final bin of the stimulus in this case, eg bin 80. For relief in this example I start at bin 80 and go to the final length of bins for example 100. For onset, I do only a subset of bins etc. For two sub periods you just generate a list of 4 numbers. Currently 4 time points (ie two time periods) are the max you can do for the sorter dict.
 
