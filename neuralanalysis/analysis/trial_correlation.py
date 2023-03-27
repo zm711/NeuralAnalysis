@@ -4,13 +4,9 @@ Created on Mon Feb  6 15:14:18 2023
 
 @author: ZacharyMcKenzie
 """
-import matplotlib.pyplot as plt
 
-# from matplotlib import cm
 import numpy as np
 from scipy import signal
-import seaborn as sns
-
 import pandas as pd
 
 
@@ -63,7 +59,6 @@ def trial_corr(
                 baSm_sub = baSm[trialGroup == trial]
                 smoothed_trial_df = pd.DataFrame(baSm_sub.T)
                 trial_corr = smoothed_trial_df.corr()
-                # plot_trial_core(trial_corr, cluster)
 
                 trial_corr_no_one = trial_corr[trial_corr != 1]
                 final_corr_val = np.nanmean(trial_corr_no_one.iloc[0, :])
@@ -82,43 +77,8 @@ def trial_corr(
             }
         )
 
-        plot_by_animal(final_dataframe, stim)
+        # plot_by_animal(final_dataframe, stim)
         mean_r = final_dataframe["R score"].mean(axis=0)
         std_r = final_dataframe["R score"].std(axis=0)
 
     return final_dataframe, mean_r, std_r
-
-
-def plot_trial_core(trial_corr: pd.DataFrame, cluster: str):
-    mask = trial_corr == 1  # white out autocorrelations between fibers which are all 1
-    f, ax = plt.subplots(figsize=(10, 8))
-    ax = sns.heatmap(
-        data=trial_corr,
-        mask=mask,
-        cmap="viridis",
-        vmin=0,
-        cbar_kws={"label": "R Score"},
-    )
-    plt.title(f"{cluster}", weight="bold")
-
-    plt.figure(dpi=1200)
-    plt.show()
-
-
-def plot_by_animal(final_dataframe: pd.DataFrame, stim: str):
-    final_dataframe = final_dataframe.loc[final_dataframe["Stim"] == stim]
-    f, ax = plt.subplots(figsize=(10, 8))
-    ax = sns.stripplot(
-        data=final_dataframe,
-        x="Trial Group",
-        y="R score",
-        jitter=True,
-        hue="Cluster",
-        marker="*",
-        palette="viridis",
-    )
-    sns.boxplot(data=final_dataframe, x="Trial Group", y="R score")
-    sns.despine()
-    plt.legend([], [], frameon=False)
-    plt.figure(dpi=1200)
-    plt.show()
