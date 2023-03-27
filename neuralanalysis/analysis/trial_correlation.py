@@ -15,7 +15,6 @@ import pandas as pd
 
 
 def multi_corr(psth_list: list, event_list: list, sm_param: int):
-
     total_r = np.zeros((len(psth_list), 2))
     for idx in len(psth_list):
         final_dataframe, mean_r, std_r = trial_corr(
@@ -31,7 +30,6 @@ def multi_corr(psth_list: list, event_list: list, sm_param: int):
 def trial_corr(
     psthvalues: dict, eventTimes: dict, sm_param: int
 ) -> tuple[pd.DataFrame, float, float]:
-
     gw = signal.windows.gaussian(
         round(sm_param * 6), (round(sm_param * 6) - 1) / 6
     )  # this takes std vs alpha for matlab version
@@ -40,14 +38,13 @@ def trial_corr(
     eventLst = list()
     for stimE in eventTimes.keys():
         eventLst.append(stimE)
-
-    for (index, stim) in enumerate(psthvalues.keys()):
-
+    stim_list = list()
+    corr_vals = list()
+    cluster_id = list()
+    trial_list = list()
+    for index, stim in enumerate(psthvalues.keys()):
         trialGroup = np.array(eventTimes[eventLst[index]]["TrialGroup"])
 
-        corr_vals = list()
-        cluster_id = list()
-        trial_list = list()
         for cluster in psthvalues[stim].keys():
             ba = psthvalues[stim][cluster]["BinnedArray"]  # BinnedArray are the counts
             bins = psthvalues[stim][cluster]["Bins"]  # these are the centers of bins
@@ -74,19 +71,25 @@ def trial_corr(
                 corr_vals.append(final_corr_val)
                 cluster_id.append(cluster)
                 trial_list.append(trial)
+                stim_list.append(stim)
 
         final_dataframe = pd.DataFrame(
-            {"Cluster": cluster_id, "Trial Group": trial_list, "R score": corr_vals}
+            {
+                "Cluster": cluster_id,
+                "Trial Group": trial_list,
+                "R score": corr_vals,
+                "Stim": stim_list,
+            }
         )
-        plot_by_animal(final_dataframe)
+
+        plot_by_animal(final_dataframe, stim)
         mean_r = final_dataframe["R score"].mean(axis=0)
         std_r = final_dataframe["R score"].std(axis=0)
 
-        return final_dataframe, mean_r, std_r
+    return final_dataframe, mean_r, std_r
 
 
 def plot_trial_core(trial_corr: pd.DataFrame, cluster: str):
-
     mask = trial_corr == 1  # white out autocorrelations between fibers which are all 1
     f, ax = plt.subplots(figsize=(10, 8))
     ax = sns.heatmap(
@@ -102,8 +105,8 @@ def plot_trial_core(trial_corr: pd.DataFrame, cluster: str):
     plt.show()
 
 
-def plot_by_animal(final_dataframe: pd.Dataframe):
-
+def plot_by_animal(final_dataframe: pd.DataFrame, stim: str):
+    final_dataframe = final_dataframe.loc[final_dataframe["Stim"] == stim]
     f, ax = plt.subplots(figsize=(10, 8))
     ax = sns.stripplot(
         data=final_dataframe,
