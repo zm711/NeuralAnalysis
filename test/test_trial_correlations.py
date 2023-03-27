@@ -20,7 +20,33 @@ def test_trial_corr():
 
     corr_df, mean, std = trial_corr(psthvalues, eventTimes, 50)
 
-    assert np.isclose(mean, 0.8744665056678191)
+    assert np.isclose(mean, 0.8744665056678191), "Correlation should be positive"
     assert np.isnan(std)
     assert np.shape(corr_df) == (1, 4)
     assert corr_df["Stim"][0] == "DIG1"
+
+
+def test_trial_corr_neg_corr():
+    array = np.array(
+        [
+            [0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 0, 0, 0],
+            [
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ],
+        ]
+    )
+
+    psthvalues = {"DIG1": {1: {"BinnedArray": array, "Bins": [0, 0.05]}}}
+    eventTimes = {"DIG1": {"TrialGroup": [1.0, 1.0, 1.0]}}
+
+    corr_df, mean, std = trial_corr(psthvalues, eventTimes, 1)
+
+    assert np.isclose(mean, -0.6066944001430321), "Correlation should be negative"
+    assert np.isnan(std)
