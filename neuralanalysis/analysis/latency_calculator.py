@@ -8,7 +8,8 @@ Created on Tue Jan 24 12:56:12 2023
 
 from scipy import stats
 import numpy as np
-from .psthfunctions import psthAndBA
+from numba import jit
+from .psthfunctions import time_stamps_to_bins
 
 
 def latency_calculator(
@@ -17,31 +18,41 @@ def latency_calculator(
     timeBinSize: float,
     bsl_win: list[float, float],
     event_win: list[float, float],
+    num_shuffle: int,
 ) -> dict:
     spike_times: np.array = np.squeeze(sp["spikeTimes"])
     clu: np.array = np.squeeze(sp["clu"])
     cluster_ids: np.array = np.squeeze(sp["cids"])
     latency_dict = {}
+    shuffled_dict = {}
     for idx, event in enumerate(eventTimes.keys()):
         curr_bsl = bsl_win[idx]
         curr_event = event_win[idx]
         events = eventTimes[event]["EventTime"]
+
+        bsl_shuffled = (
+            np.random.rand(num_shuffle, len(events)) * (curr_bsl[1] - curr_bsl[0])
+            + curr_bsl[0]
+        )
         trial_groups = eventTimes[event]["TrialGroup"]
         uniq_tgs = set(trial_groups)
-        latency_dict[event] = {}
-        for cluster in cluster_ids:
-            print(f"processing {cluster}")
+        latency_dict["cluster_ids"] = cluster_ids
+        shuffled_dict[event] = np.zeros((len(cluster_ids), len(uniq_tgs), num_shuffle))
+        latency_dict[event] = np.zeros((len(cluster_ids), len(uniq_tgs)))
+        latency_dict[event][:] = np.nan
+        shuffled_dict[event][:] = np.nan
+        for clu_idx, cluster in enumerate(cluster_ids):
+            # print(f"processing {cluster}")
             these_spikes = spike_times[clu == cluster]
-            _, _, _, _, _, ba_bsl = psthAndBA(
-                these_spikes, events, curr_bsl, timeBinSize
+            ba_bsl, _ = time_stamps_to_bins(
+                these_spikes, events, timeBinSize, curr_bsl[0], curr_bsl[1]
             )
-            _, _, _, _, _, ba = psthAndBA(these_spikes, events, curr_event, timeBinSize)
-            # print(np.sum(ba))
+            ba, _ = time_stamps_to_bins(
+                these_spikes, events, timeBinSize, curr_event[0], curr_event[1]
+            )
+            # print(np.sum(ba)
 
-            latency_dict[event][cluster] = {}
-
-            for trial in uniq_tgs:
-                latency_dict[event][cluster][trial] = {}
+            for tr_idx, trial in enumerate(uniq_tgs):
                 ba_bsl_tg = ba_bsl[trial_groups == trial]
                 mean_by_trial = np.mean(ba_bsl_tg, axis=1)
 
@@ -53,8 +64,8 @@ def latency_calculator(
                     median_lat, lat_std = latency_median(
                         ba_tg, time_bin_size=timeBinSize
                     )
-                    latency_dict[event][cluster][trial]["Latency Median"] = median_lat
-                    latency_dict[event][cluster][trial]["Std"] = lat_std
+                    latency_dict[event][clu_idx, tr_idx] = median_lat
+                    latency_dict[event][clu_idx, tr_idx] = lat_std
                 else:
                     # final_ba = np.sum(ba, axis=0)
                     # n_tg= np.shape(final_ba)[0]
@@ -65,17 +76,45 @@ def latency_calculator(
                         bsl_fr=bsl_mean, firing_counts=ba_tg, time_bin_size=timeBinSize
                     )
 
-                    latency_dict[event][cluster][trial]["Latency"] = mean_lat
+                    latency_dict[event][clu_idx, tr_idx] = mean_lat
                     # latency_dict[event][cluster][trial]['Lat2'] = mean2
-                    latency_dict[event][cluster][trial]["Std"] = std_lat
+                    latency_dict[event][clu_idx, tr_idx] = std_lat
 
-    return latency_dict
+                if np.isnan(latency_dict[event][clu_idx, tr_idx]):
+                    continue
+                else:
+                    for shuffle in range(num_shuffle):
+                        ba_shuf, _ = time_stamps_to_bins(
+                            these_spikes,
+                            events[trial_groups == trial]
+                            + bsl_shuffled[shuffle, trial_groups == trial],
+                            timeBinSize,
+                            curr_event[0],
+                            curr_event[1],
+                        )
+                        # shuffle_tg = ba_shuf[trial_groups == trial]
+                        shuffle_tg = ba_shuf
+
+                        if bsl_mean < 1:
+                            median_lat, lat_std = latency_median(
+                                shuffle_tg, time_bin_size=timeBinSize
+                            )
+                            shuffled_dict[event][clu_idx, tr_idx, shuffle] = median_lat
+                        else:
+                            mean_lat, std_lat = latency_core(
+                                bsl_fr=bsl_mean,
+                                firing_counts=shuffle_tg,
+                                time_bin_size=timeBinSize,
+                            )
+                            shuffled_dict[event][clu_idx, tr_idx, shuffle] = mean_lat
+    return latency_dict, shuffled_dict
 
 
 """idea modified from Chase and Young, 2007: PNAS
 p_tn(>=n) = 1 - sum_m_n-1 ((rt)^m e^(-rt))/m!"""
 
 
+@jit(nopython=True, cache=True)
 def latency_core(
     bsl_fr: float, firing_counts: np.array, time_bin_size: float
 ) -> tuple[float, float]:
@@ -122,6 +161,7 @@ latency and then get the median of the trials. If there are more than 3 closest 
 sets with differences greater thean +/- 200 ms they exclude"""
 
 
+@jit(nopython=True, cache=True)
 def latency_median(
     firing_counts: np.array, time_bin_size: float
 ) -> tuple[float, float]:
@@ -138,7 +178,7 @@ def latency_median(
 
     exclude_count = 0
     for lat in latency:  # Mormann et al. JNeuro2008 use 0.2s as cutoff
-        if lat > 0.4 + final_latency or lat < 0.4 + final_latency:
+        if lat > 0.4 + final_latency or lat < (final_latency - 0.4):
             exclude_count += 1
     if exclude_count >= 3:  # Morman does 3 closest
         final_latency = np.nan
