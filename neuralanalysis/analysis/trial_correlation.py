@@ -8,9 +8,10 @@ Created on Mon Feb  6 15:14:18 2023
 import numpy as np
 from scipy import signal
 import pandas as pd
+from typing import Union
 
 
-def multi_corr(psth_list: list, event_list: list, sm_param: int):
+def multi_corr(psth_list: list, event_list: list, sm_param: Union[int, list]):
     total_r = np.zeros((len(psth_list), 2))
     for idx in len(psth_list):
         final_dataframe, mean_r, std_r = trial_corr(
@@ -24,12 +25,19 @@ def multi_corr(psth_list: list, event_list: list, sm_param: int):
 
 
 def trial_corr(
-    psthvalues: dict, eventTimes: dict, sm_param: int
+    psthvalues: dict, eventTimes: dict, sm_param: Union[int, list]
 ) -> tuple[pd.DataFrame, float, float]:
-    gw = signal.windows.gaussian(
-        round(sm_param * 6), (round(sm_param * 6) - 1) / 6
-    )  # this takes std vs alpha for matlab version
-    # std = (L-1)/2alpha (matlab alpha = 3)
+    """Inputs:
+     psthvalues: dict of raw firing rates with keys of stimuli
+     eventTimes: dict of stimulus data
+     sm_param: int or list of ints indicating smoothing filter for a gaussian kernel
+               It is the sigma of the time_bin_size done in spike_raster()
+
+    Returns:
+      final_dataframe: pd.DataFrame with all clusters, trial groups, stims, and r
+      score
+      mean_r: float of the mean r for the animal across all trials all stimuli
+      std_r: float std of r for the animal across all trials all stimuli"""
 
     eventLst = list()
     for stimE in eventTimes.keys():
@@ -39,6 +47,15 @@ def trial_corr(
     cluster_id = list()
     trial_list = list()
     for index, stim in enumerate(psthvalues.keys()):
+        if type(sm_param) != list:
+            gw = signal.windows.gaussian(
+                round(sm_param * 6), (round(sm_param * 6) - 1) / 6
+            )  # this takes std vs alpha for matlab version
+            # std = (L-1)/2alpha (matlab alpha = 3)
+        else:
+            gw = signal.windows.gaussian(
+                round(sm_param[index] * 6), (round(sm_param[index] * 6) - 1) / 6
+            )
         trialGroup = np.array(eventTimes[eventLst[index]]["TrialGroup"])
 
         for cluster in psthvalues[stim].keys():
