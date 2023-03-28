@@ -8,13 +8,9 @@ Still working on
 """
 
 import numpy as np
-
-
-from neuralanalysis.visualization_ca import detectdrift
-from neuralanalysis.visualization_ca import plotCDFs
-
-from numpy.random import RandomState
 import numpy.testing
+from neuralanalysis.visualization_ca import detectdrift, plotCDFs
+from numpy.random import RandomState
 
 
 def test_detect_drift():

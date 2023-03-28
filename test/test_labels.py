@@ -5,10 +5,10 @@ Created on Thu Mar  9 13:20:05 2023
 @author: ZacharyMcKenzie
 """
 
-from neuralanalysis.misc_helpers import label_generator
 import numpy as np
 import numpy.testing
 import pandas as pd
+from neuralanalysis.misc_helpers import label_generator
 
 
 def test_labels():

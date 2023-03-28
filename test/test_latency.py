@@ -5,10 +5,10 @@ Created on Fri Mar 10 11:33:38 2023
 @author: ZacharyMcKenzie
 """
 
-import numpy as np
-from neuralanalysis.analysis import latency_calculator
-from neuralanalysis.analysis import psthfunctions
 from test.test_clusterAnalysis import gen_data
+
+import numpy as np
+from neuralanalysis.analysis import latency_calculator, psthfunctions
 
 
 def test_latency():

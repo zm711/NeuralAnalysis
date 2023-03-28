@@ -5,10 +5,10 @@ Created on Mon Mar 27 18:05:26 2023
 @author: ZacharyMcKenzie
 """
 
-from neuralanalysis.analysis.trial_correlation import trial_corr
 from test.test_clusterAnalysis import gen_data
-import numpy as np
 
+import numpy as np
+from neuralanalysis.analysis.trial_correlation import trial_corr
 from numpy.random import RandomState
 
 

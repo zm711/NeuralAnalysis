@@ -5,12 +5,13 @@ Created on Thu Mar  9 13:33:21 2023
 @author: ZacharyMcKenzie
 """
 
-from neuralanalysis.analysis import histdiff
-import numpy as np
-from numpy.random import RandomState
-import numpy.testing
-from neuralanalysis.analysis import psthfunctions as psfn
 from test.test_clusterAnalysis import gen_data
+
+import numpy as np
+import numpy.testing
+from neuralanalysis.analysis import histdiff
+from neuralanalysis.analysis import psthfunctions as psfn
+from numpy.random import RandomState
 
 
 def test_histdiff():

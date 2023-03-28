@@ -6,11 +6,9 @@ Created on Thu Mar  9 17:18:27 2023
 """
 
 import numpy as np
-from numpy.random import RandomState
 import numpy.testing
-
-
 from neuralanalysis import ClusterAnalysis
+from numpy.random import RandomState
 
 
 def gen_data(value):

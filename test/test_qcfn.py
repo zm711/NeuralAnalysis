@@ -6,14 +6,9 @@ Created on Thu Mar  9 15:28:52 2023
 """
 
 import numpy as np
-
-
-from neuralanalysis.qcfn import isiVqc
-from neuralanalysis.qcfn import qcfns
-from neuralanalysis.qcfn import silhouette_score
-
-from numpy.random import RandomState
 import numpy.testing
+from neuralanalysis.qcfn import isiVqc, qcfns, silhouette_score
+from numpy.random import RandomState
 
 
 def test_isisv():

@@ -5,10 +5,10 @@ Created on Thu Mar  9 16:47:43 2023
 @author: ZacharyMcKenzie
 """
 
-from neuralanalysis.intan_helpers import stimulushelpers
-from neuralanalysis.intan_helpers import stimulus_setupzm as stim
 import numpy as np
 import numpy.testing
+from neuralanalysis.intan_helpers import stimulus_setupzm as stim
+from neuralanalysis.intan_helpers import stimulushelpers
 
 
 def test_calculate_binary():

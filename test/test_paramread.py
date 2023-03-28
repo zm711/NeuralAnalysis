@@ -7,9 +7,8 @@ Created on Fri Mar 10 18:25:22 2023
 
 import numpy as np
 import numpy.testing
-from neuralanalysis.intan_helpers import stimulushelpers as sh
-
 from neuralanalysis.analysis import spsetup as spset
+from neuralanalysis.intan_helpers import stimulushelpers as sh
 
 
 def test_paramread():
