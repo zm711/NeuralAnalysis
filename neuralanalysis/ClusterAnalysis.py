@@ -20,6 +20,7 @@ drift mapping, and waveform plots.
 import copy
 import os.path
 import os
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -44,6 +45,7 @@ from .analysis.clusterzscore import clusterzscore
 from .analysis.firingratedf import firingRateWin
 from .analysis.prevalence_calculator import prevalence_calculator
 from .analysis.latency_calculator import latency_calculator
+from .analysis.trial_correlation import trial_corr
 
 # plotting functions
 from .visualization_ca.psthviewer import plotPSTH
@@ -420,19 +422,29 @@ class ClusterAnalysis:
             labels=labels,
         )
 
-    def latency(self, time_bin_size: float, bsl_win: list, event_win: list) -> dict:
+    def latency(
+        self, time_bin_size: float, bsl_win: list, event_win: list, num_shuffles: int
+    ) -> None:
         """calculates latency based on Chase 2007 and Mormann 2012. See function for
         full stats. Requires `time_bin_size` as time in seconds, `bsl_win` which is the
         window to look for the baseline in seconds [start, end], and an `event_win`
         which is the same, but for the stimulus time [start, end]"""
-        latency_values = latency_calculator(
+        latency_values, shuffled_values = latency_calculator(
             self.sp,
             self.eventTimes,
             timeBinSize=time_bin_size,
             bsl_win=bsl_win,
             event_win=event_win,
+            num_shuffle=num_shuffles,
         )
         self.latency_vals = latency_values
+        self.latency_shuffled = shuffled_values
+
+    def trial_corrs(self, sm_params: Union[int, list]) -> None:
+        trial_corr_df, _, _ = trial_corr(
+            self.psthvalues, self.eventTimes, sm_param=sm_params
+        )
+        self.trial_corr_df = trial_corr_df
 
     def plot_cdf(self, unit_only=False, laterality=False) -> None:
         """plots cdf and pdf of spike depth by spike amplitude by firing rate.
