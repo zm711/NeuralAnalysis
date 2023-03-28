@@ -37,7 +37,9 @@ from numba import jit
 
 @jit(nopython=True)
 def histdiff(time_stamps: np.array, reference_points: np.array, bin_borders: np.array):
-    """First we pull in our data"""
+    """Function to organize for the numba jit. It takes in three np.arrays all of floats
+    time_stamps should be the values to be assessed with reference to `reference_points`
+    based on `bin_borders`"""
     data1: np.array = time_stamps
     ndata1: int = len(time_stamps)
     data2: np.array = reference_points
