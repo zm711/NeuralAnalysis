@@ -9,7 +9,7 @@ Still working on
 
 import numpy as np
 import numpy.testing
-from neuralanalysis.visualization_ca import detectdrift, plotCDFs
+from neuralanalysis.visualization_ca import detectdrift, plot_cdf
 from numpy.random import RandomState
 
 
@@ -40,7 +40,7 @@ def test_ADbins_wfamps():
     amps = np.array(sorted(list(seq.randint(0, 250, size=len(spike_times)) * 0.99)))
     depths = np.array(sorted(list(seq.randint(0, 1000, size=len(spike_times)) * 0.98)))
 
-    depth_bins, amp_bins, recording_dur = plotCDFs.genADBins(
+    depth_bins, amp_bins, recording_dur = plot_cdf.genADBins(
         amps, probe_len, pitch, spike_times, depth
     )
 
@@ -56,7 +56,7 @@ def test_ADbins_wfamps():
         amp_bins[:3], np.array([0.000, 35.2157, 70.4314]), rtol=1e-05
     )
 
-    pdfs, cdfs = plotCDFs.computeWFamps(
+    pdfs, cdfs = plot_cdf.computeWFamps(
         amps,
         depths,
         amp_bins,

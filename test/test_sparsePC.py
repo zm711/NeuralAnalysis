@@ -1,5 +1,5 @@
 
-from neuralanalysis.visualization_ca import plottingPCs
+from neuralanalysis.visualization_ca import plotting_pcs
 import numpy as np
 import numpy.testing
 
@@ -30,7 +30,7 @@ def test_sparse():
     )
 
 
-    sparse_pc = plottingPCs.sparsePCs(fet, fet_ind, clu, 4, 15)
+    sparse_pc = plotting_pcs.sparsePCs(fet, fet_ind, clu, 4, 15)
     assert np.shape(sparse_pc)==(2,45), "Incorrect shape of sparse_pc features"
     mean_pc = np.mean(sparse_pc, axis=1)
     numpy.testing.assert_allclose(mean_pc, np.array([0.471602,0.148473]),rtol=1e-05)

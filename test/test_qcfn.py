@@ -7,7 +7,7 @@ Created on Thu Mar  9 15:28:52 2023
 
 import numpy as np
 import numpy.testing
-from neuralanalysis.qcfn import isiVqc, qcfns, silhouette_score
+from neuralanalysis.qcfn import isi_viol, qcfns, silhouette_score
 from numpy.random import RandomState
 
 
@@ -18,13 +18,13 @@ def test_isisv():
     isi = 0.0015
     ref_dur = 0.002
 
-    fp, num_viol = isiVqc.isiVCore(timestamps, isi, ref_dur)
+    fp, num_viol = isi_viol.isiVCore(timestamps, isi, ref_dur)
     num_viol = int(num_viol)
     assert np.isnan(fp)
     assert num_viol == 91, "Failed counting number of violations"
 
     ref_dur_long = 0.1
-    fp, num_viol = isiVqc.isiVCore(timestamps, isi, ref_dur_long)
+    fp, num_viol = isi_viol.isiVCore(timestamps, isi, ref_dur_long)
 
     assert np.isclose(fp, 0.27660304568527916)
 
