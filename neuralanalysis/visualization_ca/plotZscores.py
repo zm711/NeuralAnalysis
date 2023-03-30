@@ -424,7 +424,7 @@ def plotZscoreCore(
             cmap = "vlag"
             line_color = "black"
 
-        fig = plt.subplots(figsize=(10, 8))
+        fig = plt.subplots(figsize=(20, 16))
         ax = sns.heatmap(
             data=z_sorted,
             vmin=vmin,
@@ -456,16 +456,17 @@ def plotZscoreCore(
 
         plt.axvline(zero_point, color=line_color, linestyle=":", linewidth=0.5)
         plt.axvline(event_len, color=line_color, linestyle=":", linewidth=0.5)
-        plt.rc("axes", labelsize=14)
-        plt.rc("xtick", labelsize=12)
 
         if trial == False:
             plt.title(f"{stim.title()}, {sorter.title()}", weight="bold")
         else:
             plt.title(f"{stim.title()}, {trial}, {sorter.title()}", weight="bold")
 
+        ax.tick_params(axis="both", which="major", labelsize=30)
+        ax.set_ylabel("Units", fontsize=30)
+        ax.set_xlabel("Time (s)", fontsize=30)
         plt.tight_layout()
-        plt.figure(dpi=1200)
+        plt.figure(dpi=600)
         plt.show()
 
 
