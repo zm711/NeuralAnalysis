@@ -12,7 +12,7 @@ from .analysis import psthfunctions as psthfn
 from .analysis.clusterzscore import clu_z_score_merged
 from .misc_helpers.mergeclufunctions import merge_df
 
-from .visualization_ca.psthviewer import plotPSTH
+from .visualization_ca.psthviewer import plot_psth
 
 
 class MCA(ClusterAnalysis):
@@ -91,7 +91,7 @@ class MCA(ClusterAnalysis):
                 sp_cur, eventTime_cur, timeBinSize=time_bin_size
             )
 
-            plotPSTH(
+            plot_psth(
                 psthvalues,
                 eventTime_cur,
                 labels=label_cur,
