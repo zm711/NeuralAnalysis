@@ -22,7 +22,7 @@ used during psthvalues calculation. There's an optional groupSep set to True, wh
 separately. It can be set to false if someone prefers not to look at the data split that way."""
 
 
-def plotPSTH(
+def plot_psth(
     psthvalues: dict,
     eventTimes: dict,
     labels: dict,

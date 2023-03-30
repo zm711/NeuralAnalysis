@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plotDriftmap(
+def plot_driftmap(
     spike_times: np.array, spike_amps: np.array, spike_depths: np.array
 ) -> None:
 

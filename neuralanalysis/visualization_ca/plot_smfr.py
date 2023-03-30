@@ -15,7 +15,7 @@ from typing import Union
 def plot_smfr(
     psthvalues: dict,
     eventTimes: dict,
-    labels: Union[dict, None, False],
+    labels: Union[dict, None, bool],
     raster_window: list[list[float, float]],
     groupSep=True,
     eb=False,

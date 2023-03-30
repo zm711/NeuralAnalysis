@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plotACGs(sp: dict, refract_time=0.002) -> None:
+def plot_acgs(sp: dict, refract_time=0.002) -> None:
 
     """start by pulling out our data from sp. squeeze creates nX data rather
     than nX x 1 data which requires two values to specify"""

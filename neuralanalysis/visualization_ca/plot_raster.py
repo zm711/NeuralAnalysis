@@ -14,10 +14,8 @@ from ..analysis import psthfunctions as psfn
 def plot_raster(
     psthvalues: dict,
     eventTimes: dict,
-    labels: dict,
     raster_window: list[list[float, float]],
     groupSep=True,
-    eb=False,
 ) -> None:
     eventLst = list()
     for stimE in eventTimes.keys():
