@@ -30,14 +30,14 @@ METHODS:
 from .analysis.spsetup import loadsp
 
 from .qcfn.qcfns import maskedClusterQuality
-from .qcfn.isiVqc import isiV
-from .misc_helpers.getWaveForms import getWaveForms
+from .qcfn.isi_viol import isiV
+from .misc_helpers.get_waveforms import get_waveforms
 
-from .visualization_ca.plotWaveforms import plotWaveforms
-from .visualization_ca.acg import plotACGs
-from .visualization_ca.plottingPCs import plotPCs
-from .visualization_ca.plotCDFs import makeCDF, getTempPos
-from .visualization_ca.detectdrift import plotDriftmap
+from .visualization_ca.plot_waveforms import plot_waveforms
+from .visualization_ca.acg import plot_acgs
+from .visualization_ca.plotting_pcs import plot_pc
+from .visualization_ca.plot_cdf import make_cdf, get_temp_pos
+from .visualization_ca.detectdrift import plot_driftmap
 
 
 class SPAnalysis:
@@ -102,32 +102,32 @@ class SPAnalysis:
         """function to generate raw waveforms from the data rather than just templates.
         `nCh` is the number of channels for making the memory map. So a 64 channel probe
         would put 64 in. It will request a directory if needed. Returns the wf data."""
-        wf = getWaveForms(self.sp, nCh=num_chans)
+        wf = get_waveforms(self.sp, nCh=num_chans)
         self.wf = wf
         return wf
 
     def plot_wfs(self, ind: bool) -> None:
         """plot the raw waveforms. `ind` is True if ~500 waveforms are desired with mean
         in the middle. If `ind` False it will only display the mean"""
-        plotWaveforms(self.wf, Ind=ind)
+        plot_waveforms(self.wf, Ind=ind)
 
     def acg(self, ref_dur: float) -> None:
         """Autocorrelogram plots. It will display `ref_dur` as red lines in the figure.
         This value indicates refractory period which should be somewhere in the range of
         1-3 ms (0.001-0.003)"""
-        plotACGs(self.sp, refract_time=ref_dur)
+        plot_acgs(self.sp, refract_time=ref_dur)
 
     def plot_pc(self) -> None:
         """Plots top 2 pc spaces to give a rough idea of cluster separation. Not perfect
         since these are many dimensional spaces, but is a good first pass"""
-        plotPCs(self.sp)
+        plot_pc(self.sp)
 
     def plot_drift(self) -> None:
         """Plots and marks potential instance of drift within the recording"""
-        spike_depths, spike_amps, _ = getTempPos(self.sp)
-        plotDriftmap(self.sp["spikeTimes"], spike_amps, spike_depths)
+        spike_depths, spike_amps, _ = get_temp_pos(self.sp)
+        plot_driftmap(self.sp["spikeTimes"], spike_amps, spike_depths)
 
     def plot_cdf(self) -> None:
         """plot_cdf creates a pdf and cdf-like figure with depth on the y axis and amps
         on the x axis. The colormap is based on the number of spikes occurring."""
-        makeCDF(self.sp)
+        make_cdf(self.sp)
