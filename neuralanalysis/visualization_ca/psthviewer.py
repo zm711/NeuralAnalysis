@@ -118,10 +118,9 @@ def plotPSTH(
             # just my color scheme. Could be anything really
             if groupSep == True:
                 colorlist = [
-                    "#B2BEB5",  # ash gray
                     "blue",
                     "green",
-                    "orange",
+                    "#ff8c00",
                     "red",
                     "yellow",
                     "blue",
@@ -145,11 +144,12 @@ def plotPSTH(
                 color1 = list()
                 sns.set(rc={"legend.frameon": False})
                 sns.set_style("white")
-
+                plt.rc("axes", labelsize=50)
+                plt.rc("axes", titlesize=50)
                 for color in range(np.shape(psthSm)[0]):
                     color1.append(colorlist[color])
 
-                fig1, (ax1, ax2) = plt.subplots(2, figsize=(10, 8), sharex=True)
+                fig1, (ax1, ax2) = plt.subplots(2, figsize=(20, 16), sharex=True)
 
                 all_plots = list()
                 for value in range(np.shape(psthSm)[0]):
@@ -194,9 +194,6 @@ def plotPSTH(
                     )  # mark out our stimulus
                     ax1.set(
                         xlim=(windowS, windowE),
-                        # xticks = np.arange(-windowS, np.shape(psthSm)[1]),
-                        ylabel="Firing rate (Hz)",
-                        # xlabel = 'Time (s)'
                     )
 
                 if eb:
@@ -213,7 +210,8 @@ def plotPSTH(
                         legend_list.append(sub_label[key])
 
                     ax1.legend(all_plots, legend_list)
-
+                ax1.set_ylabel("Firing Rate (Hz)", fontsize=30)
+                ax1.tick_params(axis="y", which="major", labelsize=30)
                 ax2.plot(raster_x, raster_y, color="black")
                 ax2.plot(
                     [0, 0],
@@ -232,16 +230,15 @@ def plotPSTH(
 
                 ax2.set(
                     xlim=(windowS, windowE),
-                    #       xticks=np.arange(-windowS, windowE),
                     xlabel="Time (s)",
                     ylim=(0, np.max(raster_y) + 1),
-                    #        yticks=np.arange(1,np.shape(raster_x)[0]+1),
-                    ylabel="Event",
                 )
                 # ax2.set_yticks(np.arange(1, np.shape(raster_x)[0]+1), labels=eventLabels)
-
+                ax2.set_ylabel("Event", fontsize=30)
+                ax2.tick_params(axis="both", which="major", labelsize=30)
+                ax2.set_xlabel("Time (s)", fontsize=30)
             else:
-                fig1, (ax1, ax2) = plt.subplots(2, figsize=(10, 8), sharex=True)
+                fig1, (ax1, ax2) = plt.subplots(2, figsize=(20, 16), sharex=True)
 
                 if eb:
                     err_minus = psthSm - stderr
@@ -265,14 +262,14 @@ def plotPSTH(
                 )
                 ax1.set(
                     xlim=(windowS, windowE),
-                    #      xticks = np.arange(-windowS, np.shape(psthSm)[1]),
-                    ylabel="Firing rate (Hz)",
-                    # xlabel = 'Time (s)'
                 )
                 if eb:
                     ax1.set(ylim=(0, np.max(psthSm) + np.max(stderr) + 1))
                 else:
                     ax1.set(ylim=(0, np.max(psthSm) + 1))
+
+                ax1.set_ylabel("Firing Rate (Hz)", fontsize=30)
+                ax1.tick_params(axis="y", which="major", labelsize=30)
 
                 ax2.plot(raster_x, raster_y, color="black")
                 ax2.plot(
@@ -290,13 +287,13 @@ def plotPSTH(
 
                 ax2.set(
                     xlim=(windowS, windowE),
-                    #       xticks=np.arange(-windowS, windowE),
                     xlabel="Time (s)",
                     ylim=(0, np.max(raster_y) + 1),
-                    #        yticks=np.arange(1,np.shape(raster_x)[0]+1),
-                    ylabel="Event",
                 )
                 # ax2.set_yticks(np.arange(1, np.shape(raster_x)[0]+1), labels=eventLabels)]
+                ax2.set_ylabel("Event", fontsize=30)
+                ax2.tick_params(axis="both", which="major", labelsize=30)
+                ax2.set_xlabel("Time (s)", fontsize=30)
 
             """regardless of figure type following are the same"""
 
@@ -308,11 +305,13 @@ def plotPSTH(
 
             plt.grid(False)
 
-            plt.rc("axes", labelsize=12)
-            plt.rc("xtick", labelsize=12)
-            # plt.rc('ytick', labelsize=12)
-            # plt.rc('figure', labelsize=20)
+            # plt.rc("xtick", labelsize=20)
+            # plt.rc("ytick", labelsize=20)
+            # plt.rc("figure", labelsize=20)
+            # plt.yticks(label="Event", fontsize=20)
+            # plt.xticks(fontsize=20)
+            # plt.xlabel("Time (s)", fontsize=20)
             plt.tight_layout()
             sns.despine()
-            plt.figure(dpi=1200)
+            plt.figure(dpi=600)
             plt.show()
