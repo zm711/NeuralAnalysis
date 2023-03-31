@@ -6,6 +6,7 @@ Created on Fri Mar 31 08:35:58 2023
 """
 
 import numpy as np
+import glob
 
 from .non_intan_functions import (
     gen_events_non_intan,
@@ -28,7 +29,7 @@ class EventTimesMaker:
 
     def make_eventTimes(
         self, stim_array: Optional[np.array], stimulus_metrics: Optional[dict]
-    ) -> dict:
+    ) -> None:
         """Requires input of the nxm stimlus array from recording equipment where n is
         the number of distinct stimulus inputs, eg. dig1, dig2, dig3, and m is the
         signal at each sample, ie True/False or 1/0. stimulus_metrics is an optional
@@ -42,22 +43,29 @@ class EventTimesMaker:
         eventTimes = gen_events_non_intan(self.filepath, stim_array, stimulus_metrics)
         self.eventTimes = eventTimes
 
-    def set_trial_groups(self, trial_groups: dict) -> dict:
+    def set_trial_groups(self, trial_groups: dict) -> None:
         """to set trial groups later enter a dict with keys given by eventTimes.keys()
         and fill in one ndarray of len(n_events), for example {'dig1': np.ones((10,)),
         'dig2': np.array([1,2,1,2,1,2,1,2])}"""
         eventTimes = set_trial_groups(self.eventTimes, trial_group=trial_groups)
         self.eventTimes = eventTimes
 
-    def set_stim_names(self, stim_name: dict) -> dict:
+    def set_stim_names(self, stim_name: dict) -> None:
         """to set stimulus names enter a dict with keys given by eventTimes.keys() and
         fill in with a string name for each stimulus for example {'dig1': 'laser'}"""
         eventTimes = set_stim_name(self.eventTimes, stim_names=stim_name)
         self.eventTimes = eventTimes
 
-    def save_eventTimes(self, name: Optional[str]):
+    def save_eventTimes(self, name: Optional[str]) -> None:
         """If name is given this will override the initialized name otherwise it will
         preprend the self.filename onto eventTimes.npy"""
         if name is None:
             name = self.filename
         save_event_times(name=name, eventTimes=self.eventTimes)
+
+    def load_eventTimes(self) -> dict:
+        if self.eventTimes:
+            return self.eventTimes
+        eventTimes = np.load(glob.glob("*eventTimes.npy")[0], allow_pickle=True)
+        self.eventTimes = eventTimes
+        return eventTimes
