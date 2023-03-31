@@ -9,6 +9,7 @@ Created on Wed Jan 18 16:05:32 2023
 import pandas as pd
 import numpy as np
 import hashlib
+from typing import Optional
 
 
 """labelGenerator is a function which takes in the eventTimes dict and automatically
@@ -258,7 +259,7 @@ def waveform_vals_DF(
     waveform_dur: np.array,
     waveform_depth: np.array,
     waveform_amps: np.array,
-    shank_dict: dict,
+    shank_dict: Optional[dict],
 ) -> pd.DataFrame:
     cluster_ids = wf["F"]["ClusterIDs"]
     filename = sp["filename"]
@@ -288,7 +289,7 @@ def waveform_vals_DF(
 """ It loads sp['cids'] to only look at the desired neurons"""
 
 
-def genResp(resp_neuron_df: pd.DataFrame, sp: dict) -> dict:
+def gen_resp(resp_neuron_df: pd.DataFrame, sp: dict) -> dict:
     current_cids = resp_neuron_df["IDs"].unique()
     sp["cids"] = current_cids
 
