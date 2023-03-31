@@ -31,3 +31,10 @@ def test_import_all():
     spikes = na.SPAnalysis()
     assert spikes
     assert na.loadKS
+
+def test_EventTimesMaker():
+    from neuralanalysis.stimulus_helpers import EventTimesMaker
+    assert EventTimesMaker.EventTimesMaker, "Import failure"
+
+    events = EventTimesMaker.EventTimesMaker('test', 'test')
+    assert events, 'Insubstantiation of EventTimesMaker has failed'
