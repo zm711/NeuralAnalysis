@@ -3,16 +3,25 @@
 Created on Wed Mar 22 15:02:53 2023
 
 @author: ZacharyMcKenzie
+
+Functions for generating dataframes from datasets.
 """
 
-import numpy as np
+
 import hashlib
 import pandas as pd
 import os
 from . import genhelpers as gh
+from typing import Optional
 
 
-def merge_datasets(sp, df1, df2, df3, dtype: str):
+def merge_datasets(
+    sp: Optional[dict],
+    df1: pd.DataFrame,
+    df2: pd.DataFrame,
+    df3: pd.DataFrame,
+    dtype: str,
+) -> pd.DataFrame:
     final_df = pd.merge(
         df1, df2, left_on="HashID", right_on="HashID", suffixes=("", "_y")
     )
@@ -37,7 +46,7 @@ def merge_datasets(sp, df1, df2, df3, dtype: str):
     return final_df
 
 
-def gen_zscore_df(sp, labels, allP):
+def gen_zscore_df(sp: dict, labels: dict, allP: dict) -> pd.DataFrame:
     filename = sp["filename"]
     allP_list = list()
 
