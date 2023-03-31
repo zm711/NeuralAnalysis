@@ -46,13 +46,15 @@ def gen_events_non_intan(
         stim_array = np.load(glob.glob("*stim.npy")[0])
 
     stim_array = np.array(stim_array, dtype=np.int_)
+    if len(stim_array.shape) == 1:
+        stim_array = np.expand_dims(stim_array, axis=0)
     stim_labels = None
     trial_group = None
     for key in kwargs.keys():
         if key == "stimulus":
-            stim_labels = kwargs[key]
+            stim_labels = np.array(kwargs[key])
         if key == "trial":
-            trial_group = kwargs[key]
+            trial_group = np.array(kwargs[key])
 
     eventTimes = dict()
 
@@ -62,6 +64,7 @@ def gen_events_non_intan(
     eventTimes = stim_align_non_intan(
         stim_array, sample_rate, stim_labels, trial_group, eventTimes
     )
+    return eventTimes
 
 
 def stim_align_non_intan(
@@ -79,14 +82,14 @@ def stim_align_non_intan(
         eventTimes[dict_key]["EventTimes"] = events
         eventTimes[dict_key]["Lengths"] = event_len
         if trial_group is not None:
-            eventTimes[dict_key]["TrialGroup"] = trial_group
+            eventTimes[dict_key]["TrialGroup"] = np.array(trial_group)
 
     return eventTimes
 
 
 def set_trial_groups(eventTimes: dict, trial_group: dict) -> dict:
     for stim, group in trial_group.items():
-        eventTimes[stim]["TrialGroup"] = group
+        eventTimes[stim]["TrialGroup"] = np.array(group)
     return eventTimes
 
 
