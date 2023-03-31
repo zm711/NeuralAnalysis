@@ -8,7 +8,7 @@ Created on Thu Mar 30 16:10:44 2023
 import os
 import glob
 import numpy as np
-from .stimulushelpers import calculate_binary, paramread
+from ..intan_helpers.stimulushelpers import calculate_binary, paramread
 from ..misc_helpers.genhelpers import getdir, savefile
 from typing import Optional
 
