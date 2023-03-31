@@ -31,7 +31,7 @@ from .misc_helpers.dataframe_fns import merge_datasets, gen_zscore_df
 from .misc_helpers.label_generator import (
     labelGenerator,
     responseDF,
-    genResp,
+    gen_resp,
     qc_only,
     waveform_vals_DF,
 )
@@ -60,6 +60,7 @@ from .visualization_ca.detectdrift import plot_driftmap
 from .visualization_ca.neurocorrs import neuronCorr
 from .visualization_ca.plot_smfr import plot_smfr
 from .visualization_ca.plot_raster import plot_raster
+
 
 class ClusterAnalysis:
     """ClusterAnalysis is a class which takes in `sp` spike properties data as well as
@@ -232,10 +233,6 @@ class ClusterAnalysis:
         action potential in samples and seconds, the depth as averaged by waveform
         amplitude (by pc feature space is another way to average, which I have not
         implemented) and the amplitudes"""
-        self.max_waveform = None
-        self.waveform_dur = None
-        self.waveform_depth = None
-        self.waveform_amps = None
         self.shank_dict = None
         depth = self.depth
         laterality = self.laterality
@@ -280,7 +277,7 @@ class ClusterAnalysis:
         Returns:
         qcValues:dict
         isiv: dict"""
-        _,_, qcValues = masked_cluster_quality(self.sp)
+        _, _, qcValues = masked_cluster_quality(self.sp)
         self.qc = qcValues
         isiv = isi_viol(self.sp, isi=isi, ref_dur=ref_dur)
 
@@ -382,7 +379,7 @@ class ClusterAnalysis:
         )
 
     def plot_smfr(self, labels=None, tg=True, eb=True) -> None:
-        """plots just the smoothed firing rate over each stimulus. 
+        """plots just the smoothed firing rate over each stimulus.
         Inputs:
             labels either a dict of labels, None to use internal labels or False to
         ignore. tg to separate by trial groups. eb for error bars"""
@@ -390,16 +387,28 @@ class ClusterAnalysis:
         events = self.eventTimes
         if labels is None:
             labels = self.labels
-        plot_smfr(psth, events, labels=labels, groupSep=tg, eb=eb, raster_window=self.raster_window)
+        plot_smfr(
+            psth,
+            events,
+            labels=labels,
+            groupSep=tg,
+            eb=eb,
+            raster_window=self.raster_window,
+        )
 
     def plot_raster(self, tg=True) -> None:
-        """plots a raster plot for each neuron for each stimulus. 
+        """plots a raster plot for each neuron for each stimulus.
         Inputs:
         labels either a dict of labels, None to use internal labels or False to
         ignore. tg indicates by trial group."""
         psth = self.psthvalues
         events = self.eventTimes
-        plot_raster(psth, events, raster_window=self.raster_window, groupSep=tg,)
+        plot_raster(
+            psth,
+            events,
+            raster_window=self.raster_window,
+            groupSep=tg,
+        )
 
     def acg(self, ref_per=0.002) -> None:
         """This function plots ACG (autocorrelograms) for each cluster. `ref_per`
@@ -534,7 +543,7 @@ class ClusterAnalysis:
     def gen_resp(self) -> None:
         """genResp loads sp['cids'] with only responsive neurons that passed qc.
         This allows for subanalysis of neurons. Can be reverted with `revertClu`"""
-        sp = genResp(self.resp_neuro_df, self.sp)
+        sp = gen_resp(self.resp_neuro_df, self.sp)
         self.sp = sp
 
     def qc_only(self, qcthres: float, sil: float, isi: float) -> None:
