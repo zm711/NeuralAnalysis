@@ -39,8 +39,8 @@ from .misc_helpers.label_generator import (
 # functions which calculate various metrics for the neural data
 from .analysis import psthfunctions as psthfn
 from .misc_helpers.get_waveforms import get_waveforms, get_wf_values
-from .qcfn.qcfns import maskedClusterQuality
-from .qcfn.isi_viol import isiV
+from .qcfn.qcfns import masked_cluster_quality
+from .qcfn.isi_viol import isi_viol
 from .analysis.clusterzscore import clusterzscore
 from .analysis.firingratedf import firingRateWin
 from .analysis.prevalence_calculator import prevalence_calculator
@@ -280,9 +280,9 @@ class ClusterAnalysis:
         Returns:
         qcValues:dict
         isiv: dict"""
-        unitQuality, contaminationRate, qcValues = maskedClusterQuality(self.sp)
+        _,_, qcValues = masked_cluster_quality(self.sp)
         self.qc = qcValues
-        isiv = isiV(self.sp, isi=isi, ref_dur=ref_dur)
+        isiv = isi_viol(self.sp, isi=isi, ref_dur=ref_dur)
 
         self.isiv = isiv
 

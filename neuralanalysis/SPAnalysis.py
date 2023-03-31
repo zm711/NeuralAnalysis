@@ -29,8 +29,8 @@ METHODS:
 
 from .analysis.spsetup import loadsp
 
-from .qcfn.qcfns import maskedClusterQuality
-from .qcfn.isi_viol import isiV
+from .qcfn.qcfns import masked_cluster_quality
+from .qcfn.isi_viol import isi_viol
 from .misc_helpers.get_waveforms import get_waveforms
 
 from .visualization_ca.plot_waveforms import plot_waveforms
@@ -92,9 +92,9 @@ class SPAnalysis:
         ref_dur is the length of the refractory period of the neurons. Although 2ms is
         standard in neuroscience this is based on the neuron population being studied.
         """
-        qcvalues, _, _ = maskedClusterQuality(self.sp)
+        qcvalues, _, _ = masked_cluster_quality(self.sp)
         self.qc = qcvalues
-        isiv = isiV(self.sp, isi=isi, ref_dur=ref_dur)
+        isiv = isi_viol(self.sp, isi=isi, ref_dur=ref_dur)
         self.isiv = isiv
         return qcvalues, isiv
 

@@ -26,7 +26,7 @@ import numpy as np
 from ..misc_helpers.genhelpers import savefile
 
 
-def isiV(sp: dict, isi=0.0005, ref_dur=0.0015) -> dict:
+def isi_viol(sp: dict, isi=0.0005, ref_dur=0.0015) -> dict:
     spike_times = np.squeeze(sp["spikeTimes"])
     filename = sp["filename"]
 

@@ -41,7 +41,7 @@ has been curated into clusters vs the kilosort/phy templates that were found. If
 need to get the cluster data instead of the template data"""
 
 
-def maskedClusterQuality(sp=None) -> tuple[np.array, np.array, dict]:
+def masked_cluster_quality(sp=None) -> tuple[np.array, np.array, dict]:
     if sp is not None:
         filename = sp["filename"]
         if filename in os.getcwd():
