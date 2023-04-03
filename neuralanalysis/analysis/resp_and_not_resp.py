@@ -12,7 +12,7 @@ which can be analyzed with only the non-responsive Neurons"""
 
 from ..ClusterAnalysis import ClusterAnalysis
 import copy
-from ..misc_helpers.label_generator import genResp
+from ..misc_helpers.label_generator import gen_resp
 
 
 def resp_and_not_resp(
@@ -27,8 +27,8 @@ def resp_and_not_resp(
 
     myNeuron_non_resp = copy.deepcopy(myNeuron)  # deep copy of all info
 
-    sp_resp = genResp(resp_neurons, myNeuron.sp)  # generate new cids resp only
-    sp_nonresp = genResp(non_resp, myNeuron_non_resp.sp)  # non-resp
+    sp_resp = gen_resp(resp_neurons, myNeuron.sp)  # generate new cids resp only
+    sp_nonresp = gen_resp(non_resp, myNeuron_non_resp.sp)  # non-resp
 
     # load values into objects, return only new neuron
     myNeuron.sp = sp_resp
