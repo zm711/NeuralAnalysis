@@ -43,17 +43,22 @@ future code it should just be a float value 1.0, 2.0, 3.0 for each stimulus cond
 
 import os.path
 import os
-
+from typing import Union
 import numpy as np
 
 from ..analysis.spsetup import loadsp
 from ..intan_helpers.stim_alignment import stim_alignment
 from ..intan_helpers.stimulushelpers import metadatafn, optoproc
+try:
+    from ..intan_helpers.stimulus_functions_neo import process_stim
+    NEO=True
+except ImportError:
+    NEO=False
 from ..intan_helpers.zmbin import binConvert
 from ..misc_helpers.genhelpers import getdir
 
 
-def loadKS(baro=False):
+def loadKS(baro:bool=False, filename:str=''):
     """loadKS automatically generates `sp` and `eventTimes` if using Intan.
     It runs `loadsp` to account for any new Phy curation. An *sp.npy file is save
     but is not loaded. Then we try to find the `*eventTimes.npy`. If this file
@@ -66,7 +71,10 @@ def loadKS(baro=False):
         eventTimes: dict = stim_alignment(baro=baro)
     except FileNotFoundError:
         print("eventTimes.npy was not found now select dir with .rhd file")
-        binConvert()
+        if NEO:
+            process_stim(filename)
+        else:
+            binConvert()
         print("Select pyanalyis folder to generate the *eventTimes.npy file")
         eventTimes = stim_alignment(baro=baro)
     finally:
