@@ -17,7 +17,7 @@ def process_stim(filename: str = "") -> None:
     if len(filename) == 0:
         print("No filename given please select folder containing .rhd file")
         _, _, filename = getdir()
-        filename = filename = ".rhd"
+        filename = filename + ".rhd"
 
     assert ".rhd" in filename, "please make sure the filename given is an .rhd"
 
