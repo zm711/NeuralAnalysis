@@ -3,6 +3,8 @@
 Created on Tue Apr  4 15:03:45 2023
 
 @author: ZacharyMcKenzie
+
+This will only work if Neo accepts my pull request. Otherwise I will generate a different work around.
 """
 
 import neo
@@ -15,7 +17,7 @@ def process_stim(filename: str = "") -> None:
     if len(filename) == 0:
         print("No filename given please select folder containing .rhd file")
         _, _, filename = getdir()
-        filename = filename = ".rhd"
+        filename = filename + ".rhd"
 
     assert ".rhd" in filename, "please make sure the filename given is an .rhd"
 
