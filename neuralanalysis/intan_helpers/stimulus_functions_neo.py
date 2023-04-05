@@ -34,7 +34,7 @@ def process_stim(filename: str = "") -> None:
         "board_dig_in_channels": dig_channels,
         "frequency_parameters": {"amplifier_sample_rate": sample_freq},
     }
-
+    os.mkdir("pyanalysis")
     os.chdir("pyanalysis")
     np.save(filename + ".intan.npy", intan_dict, allow_pickle=True)
 
@@ -55,7 +55,7 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
 
     digital_stream = [
         idx for idx, name in enumerate(stream_list) if "DIGITAL-IN" in name.upper()
-    ][0]
+    ]
 
     adc_data = reader.get_analogsignal_chunk(
         stream_index=adc_stream, channel_indexes=[0]
@@ -70,6 +70,7 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
     if len(digital_stream) == 0:
         digital_data = intan_neo_read_no_dig(reader)
     else:
+        digital_stream = digital_stream[0]
         digital_data = np.squeeze(
             reader.get_analogsignal_chunk(
                 stream_index=digital_stream, channel_indexes=[0]
@@ -94,6 +95,8 @@ def preprocess_digital(digital_data: np.array) -> tuple[np.array, np.array]:
 
 
 def intan_neo_read_no_dig(reader: neo.rawio.IntanRawIO) -> np.array:
+    """if neo doesn't give easy access to digital stream then I recreate the function
+    here"""
     digital_memmap = reader._raw_data["DIGITAL-IN"]  # directly grab memory map from neo
     dig_size = digital_memmap.size
     dig_shape = digital_memmap.shape
