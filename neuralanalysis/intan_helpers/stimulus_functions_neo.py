@@ -3,6 +3,8 @@
 Created on Tue Apr  4 15:03:45 2023
 
 @author: ZacharyMcKenzie
+
+This will only work if Neo accepts my pull request. Otherwise I will generate a different work around.
 """
 
 import neo
