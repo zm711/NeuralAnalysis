@@ -54,7 +54,7 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
     ]
 
     digital_stream = [
-        idx for idx, name in enumerate(stream_list) if "DIGITAL" in name.upper()
+        idx for idx, name in enumerate(stream_list) if "DIGITAL-IN" in name.upper()
     ][0]
 
     adc_data = reader.get_analogsignal_chunk(
@@ -67,9 +67,14 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
         )
     )
 
-    digital_data = np.squeeze(
-        reader.get_analogsignal_chunk(stream_index=digital_stream, channel_indexes=[0])
-    )
+    if len(digital_stream) == 0:
+        digital_data = intan_neo_read_no_dig(reader)
+    else:
+        digital_data = np.squeeze(
+            reader.get_analogsignal_chunk(
+                stream_index=digital_stream, channel_indexes=[0]
+            )
+        )
 
     for value in reader.header["signal_channels"]:
         sample_freq = value[2]
@@ -86,3 +91,22 @@ def preprocess_digital(digital_data: np.array) -> tuple[np.array, np.array]:
         value_matrix[idx] = np.where(digital_data == value, 1, 0)
 
     return value_matrix, values
+
+
+def intan_neo_read_no_dig(reader: neo.rawio.IntanRawIO) -> np.array:
+    digital_memmap = reader._raw_data["DIGITAL-IN"]  # directly grab memory map from neo
+    dig_size = digital_memmap.size
+    dig_shape = digital_memmap.shape
+    # below we have all the shaping information necessary
+    i_start = 0
+    i_stop = dig_size
+    block_size = dig_shape[1]
+    block_start = i_start // block_size
+    block_stop = i_stop // block_size + 1
+
+    sl0 = i_start % block_size
+    sl1 = sl0 + (i_stop - i_start)
+
+    digital_data = np.squeeze(digital_memmap[block_start:block_stop].flatten()[sl0:sl1])
+
+    return digital_data
