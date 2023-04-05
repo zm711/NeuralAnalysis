@@ -75,7 +75,7 @@ def test_gen_resp():
     resp_df = pd.DataFrame({"IDs": [0, 1, 2, 3]})
     sp = {"cids": np.array([0, 1, 2, 3, 4, 5, 6])}
 
-    sp = label_generator.genResp(resp_df, sp)
+    sp = label_generator.gen_resp(resp_df, sp)
 
     assert len(sp["cids"]) == 4
     numpy.testing.assert_allclose(sp["cids"], np.array([0, 1, 2, 3]))

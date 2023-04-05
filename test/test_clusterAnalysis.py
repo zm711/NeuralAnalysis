@@ -42,11 +42,11 @@ def test_clu_z_score():
     sp, eventTimes = gen_data(1234567890)
     myNeuron = ClusterAnalysis.ClusterAnalysis(sp, eventTimes)
 
-    allP, normVal, window = myNeuron.clu_zscore(
+    allP, normVal = myNeuron.clu_zscore(
         time_bin_size=0.05, window=[[-1, -0.1], [-1, 5]]
     )
 
-    assert window == [[-1, 5]]
+    
     allP = allP["Test"]
 
     assert np.shape(allP) == (10, 4, 120)
@@ -61,7 +61,7 @@ def test_responsive_neurons_generation_tg_false():
     sp, eventTimes = gen_data(1234567890)
     myNeuron = ClusterAnalysis.ClusterAnalysis(sp, eventTimes)
 
-    allP, _, _ = myNeuron.clu_zscore(
+    allP, _,  = myNeuron.clu_zscore(
         time_bin_size=0.05, tg=False, window=[[-1, -0.1], [-1, 5]]
     )
 
