@@ -12,7 +12,7 @@ Currently I have helpers built in for analyzing Intan, but I'm actively working 
 I've tested python 3.8-3.10. I've also tested some other packages and these are my current to recreate. I work in spyder so I generate a conda env with its own spyder I had stability issues so I'm sticking with 5.3.3 for now. Using the packages below will prevent any compatibility issues.
 
 ```bash
- conda create -n neuralanalysis -c conda-forge python=3.10 spyder=5.3.3 numpy pandas scipy matplotlib h5py seaborn scikit-learn cython sympy numba
+ conda create -n neuralanalysis -c conda-forge python=3.10 spyder=5.3.3 numpy=1.23 pandas scipy matplotlib h5py seaborn scikit-learn cython sympy numba
  pip install neo
  ```
  **I'm going to create an environment `yaml` soon--ie don't use the yaml yet.**
