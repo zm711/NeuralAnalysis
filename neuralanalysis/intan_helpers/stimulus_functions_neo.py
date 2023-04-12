@@ -30,12 +30,9 @@ def process_stim(filename: str = "") -> None:
 
     try:
         digital_data.shape
-        value_matrix, values = preprocess_digital(digital_data, intan_header)
-        dig_channels = {}
-        for idx, value in enumerate(values):
-            dig_channels[idx] = {"native_channel_name": "DIG" + str(value)}
+        value_matrix = preprocess_digital(digital_data, intan_header)
         intan_dict["board_dig_in_data"] = value_matrix
-        intan_dict["board_dig_in_channels"] = dig_channels
+        intan_dict["board_dig_in_channels"] = intan_header["board_dig_in_channels"]
     except AttributeError:
         print("no digital data")
 
@@ -100,9 +97,7 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
     return final_adc, digital_data, sample_freq
 
 
-def preprocess_digital(
-    digital_data: np.array, header: dict
-) -> tuple[np.array, np.array]:
+def preprocess_digital(digital_data: np.array, header: dict) -> np.array:
     dig_in_channels = header["board_dig_in_channels"]
     values = np.nonzero(np.unique(digital_data))[0]
 
@@ -115,7 +110,7 @@ def preprocess_digital(
             0,
         )
 
-    return values, values
+    return values
 
 
 def intan_neo_read_no_dig(reader: neo.rawio.IntanRawIO) -> np.array:
