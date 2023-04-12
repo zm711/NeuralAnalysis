@@ -25,17 +25,22 @@ def process_stim(filename: str = "") -> None:
     
     intan_dict=dict(frequency_parameters=dict(amplifier_sample_rate=sample_freq))
     
-    if np.sum(np.isnan(digital_data)!=0:
-
+    try:
+        digital_data.shape
         value_matrix, values = preprocess_digital(digital_data)
         dig_channels = {}
         for idx, value in enumerate(values):
             dig_channels[idx] = {"native_channel_name": "DIG" + str(value)}
         intan_dict['board_dig_in_data'] = value_matrix
         intan_dict['board_dig_in_channels'] = dig_channels
+    except AttributeError:
+        print('no digital data')
         
-    if np.sum(np.isnan(final_adc))!=0:
+    try:
+        final_adc.shape
         intan_dict['board_adc_data']=final_adc
+    except AttributeError:
+        print('no adc data')
 
     os.mkdir("pyanalysis")
     os.chdir("pyanalysis")
