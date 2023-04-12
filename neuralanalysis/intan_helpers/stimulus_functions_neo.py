@@ -10,6 +10,7 @@ This will only work if Neo accepts my pull request. Otherwise I will generate a 
 import neo
 import os
 from ..misc_helpers.genhelpers import getdir
+from .intanutils import read_header
 import numpy as np
 
 
@@ -20,27 +21,29 @@ def process_stim(filename: str = "") -> None:
         filename = filename + ".rhd"
 
     assert ".rhd" in filename, "please make sure the filename given is an .rhd"
-    
+
     final_adc, digital_data, sample_freq = read_intan_neo(filename)
-    
-    intan_dict=dict(frequency_parameters=dict(amplifier_sample_rate=sample_freq))
-    
+    fid = open(filename, "rb")
+    intan_header = read_header(fid)
+    fid.close()
+    intan_dict = dict(frequency_parameters=dict(amplifier_sample_rate=sample_freq))
+
     try:
         digital_data.shape
-        value_matrix, values = preprocess_digital(digital_data)
+        value_matrix, values = preprocess_digital(digital_data, intan_header)
         dig_channels = {}
         for idx, value in enumerate(values):
             dig_channels[idx] = {"native_channel_name": "DIG" + str(value)}
-        intan_dict['board_dig_in_data'] = value_matrix
-        intan_dict['board_dig_in_channels'] = dig_channels
+        intan_dict["board_dig_in_data"] = value_matrix
+        intan_dict["board_dig_in_channels"] = dig_channels
     except AttributeError:
-        print('no digital data')
-        
+        print("no digital data")
+
     try:
         final_adc.shape
-        intan_dict['board_adc_data']=final_adc
+        intan_dict["board_adc_data"] = final_adc
     except AttributeError:
-        print('no adc data')
+        print("no adc data")
 
     os.mkdir("pyanalysis")
     os.chdir("pyanalysis")
@@ -62,8 +65,8 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
     digital_stream = [
         idx for idx, name in enumerate(stream_list) if "DIGITAL-IN" in name.upper()
     ]
-    
-    if len(adc_stream)!=0:
+
+    if len(adc_stream) != 0:
         adc_stream = adc_stream[0]
         adc_data = reader.get_analogsignal_chunk(
             stream_index=adc_stream, channel_indexes=[0]
@@ -75,7 +78,7 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
             )
         )
     else:
-       final_adc=np.nan
+        final_adc = np.nan
 
     if len(digital_stream) == 0:
         try:
@@ -97,14 +100,22 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
     return final_adc, digital_data, sample_freq
 
 
-def preprocess_digital(digital_data: np.array) -> tuple[np.array, np.array]:
+def preprocess_digital(
+    digital_data: np.array, header: dict
+) -> tuple[np.array, np.array]:
+    dig_in_channels = header["board_dig_in_channels"]
     values = np.nonzero(np.unique(digital_data))[0]
 
-    value_matrix = np.zeros((len(values), len(digital_data)), dtype=np.int16)
-    for idx, value in enumerate(values):
-        value_matrix[idx] = np.where(digital_data == value, 1, 0)
+    for value in range(len(dig_in_channels)):
+        values[value] = np.not_equal(
+            np.bitwise_and(
+                digital_data,
+                (1 << dig_in_channels[value]["native_order"]),
+            ),
+            0,
+        )
 
-    return value_matrix, values
+    return values, values
 
 
 def intan_neo_read_no_dig(reader: neo.rawio.IntanRawIO) -> np.array:
