@@ -10,7 +10,7 @@ This will only work if Neo accepts my pull request. Otherwise I will generate a 
 import neo
 import os
 from ..misc_helpers.genhelpers import getdir
-from .intanutils import read_header
+from .intanutil import read_header
 import numpy as np
 
 
