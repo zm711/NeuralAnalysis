@@ -25,7 +25,7 @@ def process_stim(filename: str = "") -> None:
     
     intan_dict=dict(frequency_parameters=dict(amplifier_sample_rate=sample_freq))
     
-    if np.isnan(digital_data, where=False):
+    if np.sum(np.isnan(digital_data)!=0:
 
         value_matrix, values = preprocess_digital(digital_data)
         dig_channels = {}
@@ -34,7 +34,7 @@ def process_stim(filename: str = "") -> None:
         intan_dict['board_dig_in_data'] = value_matrix
         intan_dict['board_dig_in_channels'] = dig_channels
         
-    if np.isnan(final_adc, where=False):
+    if np.sum(np.isnan(final_adc))!=0:
         intan_dict['board_adc_data']=final_adc
 
     os.mkdir("pyanalysis")
