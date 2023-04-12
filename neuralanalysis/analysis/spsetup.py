@@ -98,10 +98,10 @@ def loadsp() -> dict:
         cids = cids[np.isin(cids, NoiseCluster, invert=True)]
 
     else:
-        clu = spikeTemplates
+        clu = np.squeeze(spikeTemplates)
         cids = np.unique(spikeTemplates)
         cgs = 3 * np.ones((len(cids),))
-        st = spikeTimes
+        st = np.squeeze(spikeTimes)
         noise = np.nan
 
     """reading in more npy data"""
