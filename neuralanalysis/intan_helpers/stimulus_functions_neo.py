@@ -99,7 +99,7 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
 
 def preprocess_digital(digital_data: np.array, header: dict) -> np.array:
     dig_in_channels = header["board_dig_in_channels"]
-    values = np.zeros((len(dig_in_channels)), len(digital_data))
+    values = np.zeros((len(dig_in_channels), len(digital_data)))
 
     for value in range(len(dig_in_channels)):
         values[value, :] = np.not_equal(
