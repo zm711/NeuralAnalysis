@@ -49,7 +49,7 @@ def process_stim(filename: str = "") -> None:
 
 def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
     reader = neo.rawio.IntanRawIO(filename)
-    print("Parsing header--this will take a while--")
+    print("Parsing header--this will take a while--\n")
 
     reader.parse_header()
 
