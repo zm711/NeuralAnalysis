@@ -99,10 +99,10 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
 
 def preprocess_digital(digital_data: np.array, header: dict) -> np.array:
     dig_in_channels = header["board_dig_in_channels"]
-    values = np.nonzero(np.unique(digital_data))[0]
+    values = np.zeros((len(dig_in_channels)), len(digital_data))
 
     for value in range(len(dig_in_channels)):
-        values[value] = np.not_equal(
+        values[value, :] = np.not_equal(
             np.bitwise_and(
                 digital_data,
                 (1 << dig_in_channels[value]["native_order"]),
