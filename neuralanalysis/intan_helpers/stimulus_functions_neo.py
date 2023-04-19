@@ -44,7 +44,13 @@ def process_stim(filename: str = "") -> None:
 
     os.mkdir("pyanalysis")
     os.chdir("pyanalysis")
-    np.save(filename + ".intan.npy", intan_dict, allow_pickle=True)
+
+    if len(intan_dict.keys()) == 0:
+        print("No stimulus data was analyzed. Verify .rhd file")
+        raise Exception("Failure")
+    else:
+        print("Saving *.intan.npy file now.")
+        np.save(filename + ".intan.npy", intan_dict, allow_pickle=True)
 
 
 def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
