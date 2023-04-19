@@ -341,7 +341,7 @@ class ClusterAnalysis:
         z_df = gen_zscore_df(self.sp, self.labels, self.allP)
         self.z_df = z_df
 
-    def spike_raster(self, time_bin_size=0.001, window_list=None) -> tuple[dict, list]:
+    def spike_raster(self, time_bin_size=0.001, window_list=None) -> None:
         """spike_raster calculates psthvalues which can be used to create firing
         rate and raster plots. it takes in `time_bin_size` in seconds, ie the default
         is 50 ms, but if using for raster plot 1 ms (0.001) is much better because a
