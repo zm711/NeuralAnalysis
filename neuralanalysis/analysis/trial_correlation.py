@@ -27,17 +27,29 @@ def multi_corr(psth_list: list, event_list: list, sm_param: Union[int, list]):
 def trial_corr(
     psthvalues: dict, eventTimes: dict, sm_param: Union[int, list]
 ) -> tuple[pd.DataFrame, float, float]:
-    """Inputs:
-     psthvalues: dict of raw firing rates with keys of stimuli
-     eventTimes: dict of stimulus data
-     sm_param: int or list of ints indicating smoothing filter for a gaussian kernel
-               It is the sigma of the time_bin_size done in spike_raster()
+    """
+    function for calculation Pearson correlation coefficients between trial groups for
+    gaussian smoothed data.
 
-    Returns:
-      final_dataframe: pd.DataFrame with all clusters, trial groups, stims, and r
-      score
-      mean_r: float of the mean r for the animal across all trials all stimuli
-      std_r: float std of r for the animal across all trials all stimuli"""
+    Parameters
+    ----------
+    psthvalues : dict
+        raster data for each cluster
+    eventTimes : dict
+        stimulus data
+    sm_param : Union[int, list]
+        guassian smoothing filter in milliseconds
+
+    Returns
+    -------
+    final_dataframe : pd.DataFrame
+        dataframe of trial-trial correlations
+    mean_r : float
+        mean correlation value
+    std_r : float
+        std of correlation values
+
+    """
 
     eventLst = list()
     for stimE in eventTimes.keys():
