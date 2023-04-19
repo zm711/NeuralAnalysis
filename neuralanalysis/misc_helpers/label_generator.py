@@ -49,6 +49,36 @@ def responseDF(
     sil: float,
     isi=None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    function for creating responsive neuron DataFrame
+
+    Parameters
+    ----------
+    responsive_neurons : dict
+        dictionary of responsive neurons as determined by z-score cutoffs
+    isiv : dict
+        dictionary of interspike interval violations.
+    qcvalues : dict
+        the isolation distances, contamination rates, and simplified silhouette scores
+    sp : dict
+        spike train and associated data
+    labels : dict
+        labels to translate integers to strings for labels.
+    qcthres : float
+        isolation distance value cutoff for qc (0, inf)
+    sil : float
+        silhouette score value cutoff (-1, 1)
+    isi : TYPE, optional
+        Optional interspike violation fraction cutoff. (0,1) 0 with no violation The default is None.
+
+    Returns
+    -------
+    resp_neuron_df : pd.DataFrame
+        DataFrame of responsive neurons which have passed qc
+    non_resp_df : TYPE
+        DataFrame of non-responsive neurons which have passed qc
+
+    """
     # cids = sp["cids"]
     try:
         unit_quality = qcvalues["uQ"]
@@ -197,6 +227,34 @@ def responseDF(
 def qc_only(
     qcvalues: dict, isiv: dict, sp: dict, qcthres: float, sil: float, isi: float
 ) -> tuple[dict, pd.DataFrame]:
+    """
+    function for creating a dataframe just based on quality metrics.
+
+    Parameters
+    ----------
+    qcvalues : dict
+        the isolation distances, contamination rates, and simplified silhouette scores
+    isiv : dict
+        dictionary of interspike interval violations.
+    sp : dict
+        spike train and associated data
+    labels : dict
+        labels to translate integers to strings for labels.
+    qcthres : float
+        isolation distance value cutoff for qc (0, inf)
+    sil : float
+        silhouette score value cutoff (-1, 1)
+    isi : TYPE, optional
+        Optional interspike violation fraction cutoff. (0,1) 0 with no violation The default is None.
+
+    Returns
+    -------
+    sp : dict
+        this is sp with only qc neurons loaded into sp['cids'] for ease of running methods
+    quality_df : pd.DataFrame
+        DataFrame of all neurons which passed qc. Non response data included.
+
+    """
     filename = sp["filename"]
     neuron_idx = hashlib.sha256((filename).encode()).hexdigest()
     cids = sp["cids"]
@@ -261,6 +319,30 @@ def waveform_vals_DF(
     waveform_amps: np.array,
     shank_dict: Optional[dict],
 ) -> pd.DataFrame:
+    """
+    Creates a pd.DataFrame of waveform values (depth,amps, duration, shank location)
+
+    Parameters
+    ----------
+    wf : dict
+        raw waveform data
+    sp : dict
+        spike train data
+    waveform_dur : np.array
+        array of waveform durations
+    waveform_depth : np.array
+        array of waveform depths
+    waveform_amps : np.array
+        array of waveform amps
+    shank_dict : Optional[dict]
+        dictionary of shank values; limited functionality should avoid for now
+
+    Returns
+    -------
+    neuron_characteristics : pd.DataFrame
+        DataFrame of waveform characterics for each cluster
+
+    """
     cluster_ids = wf["F"]["ClusterIDs"]
     filename = sp["filename"]
     ids_hash = [

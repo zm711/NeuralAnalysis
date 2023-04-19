@@ -11,8 +11,16 @@ from ..intan_helpers.stimulushelpers import paramread
 
 
 def loadsp() -> dict:
-    """First I grab the directory where are numpy files are open that directory and save
-    the title in case we decide to save things later"""
+    """
+    function for loading stimulus data. Directory prompt to select root directory and
+    then loads the value by itself.
+
+    Returns
+    -------
+    sp: dict
+        the spike trains, identities, pc values, etc all in a dictionary.
+
+    """
 
     old_dir, open_file, fileName = getdir()
 

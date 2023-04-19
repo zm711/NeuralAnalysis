@@ -20,7 +20,7 @@ drift mapping, and waveform plots.
 import copy
 import os.path
 import os
-from typing import Union
+from typing import Union, Optional
 
 import numpy as np
 import pandas as pd
@@ -136,11 +136,35 @@ class ClusterAnalysis:
         except:
             print("No previous ClusterAnalysis to pull values from")
 
-    def set_labels(self, labels: dict, depth=None, laterality=None) -> None:
-        """labels is dict with format {'Stim': {str(float): "what you want"}}. For baro
-        works automatically based on 20mmHg/V. For other stimuli it must be entered
-        by hand.It also allows to load laterality 'r' or 'l' for multi shank probes
-        Finally it also load in `depth` of the bottom of the probe"""
+    def set_labels(
+        self,
+        labels: dict,
+        depth: Optional[float] = None,
+        laterality: Optional[str] = None,
+    ) -> None:
+        """
+        this sets the labels for the integer stimuli for plotting, the depth of the
+        probe used int the recording, and the laterality of the probe in the nervous
+        system.
+
+        Parameters
+        ----------
+        labels : dict
+            Each stimulus should be a key with a dictionary of key:value pairs where the
+            key is what is stored in trial groups and the value is the desired display
+            value
+        depth : float, optional
+            A float depth of probe to be used for calculating waveform values.
+            The default is None.
+        laterality : str, optional
+            Optional lateralization of the probe in the tissue. The default is None.
+
+        Returns
+        -------
+        None
+            stores values as labels, depth, laterality for use by other functions.
+
+        """
         if self.eventTimes.get("ADC1", False) or self.eventTimes.get("ADC1tot", False):
             self.labels = labelGenerator(self.eventTimes)
         else:
@@ -223,10 +247,21 @@ class ClusterAnalysis:
         )
 
     def get_waveforms(self, num_chans: int) -> None:
-        """`get_waveforms` will return the true waveforms (post phy curation),
-        which can then be analyzed for various metrics. Uses a memory map
-        to reduce RAM usage. Optionally enter number of channels as `num_chans`
-        otherwise a prompt will appear."""
+        """
+        Obtains raw waveforms values from the binary file for each cluster stored
+        internally in a dictionary
+
+        Parameters
+        ----------
+        num_chans : int
+            the number of channels in the recording to create the proper memory map
+
+        Returns
+        -------
+        None
+           Internally stores waveform data as a dictionary `wf`
+
+        """
         wf = get_waveforms(self.sp, nCh=num_chans)
         self.wf = wf
 
@@ -248,10 +283,22 @@ class ClusterAnalysis:
         if wf_vals.shank_dict:
             self.shank_dict = wf_vals.shank_dict
 
-    def plot_wfs(self, ind=True) -> None:
-        """`plot_wfs` will plot the raw waveforms. If `ind` = `True` it will
-        display ~500 waveforms with the mean waveform in the middle.
-        If `ind` is `False` it will only display the mean waveform."""
+    def plot_wfs(self, ind: bool = True) -> None:
+        """
+        plots the raw waveforms.
+
+        Parameters
+        ----------
+        ind : bool, optional
+            plots 300 waveforms of each cluster with the mean waveform
+            in black. False will only display the mean waveform. The default is True.
+
+        Returns
+        -------
+        None
+            plots for each cluster in sp['cids']
+
+        """
         plot_waveforms(self.wf, order="F", Ind=True)
 
     def gen_wfdf(self) -> None:
@@ -285,19 +332,33 @@ class ClusterAnalysis:
 
         self.isiv = isiv
 
-    def clu_zscore(self, time_bin_size=0.05, tg=True, window=None) -> tuple[dict, dict]:
-        """`clu_zscore` will calculate the zscored firing rates of neurons. There are
-        two possible paramaters. `time_bin_size` which defaults to 50 ms, but can
-        be changed to 10 or 100 ms if desired. `tg` is the parameter for whether
-        to separate data by trial grouping. `False` means no sepearation by tg
-        whereas `True` indicates to keep data separated. `window` is optional parameter
-        which gives the user the option to enter a baseline window and a stimulus
-        window if they use the same windows for their stimuli. Format is
-        [[bslStart:float, bslStop:float], [stimStart:float, stimStop:float]].
-        RETURNS:
-        AllP: dict of z scores
-        nomrVal: dict of mean and std of baseline
-        window: list of windows used"""
+    def clu_zscore(
+        self, time_bin_size=0.05, tg: bool = True, window=None
+    ) -> tuple[dict, dict]:
+        """
+        creates z score values for each cluster for each stimulus based on baseline
+
+        Parameters
+        ----------
+        time_bin_size : float, optional
+            Size of time bin in seconds. The default is 0.05 (50 ms)
+        tg : bool, optional
+            Whether to separate by trial grouping for each stimulus The default is True.
+        window : list[float], optional
+            Can enter a list of lists for each stimulus with floats where each
+            stimulus has a list of [start, end] for baseline and for event window. So,
+            finally structure would be [[-1,-.1], [0, 4]]. The default is None.
+
+        Returns
+        -------
+        allP: dict
+            the score firing dictionary with each stimulus being a key and each value
+            being an np.array of n_clusters x n_trial_groups x n_time_bins
+        normVal: dict
+            indicates baseline firing rates and std for each cluster
+
+        """
+
         if type(time_bin_size) == float:
             time_bin_size = [time_bin_size]
         allP, normVal, window = clusterzscore(
@@ -341,14 +402,26 @@ class ClusterAnalysis:
         z_df = gen_zscore_df(self.sp, self.labels, self.allP)
         self.z_df = z_df
 
-    def spike_raster(self, time_bin_size=0.001, window_list=None) -> None:
-        """spike_raster calculates psthvalues which can be used to create firing
-        rate and raster plots. it takes in `time_bin_size` in seconds, ie the default
-        is 50 ms, but if using for raster plot 1 ms (0.001) is much better because a
-        raster plot requires all bins to be 0 or 1.
-        RETURNS:
-        psthvalues: dict of firing rates
-        window: list of windows used"""
+    def spike_raster(self, time_bin_size: float = 0.001, window_list=None) -> None:
+        """
+        Calculates raw firing rates based on time bins which can be consumed by other
+        methods in the class
+
+        Parameters
+        ----------
+        time_bin_size : TYPE, optional
+            time bin size for raster plot calculation. The default is 0.001 (1ms)
+        window_list : TYPE, optional
+            A list of lists for windows for each stimulus. If not given
+            the function will prompt the user. The default is None.
+
+        Returns
+        -------
+        None
+            Internally stores the psthvalues, time_bin, and raster_window for use with
+            other functions.
+
+        """
         if type(time_bin_size) == float:
             time_bin_size = [time_bin_size]
         psthvalues, window = psthfn.rasterPSTH(
@@ -358,13 +431,31 @@ class ClusterAnalysis:
         self.time_bin: float = time_bin_size
         self.raster_window: list = window
 
-    def plot_spikes(self, labels=None, tg=True, eb=True) -> None:
-        """plot_spikes will generate a 2 figure plot with firing rate on top and
-        raster on the bottom. `labels` can either be None in which it will try to grab
-        the internal labels from `set_labels` or it can be `False`, in which case it
-        won't plot labels on the graph. `tg` is the trial group flag plots with `True`
-        fo separating by trial groups. `eb` is the flag for including error shading
-        for firing rate plot."""
+    def plot_spikes(
+        self, labels: Optional[Union[dict, bool]] = None, tg=True, eb=True
+    ) -> None:
+        """
+        function for plotting a smoothed firing rate and raster plot together. Will
+        request gaussian smoothing filter value units of time_bin_size provided in
+        `spike_raster`
+
+        Parameters
+        ----------
+        labels : dict, optional
+            optional overide of internal labels. None prompts to look
+            for internal labels. False will cause it not to plot on the graph.
+            The default is None.
+        tg : bool
+            Separates data by trial groups. The default is True.
+        eb : bool
+            Adds error bar shading to firing rate plot. The default is True.
+
+        Returns
+        -------
+        None
+            plots the firing rate and raster plot .
+
+        """
         psthvalues = self.psthvalues
         eventTimes = self.eventTimes
         if labels is None:
@@ -410,17 +501,35 @@ class ClusterAnalysis:
             groupSep=tg,
         )
 
-    def acg(self, ref_per=0.002) -> None:
-        """This function plots ACG (autocorrelograms) for each cluster. `ref_per`
-        is the refractory period to be displayed on each graph. Default is 2ms, but
-        range could reasonably be 1-3 ms (0.001-0.003)"""
+    def acg(self, ref_per: float = 0.002) -> None:
+        """
+        Creates autocorrelograms for each cluster.
+
+        Parameters
+        ----------
+        ref_per : float, optional
+            The refractory period of the neuronal population in seconds.
+            The default is 0.002 (2ms).
+
+        Returns
+        -------
+        None
+            plots of ACGs.
+
+        """
         plot_acgs(self.sp, refract_time=ref_per)
 
     def plot_pc(self) -> None:
-        """plot_pc plots only based on top two PCs. It will check for four pcs if
-        they exist and then after some math--see function for what is happening--
-        returns the top two. Red is this cluster and black is spikes from other
-        clusters."""
+        """
+        plots the two highest value PCs to given a visualization of clustering quality.
+        Better to use actual qc functions for qc cutoffs.
+
+        Returns
+        -------
+        None
+            plots 2d pc figures..
+
+        """
         plot_pc(self.sp, nPCsPerChan=4, nPCchans=15)
 
     def neuro_corr(
@@ -453,12 +562,36 @@ class ClusterAnalysis:
         )
 
     def latency(
-        self, time_bin_size: float, bsl_win: list, event_win: list, num_shuffles: int
+        self,
+        time_bin_size: float,
+        bsl_win: list[float],
+        event_win: list[float],
+        num_shuffles: int,
     ) -> None:
-        """calculates latency based on Chase 2007 and Mormann 2012. See function for
-        full stats. Requires `time_bin_size` as time in seconds, `bsl_win` which is the
-        window to look for the baseline in seconds [start, end], and an `event_win`
-        which is the same, but for the stimulus time [start, end]"""
+        """
+        checks for the latency to fire after start of stimulus using two methods:
+        chase et al for <2Hz neurons and Mormann et al for > 2Hz.
+
+        Parameters
+        ----------
+        time_bin_size : float
+            Size of the time bin to use given in seconds
+        bsl_win : list
+            baseline window to calculate baseline firing rate and to generate shuffles
+        event_win : list
+            window around stimulus to be analyzed with [start, end] format
+        num_shuffles : int
+            Generates random shuffles of baseline to allow for comparisons. This is the
+            number of shuffles.
+
+        Returns
+        -------
+        None
+            stores to dictionarys, latency_vals which contains the latency firing rate
+            for each cluster and the latency_shuffled for the shuffled baseline
+            latencies.
+
+        """
         latency_values, shuffled_values = latency_calculator(
             self.sp,
             self.eventTimes,
