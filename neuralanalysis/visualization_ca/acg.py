@@ -38,6 +38,26 @@ def plot_acgs(sp: dict, refract_time=0.002) -> None:
 
 
 def acg(st: np.array, sample_rate: float, cluster: int, ref_per: float) -> None:
+    """
+    calculates autocorrelelograms for each cluster
+
+    Parameters
+    ----------
+    st : np.array
+        vector of spike times.
+    sample_rate : float
+        float of sampling rate of amplifier
+    cluster : int
+        the cluster id for current cluster
+    ref_per : float
+        the desired refractory period to line in red
+
+    Returns
+    -------
+    None
+        Calculates and plots acgs.
+
+    """
 
     # n_spikes = len(st)
     bin_size = 0.00025  # do small bins to get accurate sizes

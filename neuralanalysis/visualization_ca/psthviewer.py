@@ -27,9 +27,33 @@ def plot_psth(
     eventTimes: dict,
     labels: dict,
     raster_window: list[list[float, float]],
-    groupSep=True,
-    eb=False,
+    groupSep:bool=True,
+    eb:bool=False,
 ) -> None:
+    """
+    plots a smoothed firing rate plot on top of a raster plot
+
+    Parameters
+    ----------
+    psthvalues : dict
+        dictionary of psth values
+    eventTimes : dict
+        dictionary of stimulus values
+    labels : dict
+        dictionary to translate from int trial groups to str trial groups
+    raster_window : list[list[float, float]]
+        list of lists for each stimulus giving the time window for plotting
+    groupSep : bool, optional
+        Where to separate trial groups or to plot together. True is separate. The default is True.
+    eb : bool, optional
+        Whether to include error bar shading. The default is False.
+
+    Returns
+    -------
+    None
+        Plots of smoothed firing rates and raster plots
+
+    """
     eventLst = list()
     for stimE in eventTimes.keys():
         eventLst.append(stimE)

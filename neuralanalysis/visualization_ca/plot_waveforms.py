@@ -26,29 +26,44 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plot_waveforms(wf: dict, order="F", Ind=True) -> None:
+def plot_waveforms(wf: dict, order:str="F", Ind:bool=True) -> None:
+    """
+    plots raw waveforms from binary file data rather than idealized templates
 
-    """first we pull our data out of the dict"""
+    Parameters
+    ----------
+    wf : dict
+        dictionary of waveforms
+    order : str, optional
+        "F" or "C" including the numpy data mapping. The default is "F".
+    Ind : bool, optional
+        whether or not to plot individual waveforms or just mean. The default is True.
 
-    waveFormsMean = wf[order]["waveFormsMean"]
-    waveForms = wf[order]["waveForms"]
+    Returns
+    -------
+    None
+        DESCRIPTION.
+
+    """
+    wfs_mean = wf[order]["waveFormsMean"]
+    waveforms = wf[order]["waveForms"]
     clusterIDs = wf[order]["ClusterIDs"]
 
     for clu in range(
         len(clusterIDs)
     ):  # iterate through each cluster. grab the max channel and plot it's waveforms
-        max_val = np.argwhere(waveFormsMean[clu] == np.min(waveFormsMean[clu]))[0]
+        max_val = np.argwhere(wfs_mean[clu] == np.min(wfs_mean[clu]))[0]
         max_channel = max_val[0]
 
         if Ind == True:  # do all waveforms
-            curr_waves = waveForms[clu, :, max_channel, :]
-            curr_mean = waveFormsMean[clu, max_channel, :]
+            curr_waves = waveforms[clu, :, max_channel, :]
+            curr_mean = wfs_mean[clu, max_channel, :]
 
             plotWaveformsInd(curr_waves, curr_mean, clusterIDs[clu])
 
         else:  # plot just the mean of the max
-            waveformMax = waveFormsMean[clu, max_channel, :]
-            plotWaveformsMax(waveformMax, clusterIDs[clu])
+            wf_max = wfs_mean[clu, max_channel, :]
+            plotWaveformsMax(wf_max, clusterIDs[clu])
 
 
 def plotWaveformsInd(waveForms: np.array, meanwaveform: np.array, cluster: int) -> None:
@@ -69,7 +84,7 @@ def plotWaveformsInd(waveForms: np.array, meanwaveform: np.array, cluster: int) 
     plt.tight_layout()
     plt.title(f"Cluster Number {cluster} Waveforms", fontsize=8, weight="bold")
     sns.despine()
-    plt.figure(dpi=1200)
+    plt.figure(dpi=800)
     plt.show()
 
 
@@ -83,5 +98,5 @@ def plotWaveformsMax(waveFormsMax: np.array, cluster: int) -> None:
     plt.tight_layout()
     plt.title(f"Cluster Number {cluster} Waveform", fontsize=8, weight="bold")
     sns.despine()
-    plt.figure(dpi=1200)
+    plt.figure(dpi=800)
     plt.show()
