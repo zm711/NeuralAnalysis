@@ -40,13 +40,34 @@ from .genhelpers import getdir, savefile
 
 
 def get_waveforms(
-    sp: dict, nCh: int, datatype=np.int16, wfWin=[-40, 41], nWf=2000
+    sp: dict, nCh: int, datatype=np.int16, wfWin=(-40, 41), nWf=2000
 ) -> dict:
+    """
+    function for getting raw waveforms from binary file
+
+    Parameters
+    ----------
+    sp : dict
+        Neural data dictionary
+    nCh : int
+        Number of channels recorded from. Should be equal to rows in data matrix
+    datatype : np.datatype, optional
+       datatype that the binary file is saved in. For Kilosort int16 The default is np.int16.
+    wfWin : tuple, optional
+        waveform window around each spike. Default are kilosort's The default is [-40, 41].
+    nWf : int, optional
+        number of waveform to attempt. Will automatically scale if too many for dataset The default is 2000.
+
+    Returns
+    -------
+    wf: dict
+       dictionary of raw waveform values, cluster ids, mean waveform values
+
+    """
     # First we set up all of our data and initialization values
     if nCh is None:
         nCh = int(input("number of channels"))
     sample_rate: float = sp["sampleRate"]
-    wfWin: list = wfWin
     nWf = int(nWf)
     spike_times: np.array = sp["spikeTimes"]
     spike_times = np.ceil(np.multiply(spike_times, sample_rate))  # convert to samples
@@ -191,6 +212,29 @@ OUTPUTS: max_waveforms: the max set of samples for each neuron
 def get_wf_values(
     wf: dict, sp: dict, dataOrder="F", depth=None, laterality=None
 ) -> namedtuple:
+    """
+    function for determing some standard waveform values
+
+    Parameters
+    ----------
+    wf : dict
+        raw waveform dictionary
+    sp : dict
+       neural data dictionary
+    dataOrder : str, optional
+        "Fortran" or "C" style. Since I make binaries with Matlab it's "F". The default is "F".
+    depth : float, optional
+        The measured probe depth. If given will scale depths basd on this. The default is None.
+    laterality : str, optional
+        'l' for left, 'r' for right. optional for multiypes The default is None.
+
+ 
+    Returns
+    -------
+    namedtuple
+        waveform values
+
+    """
     xcoords: np.array = sp["xcoords"]
     shank_set = set(xcoords)  # set gets rid of duplicates
     ycoords: np.array = sp["ycoords"]
