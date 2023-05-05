@@ -32,8 +32,8 @@ def clusterzscore(
             continue
         else:
             if window_list:
-                bslWin: list = window_list[0]
-                window: list = window_list[1]
+                bslWin: list = window_list[index][0]
+                window: list = window_list[index][1]
             else:
                 bslWinIn = input(
                     "Enter baseline window with reference to event onset in format x.y for stim {stim}".format(
