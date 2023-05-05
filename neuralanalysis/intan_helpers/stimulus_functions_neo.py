@@ -65,21 +65,18 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
 
     adc_stream = [idx for idx, name in enumerate(stream_list) if "ADC" in name.upper()]
 
-    digital_stream = [
-        idx for idx, name in enumerate(stream_list) if "DIGITAL-IN" in name.upper()
-    ]
+    digital_stream = [idx for idx, name in enumerate(stream_list) if "DIGITAL-IN" in name.upper()]
 
     if len(adc_stream) != 0:
         adc_stream = adc_stream[0]
         adc_data = reader.get_analogsignal_chunk(
-            stream_index=adc_stream, channel_indexes=[0]
+            stream_index=adc_stream,
         )
 
         final_adc = np.squeeze(
-            reader.rescale_signal_raw_to_float(
-                adc_data, stream_index=adc_stream, dtype="float64"
-            )
+            reader.rescale_signal_raw_to_float(adc_data, stream_index=adc_stream, dtype="float64")
         )
+        final_adc = final_adc[:, 0]
     else:
         final_adc = np.nan
 
@@ -91,15 +88,13 @@ def read_intan_neo(filename: str) -> tuple[np.array, np.array, float]:
     else:
         digital_stream = digital_stream[0]
         digital_data = np.squeeze(
-            reader.get_analogsignal_chunk(
-                stream_index=digital_stream, channel_indexes=[0]
-            )
+            reader.get_analogsignal_chunk(stream_index=digital_stream, channel_indexes=[0])
         )
 
     for value in reader.header["signal_channels"]:
         sample_freq = value[2]
         break
-
+    del reader
     return final_adc, digital_data, sample_freq
 
 
