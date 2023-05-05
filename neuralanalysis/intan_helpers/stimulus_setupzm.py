@@ -20,14 +20,11 @@ def dig_stim_setup(
     sample_rate: float,
     eventTimeTot: dict,
 ) -> dict:
-
     for stim in range(np.shape(board_dig_in_data)[0]):
         dig_channel = int(board_dig_in_channels[stim]["native_channel_name"][-1])
         print("Analyzing data from digital channel {chan}".format(chan=dig_channel))
         board_dig_current = board_dig_in_data[stim, :]
-        event_lengths, event_times, trial_group = spike_prep(
-            board_dig_current, sample_rate
-        )
+        event_lengths, event_times, trial_group = spike_prep(board_dig_current, sample_rate)
         # if board_dig_in_channels[stim]['native_channel_name'] == 'DIGITAL-IN-0'+str(stim+1):
 
         if len(event_lengths) != 0:
@@ -37,9 +34,7 @@ def dig_stim_setup(
             if trial_group != 0:
                 eventTimeTot["DIG" + str(dig_channel)]["TrialGroup"] = trial_group
             else:
-                eventTimeTot["DIG" + str(dig_channel)]["TrialGroup"] = np.ones(
-                    (len(event_times),)
-                )
+                eventTimeTot["DIG" + str(dig_channel)]["TrialGroup"] = np.ones((len(event_times),))
     return eventTimeTot
 
 
@@ -49,9 +44,7 @@ the trail groups. Using conditions it completes the digitization then uses the c
 core to generate the eventTimes"""
 
 
-def barostat_stim_setup(
-    board_adc_data: np.array, sample_rate: float, peak=False
-) -> dict:
+def barostat_stim_setup(board_adc_data: np.array, sample_rate: float, peak=False) -> dict:
     """Below is the old baro code that only looks at the peak pressure rather than the
     ramping up to pressure as well. I set it to false since I don't analyze it"""
     eventTimeBaro = None
@@ -120,9 +113,7 @@ def barostat_stim_setup(
         eventTimelength_raw = []
         trialGroup_raw = []
         for data in range(len(baro_dig)):
-            eventTimeLength, eventTimes, trialGroup = spike_prep(
-                baro_dig[data], sample_rate
-            )
+            eventTimeLength, eventTimes, trialGroup = spike_prep(baro_dig[data], sample_rate)
             for events in range(len(eventTimes)):
                 eventTimes_raw.append(eventTimes[events])
                 eventTimelength_raw.append(eventTimeLength[events])
@@ -138,17 +129,15 @@ def barostat_stim_setup(
     general. In order to remove noise I cut off any voltage less than 0.09 mV. 
     This doesn't do too much, but does help a little bit"""
 
-    baro_dig2 = np.array(
-        np.logical_and(board_adc_data > 0.09, board_adc_data > 0), dtype=int
-    )
+    baro_dig2 = np.array(np.logical_and(board_adc_data > 0.09, board_adc_data > 0), dtype=int)
     eventTimesDig_length, eventTimesDig, _ = spike_prep(baro_dig2, sample_rate)
 
     """my barostat stimuli are programmed as 20s. So anything below 15 is going
     to be an analog fluctation that must be removed. Do this for the start times
     and for the lengths"""
 
-    eventStart = eventTimesDig[eventTimesDig_length > 15]
-    eventLength = eventTimesDig_length[eventTimesDig_length > 15]
+    eventStart = eventTimesDig[eventTimesDig_length > 8]
+    eventLength = eventTimesDig_length[eventTimesDig_length > 8]
     trial_group = np.zeros((len(eventStart),))
 
     """we go through each event and find its trial group to the nears 0.25. This allows
@@ -157,9 +146,7 @@ def barostat_stim_setup(
     for idx in range(len(eventStart)):
         start = int(eventStart[idx]) * int(sample_rate)
         end = start + int(eventLength[idx]) * int(sample_rate)
-        trial_group[idx] = int(
-            valueround(statistics.mode(board_adc_data[start:end])) / 0.25
-        )
+        trial_group[idx] = int(valueround(statistics.mode(board_adc_data[start:end])) / 0.25)
 
     eventTimeTotal = np.zeros((3, len(eventStart)))
     eventTimeTotal[0] = eventStart
