@@ -121,14 +121,20 @@ def plot_psth(
                 BinIndex = np.transpose(np.nonzero(ba[inds, :]))
                 tr = BinIndex[:, 0]
                 b = BinIndex[:, 1]
+                indices = argsort(b)
+                b = b[indices]
+                tr = tr[indices]
             else:
                 BinIndex = np.transpose(np.nonzero(ba))
                 tr = BinIndex[:, 0]
                 b = BinIndex[:, 1]
+                indices = argsort(b)
+                b = b[indices]
+                tr = tr[indices]
 
             raster_x, yy = psfn.rasterize(bins[b])
             raster_x = np.squeeze(raster_x)
-            raster_y = yy + np.reshape(np.tile(tr.T, (3, 1)), (1, len(tr.T) * 3))
+            raster_y = yy + np.reshape(np.tile(tr.T, (3, 1)).T, (1, len(tr.T) * 3))
             raster_y = np.squeeze(raster_y)
             raster_y[1:-1:3] = raster_y[1:-1:3] + raster_scale  # apply scale
 
