@@ -121,14 +121,14 @@ def plot_psth(
                 BinIndex = np.transpose(np.nonzero(ba[inds, :]))
                 tr = BinIndex[:, 0]
                 b = BinIndex[:, 1]
-                indices = argsort(b)
+                indices = np.argsort(b)
                 b = b[indices]
                 tr = tr[indices]
             else:
                 BinIndex = np.transpose(np.nonzero(ba))
                 tr = BinIndex[:, 0]
                 b = BinIndex[:, 1]
-                indices = argsort(b)
+                indices = np.argsort(b)
                 b = b[indices]
                 tr = tr[indices]
 
