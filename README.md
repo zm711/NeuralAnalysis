@@ -1,3 +1,5 @@
+# I HAVE MOVED TO MY SPIKEANALYSIS REPO for analysis
+
 # NeuralAnalysis
 Pipeline for analyzing post-Phy Data (ie, kilosort data, spyking circus data, spikeinterface (if exported to phy)).
 some functions based off of Nick Steinmetz's matlab code (qcfn, psthfns, psthviewer, isiv, loadsp), others are based on reading of the literature which I've indicated in 
@@ -11,13 +13,4 @@ Currently I have helpers built in for analyzing Intan, but I'm actively working 
 
 I've tested python 3.8-3.10. I've also tested some other packages and these are my current to recreate. I work in spyder so I generate a conda env with its own spyder I had stability issues so I'm sticking with 5.3.3 for now. Using the packages below will prevent any compatibility issues.
 
-```bash
- conda create -n neuralanalysis -c conda-forge python=3.10 spyder=5.3.3 numpy=1.23 pandas scipy matplotlib h5py seaborn scikit-learn cython sympy numba
- pip install neo
- ```
- **I'm going to create an environment `yaml` soon--ie don't use the yaml yet.**
- **Also this isn't packaged yet so only with git clone can this package be used**
 
-
-## todo
-fix mca when different stimuli used
